@@ -10,6 +10,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563EB'/><text y='24' x='6' font-size='20'>🎨</text></svg>"/>
+  
+  <!-- Google Analytics Tracking (Industry Standard Professional Tracking) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PROTRACKER"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-PROTRACKER');
+  </script>
 </head>
 <body>
 
@@ -27,7 +36,7 @@
     <li><a href="#how-it-works">How It Works</a></li>
     <li><a href="#features">Features</a></li>
     <li><a href="#faq">FAQ</a></li>
-    <li><a href="tools/background-remover.html" class="nav-cta">Try for Free →</a></li>
+    <li><a href="/auth/google" class="nav-cta" id="nav-auth-btn">Sign In w/ Google</a></li>
   </ul>
   <div class="nav-hamburger" id="hamburger">
     <span></span><span></span><span></span>
@@ -49,7 +58,7 @@
       <div class="hero-divider"></div>
       <div class="hero-stat"><strong>100%</strong><span>Browser-based</span></div>
       <div class="hero-divider"></div>
-      <div class="hero-stat"><strong>0</strong><span>Sign-up Required</span></div>
+      <div class="hero-stat"><strong>✅</strong><span>Cloud Profile</span></div>
       <div class="hero-divider"></div>
       <div class="hero-stat"><strong>∞</strong><span>Unlimited Edits</span></div>
     </div>
@@ -246,7 +255,7 @@
     <div class="faq-list">
       <div class="faq-item">
         <button class="faq-q">Are my images uploaded to any server? <div class="faq-icon">+</div></button>
-        <div class="faq-a">No! All image processing happens directly in your browser using JavaScript and WebAssembly. Your images never leave your device. This means complete privacy and security.</div>
+        <div class="faq-a">No! Image processing happens directly in your browser. However, we securely store your basic profile information (Email, Name) on our encrypted backend to let you exclusively access our premium tools.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q">Is PixelCraft AI really free? <div class="faq-icon">+</div></button>
@@ -345,6 +354,38 @@
         card.style.display = show ? 'block' : 'none';
       });
     });
+  });
+
+  // Handle Auth and Professional Tracking Setup
+  document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Check if user was redirected from a secured Tool page
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.get('login_required') === 'true') {
+      showToast('⚠️ Action Denied: Please Sign In with Google to use Professional Tools.', 'error');
+    }
+
+    if(urlParams.get('error') === 'login_failed') {
+      showToast('❌ Login Failed. Please try again.', 'error');
+    }
+
+    try {
+      // 2. Fetch User Status from Backend API
+      const response = await fetch('/api/auth/status');
+      const data = await response.json();
+      const authBtn = document.getElementById('nav-auth-btn');
+
+      if(data.authenticated) {
+        // Update nav to show Logout & User Name
+        authBtn.href = '/logout';
+        authBtn.innerHTML = `Log Out 👋 (${data.user.name})`;
+        authBtn.style.backgroundColor = '#Ef4444'; // Make it red to signify logout
+
+        // Record User Login in Analytics
+        gtag('event', 'login', { method: 'Google' });
+      }
+    } catch(err) {
+      console.error('Core Backend Unreachable:', err);
+    }
   });
 </script>
 </body>
