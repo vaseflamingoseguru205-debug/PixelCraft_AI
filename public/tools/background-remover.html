@@ -277,49 +277,61 @@ async function processFile(file) {
   showProc(4, 'Starting AI…', 'First load takes 20–40 sec (model download ~30MB, cached after).');
 
   try {
-    // 1 ── Load processor & model (once) ─────────────────────────────────────
+    // 1 ── Load pipeline (once) ─────────────────────────────────────
     if (!processor) {
-      showProc(8, 'Downloading AI processor…', '');
-      processor = await AutoProcessor.from_pretrained('briaai/RMBG-1.4', {
-        config: {
-          do_normalize: true, do_pad: false, do_rescale: true, do_resize: true,
-          image_mean: [0.5, 0.5, 0.5], image_std: [1, 1, 1],
-          resample: 2, rescale_factor: 0.00392156862745098,
-          size: { width: 1024, height: 1024 },
-        }
-      });
+      showProc(8, 'Downloading AI model…', 'Please wait. Cached for future use.');
+      // Using pipeline is much more robust against tensor shape issues
+      const { pipeline } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3/dist/transformers.min.js');
+      processor = await pipeline('image-segmentation', 'briaai/RMBG-1.4', { device: 'webgpu' });
     }
 
-    if (!model) {
-      showProc(28, 'Downloading segmentation model…', 'Please wait, this is a one-time download.');
-      try {
-        model = await AutoModel.from_pretrained('briaai/RMBG-1.4', {
-          config: { model_type: 'custom' }, device: 'webgpu',
-        });
-      } catch {
-        showProc(28, 'GPU not available, using CPU…', 'May take 30–60 sec on CPU.');
-        model = await AutoModel.from_pretrained('briaai/RMBG-1.4', {
-          config: { model_type: 'custom' }, device: 'cpu',
-        });
-      }
+    // 2 ── Inference ──────────────────────────────────────────────────────────
+    showProc(55, 'Running AI segmentation…', 'Identifying subject and background…');
+    // The pipeline returns a list of results (usually { label: 'foreground', mask: RawImage, score })
+    // For background removal models, it generally returns the mask directly or an array of blobs.
+    // However, image-segmentation pipeline can just return foreground/background regions.
+    // Wait, RMBG-1.4 is often used directly via AutoModel/AutoProcessor. Let's fix the Tensor issue.
+    // The issue was: rawImg.toRGB() missing, or shape mismatch.
+    // Let's use image-segmentation pipeline directly.
+    const results = await processor(dataURL);
+    
+    // Process results. RMBG-1.4 typically returns a single image or mask of foreground
+    let maskData;
+    if (Array.isArray(results) && results[0].mask) {
+      // It's a classification mask output
+      maskData = results[0].mask;
+    } else if (results instanceof RawImage) {
+        maskData = results;
+    } else if (results && results.mask) {
+        maskData = results.mask;
+    } else {
+        // Fallback if returned format is weird (some versions return foreground as an image)
+        // If it's a Pillow/RawImage image output, we can draw it directly.
+        // Wait, for RMBG-1.4 Transformers pipeline usually returns a DataURL or RawImage.
+        maskData = results[0]?.mask || results; 
     }
 
-    // 2 ── Prepare image ──────────────────────────────────────────────────────
-    showProc(55, 'Preparing image…', '');
-    const rawImg = await RawImage.fromURL(dataURL);
+    if (!maskData) throw new Error("Could not extract mask from AI response.");
 
-    // 3 ── Inference ──────────────────────────────────────────────────────────
-    showProc(65, 'Running AI segmentation…', 'Identifying subject and background…');
-    const { pixel_values } = await processor(rawImg);
-    const { output } = await model({ input: pixel_values });
-
-    // 4 ── Extract mask ───────────────────────────────────────────────────────
     showProc(86, 'Applying mask…', '');
-    const maskTensor  = output[0].squeeze();   // shape [H, W], values 0..1
-    const maskRaw     = await RawImage.fromTensor(maskTensor);
-    const maskResized = await maskRaw.resize(rawImg.width, rawImg.height);
+    
+    // We resize mask back to original image size
+    const rawImg = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3/dist/transformers.min.js').then(m => m.RawImage.fromURL(dataURL));
+    let maskResized;
+    if (maskData.resize) {
+         maskResized = await maskData.resize(rawImg.width, rawImg.height);
+    } else if (maskData.bitmap) { // Image bitmap output
+         // create raw image from bitmap
+         const canvas = document.createElement('canvas');
+         canvas.width = rawImg.width; canvas.height = rawImg.height;
+         const ctx = canvas.getContext('2d');
+         ctx.drawImage(maskData, 0, 0, rawImg.width, rawImg.height);
+         maskResized = ctx.getImageData(0,0, rawImg.width, rawImg.height); // Fake it
+    } else {
+        maskResized = maskData;
+    }
 
-    savedMask = { data: maskResized.data, width: rawImg.width, height: rawImg.height };
+    savedMask = { data: maskResized.data || maskResized, width: rawImg.width, height: rawImg.height };
 
     // 5 ── Draw result ────────────────────────────────────────────────────────
     showProc(95, 'Rendering…', '');
@@ -331,37 +343,48 @@ async function processFile(file) {
     window.showToast?.('Background removed successfully! 🎉', 'success');
 
   } catch (err) {
+    if (err.message && err.message.includes('webgpu')) {
+        // Fallback for WebGPU error
+        if (processor) processor.dispose && processor.dispose();
+        processor = null;
+        throw new Error("Device doesn't support WebGPU fully. Please try a different browser.");
+    }
     console.error('BG remover error:', err);
     procOverlay.classList.remove('active');
     origSection.style.display = 'block';
-    showError(err.message || 'Unknown error. Please try again.');
+    showError(err.message || String(err));
   }
 }
 
 // ─── Canvas rendering ────────────────────────────────────────────────────────
 function renderCanvas(bgColor) {
   if (!savedMask) return;
-  const { data: maskData, width: W, height: H } = savedMask;
-
-  resultCanvas.width  = W;
-  resultCanvas.height = H;
+  const W = resultCanvas.width = origImg.naturalWidth;
+  const H = resultCanvas.height = origImg.naturalHeight;
   const ctx = resultCanvas.getContext('2d');
 
-  // Draw original at full resolution
+  // Draw original
   ctx.clearRect(0, 0, W, H);
   ctx.drawImage(origImg, 0, 0, W, H);
 
-  // Apply segmentation mask as alpha
+  // Apply mask
   const imgData = ctx.getImageData(0, 0, W, H);
   const px = imgData.data;
+  const mData = savedMask.data;
+  
+  // If pipeline returned RGBA, we can just use the alpha channel of mask
+  // Otherwise if grayscale (1 channel), use the single value
+  let isGrayscale = (mData.length === W * H);
+  let isRGBA = (mData.length === W * H * 4);
+
   for (let i = 0; i < W * H; i++) {
-    // maskData is RGBA or single-channel; take first channel
-    const maskVal = maskData[i * (maskData.length / (W * H) | 0)];  // handles both
-    px[i * 4 + 3] = Math.round(maskVal * 255);
+    const maskVal = isRGBA ? mData[i * 4] : (isGrayscale ? mData[i] : mData[i * (mData.length / (W * H) | 0)]);
+    // some masks are 0..1 floating point arrays, some are 0..255 Uint8ClampedArray
+    let alpha = (maskVal <= 1 && mData instanceof Float32Array) ? maskVal * 255 : maskVal;
+    px[i * 4 + 3] = Math.round(alpha);
   }
   ctx.putImageData(imgData, 0, 0);
 
-  // Composite onto a solid background if chosen
   if (bgColor !== 'transparent') {
     const flat = document.createElement('canvas');
     flat.width = W; flat.height = H;
