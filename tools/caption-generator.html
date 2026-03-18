@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Caption Generator — PixelCraft AI</title>
+  <meta name="description" content="Generate AI social media captions for Instagram, Twitter, LinkedIn from your image. Free caption generator with hashtags."/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">💬</div>
+    <h1>AI Caption Generator</h1>
+    <p>Upload your image and describe it briefly to get perfect social media captions with hashtags.</p>
+  </div>
+  <div class="tool-workspace">
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" style="display:none"/>
+      <div class="upload-icon">💬</div>
+      <h3>Upload your image</h3>
+      <p>Then describe what it's about for best results</p>
+    </div>
+    <div id="editor" style="display:none;">
+      <div class="result-area show" style="margin-top:0;">
+        <div class="result-header">
+          <span class="result-header-title">💬 Caption Generator</span>
+          <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+        </div>
+        <div class="result-body">
+          <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:24px;align-items:start;">
+            <div>
+              <img id="preview-img" style="width:100%;border-radius:12px;border:1.5px solid var(--border);object-fit:cover;max-height:260px;margin-bottom:16px;"/>
+              <div class="control-group" style="margin-bottom:14px;">
+                <label>Describe your image (optional)</label>
+                <input type="text" id="img-desc" placeholder="e.g. sunset at beach, coffee morning, gym workout..."/>
+              </div>
+              <div class="control-group" style="margin-bottom:14px;">
+                <label>Mood / Tone</label>
+                <select id="mood">
+                  <option value="inspirational">✨ Inspirational</option>
+                  <option value="funny">😂 Funny</option>
+                  <option value="professional">💼 Professional</option>
+                  <option value="romantic">❤️ Romantic</option>
+                  <option value="adventure">🏔️ Adventure</option>
+                  <option value="motivational">🔥 Motivational</option>
+                  <option value="chill">😎 Chill & Casual</option>
+                </select>
+              </div>
+              <div class="control-group" style="margin-bottom:14px;">
+                <label>Hashtag Count <span class="value-label" id="tag-count-val">10</span></label>
+                <input type="range" id="tag-count" min="3" max="30" value="10"/>
+              </div>
+              <div class="control-group" style="margin-bottom:14px;">
+                <label>Language</label>
+                <select id="lang">
+                  <option value="en">🇺🇸 English</option>
+                  <option value="hi">🇮🇳 Hindi (Hinglish)</option>
+                  <option value="both">🌍 Both</option>
+                </select>
+              </div>
+              <button class="btn btn-blue" id="btn-generate" style="width:100%;justify-content:center;">✨ Generate Captions</button>
+            </div>
+            <div id="captions-container" style="display:none;">
+              <div id="platform-tabs" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;"></div>
+              <div id="caption-cards"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../js/utils.js"></script>
+<script>
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('upload-area');
+const editor = document.getElementById('editor');
+
+document.getElementById('tag-count').addEventListener('input', () => {
+  document.getElementById('tag-count-val').textContent = document.getElementById('tag-count').value;
+});
+
+setupDragDrop(uploadArea, handleFile);
+fileInput.addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+const fileToUrl = f => URL.createObjectURL(f);
+async function handleFile(file) {
+  document.getElementById('preview-img').src = fileToUrl(file);
+  uploadArea.style.display = 'none';
+  editor.style.display = 'block';
+}
+
+const CAPTIONS = {
+  inspirational: {
+    instagram: [
+      "Every moment is a new beginning. Embrace the journey. ✨",
+      "Life is beautiful when you start noticing the little things. 🌸",
+      "Dream big. Work hard. Stay humble. 💫",
+      "Chasing dreams and catching sunsets. 🌅"
+    ],
+    twitter: [
+      "Moments like this remind me why I love life. ✨ #grateful",
+      "Every day is a gift. What will you do with yours? 🌟",
+      "Turning ordinary moments into extraordinary memories. 💫"
+    ],
+    linkedin: [
+      "Success is not final, failure is not fatal. It's the courage to continue that counts.",
+      "Every great story starts with a single step. I'm taking mine today.",
+      "Grateful for the journey, excited for what's ahead."
+    ]
+  },
+  funny: {
+    instagram: [
+      "Me pretending to be a normal human being 😂",
+      "Could be studying. Could be sleeping. Chose chaos. 🙃",
+      "Plot twist: I have no idea what I'm doing 🤷‍♂️",
+      "Living my best life (send snacks) 🍕"
+    ],
+    twitter: [
+      "Why be productive when you can do... this? 😅",
+      "This is my main character moment. Clearly. 😂",
+      "My therapist has not seen this picture yet. 🙃"
+    ],
+    linkedin: [
+      "Excited to announce that I definitely did not wing this. (I did.)",
+      "Making it look easy since... a few seconds ago.",
+      "Per my last email... just kidding. But not really."
+    ]
+  },
+  professional: {
+    instagram: [
+      "Excellence is not a destination but a continuous journey. 💼",
+      "Behind every success is hard work, consistency, and a great team. 🙌",
+      "Grateful for the opportunities and the growth they bring. 📈"
+    ],
+    twitter: [
+      "Consistency builds legacy. Keep showing up. 💡",
+      "Great things take time. Trust the process. 📊",
+      "Success is preparation meeting opportunity. 🎯"
+    ],
+    linkedin: [
+      "Proud to share this milestone in our journey. Grateful for the team that made it possible.",
+      "Every challenge is an opportunity to innovate. That's how we grow.",
+      "Collaboration, dedication, and a commitment to excellence — that's our formula."
+    ]
+  },
+  motivational: {
+    instagram: [
+      "Get up. Show up. Never give up. 🔥",
+      "Your only competition is who you were yesterday. 💪",
+      "Hard work beats talent when talent doesn't work hard. ⚡",
+      "The grind never lies. Results don't lie. 🏆"
+    ],
+    twitter: [
+      "Stop waiting for motivation. Start building discipline. 🔥",
+      "The difference between try and triumph is a little 'umph'. 💪",
+      "Champions aren't made in comfort zones. 🏆"
+    ],
+    linkedin: [
+      "Discipline over motivation. Systems over goals. Consistency over intensity.",
+      "The most successful people didn't have all the answers. They just refused to stop.",
+      "Growth happens outside your comfort zone. Always has. Always will."
+    ]
+  },
+  romantic: {
+    instagram: [
+      "Every love story is beautiful, but ours is my favorite. ❤️",
+      "Home is wherever I'm with you. 🏡💕",
+      "Falling in love with moments we'll remember forever. 🌹",
+      "You're my favorite notification. 💌"
+    ],
+    twitter: [
+      "Some moments don't need words. Just feelings. ❤️",
+      "The best things in life aren't things. They're moments. 💕",
+      "Grateful for the person who makes ordinary days extraordinary. 🌹"
+    ],
+    linkedin: ["Love is the most powerful motivator. In life and in work, cherish what matters."]
+  },
+  adventure: {
+    instagram: [
+      "Not all those who wander are lost. 🗺️",
+      "Adventure awaits. I'm already there. ⛰️",
+      "Collect moments, not things. 🌍",
+      "The world is too beautiful to stay in one place. ✈️"
+    ],
+    twitter: [
+      "Life is short. Make it epic. 🌍",
+      "Explorer mode: ON. Comfort zone: LEFT. 🏔️",
+      "Passport stamps > Instagram likes. ✈️"
+    ],
+    linkedin: ["The best investment you can make is in experiences that shape who you become."]
+  },
+  chill: {
+    instagram: [
+      "Just vibing. No agenda. ✌️",
+      "Good vibes only from this side. 😎",
+      "Sunday mood: permanent state of mind. 🌿",
+      "Taking it one cup of coffee at a time. ☕"
+    ],
+    twitter: [
+      "Unbothered. Moisturized. Thriving. 😌",
+      "Main character energy. Low effort. 😎",
+      "No rush. Good energy. Peace. 🌿"
+    ],
+    linkedin: ["Work hard, rest harder. Balance isn't a luxury — it's a strategy."]
+  }
+};
+
+const HASHTAGS = {
+  inspirational: '#inspiration #motivated #positivevibes #mindset #growth #success #blessed #grateful #quote #dailymotivation #believe #dreams #goals #focus #winning #lifeisgood #liveyourbestlife #goodvibes #thinkpositive #inspire',
+  funny: '#funny #lol #humor #memes #relatable #mood #hilarious #comedy #laughing #funnypost #sarcasm #trending #viral #moodoftheday #lmao #justsaying #realtalk #toofunny',
+  professional: '#business #success #entrepreneur #leadership #growth #networking #career #professional #goals #hustle #mindset #innovation #teamwork #motivated #worksmart',
+  motivational: '#motivation #hustle #grind #nevergiveup #success #discipline #hardwork #goals #focusedon #achievement #winner #champion #mindset #stronger #pushyourlimits',
+  romantic: '#love #romance #relationship #couple #together #soulmate #happiness #heart #lovelife #blessed #forever #mylove #truelove #lovestory',
+  adventure: '#travel #adventure #explore #wanderlust #nature #vacation #trip #travelgram #photography #outdoors #world #journey #discover #hiking #beautiful',
+  chill: '#vibes #chill #relax #lifestyle #goodvibes #mood #sunday #peace #calm #coffeetime #selfcare #aesthetic #minimal #slowlife #cozy'
+};
+
+const HINGLISH = {
+  inspirational: ["Zindagi mein kuch acha karo, khud pe trust karo ✨", "Sapne dekho, mehnat karo, aur kabhi mat ruko 💫"],
+  funny: ["Padhai chhod di, kyunki main 'waqt nahi' wali category mein hoon 😂", "Apna time aayega... kal tak toh zaroor 🙃"],
+  professional: ["Kaam karte raho, results aayenge hi 💼", "Success ka koi shortcut nahi hota 📈"],
+  motivational: ["Haar mat maan, jeetna abhi baaki hai 🔥", "Lakshya ek, mehnat hazaar, result aayega zaroor 💪"],
+  chill: ["Bhai relax, sab theek ho jayega ✌️", "Chai pi aur chill maar ☕😎"],
+  romantic: ["Tum mere liye sab kuch ho ❤️", "Tere bina zindagi adhuri si hai 💕"],
+  adventure: ["Duniya ghoomni hai toh nikal pado ✈️", "Har jagah mein kuch naya hai 🌍"]
+};
+
+document.getElementById('btn-generate').addEventListener('click', generateCaptions);
+
+function generateCaptions() {
+  const mood = document.getElementById('mood').value;
+  const lang = document.getElementById('lang').value;
+  const tagCount = parseInt(document.getElementById('tag-count').value);
+  const desc = document.getElementById('img-desc').value;
+  const caps = CAPTIONS[mood] || CAPTIONS.inspirational;
+  const tags = (HASHTAGS[mood] || '').split(' ').slice(0, tagCount).join(' ');
+  const hinglish = HINGLISH[mood] || [];
+
+  const container = document.getElementById('captions-container');
+  const cards = document.getElementById('caption-cards');
+  container.style.display = 'block';
+  cards.innerHTML = '';
+
+  const platforms = [
+    { name: 'Instagram', icon: '📷', captions: caps.instagram },
+    { name: 'Twitter/X', icon: '𝕏', captions: caps.twitter },
+    { name: 'LinkedIn', icon: '💼', captions: caps.linkedin }
+  ];
+
+  platforms.forEach(p => {
+    const section = document.createElement('div');
+    section.style.cssText = 'background:var(--bg);border-radius:12px;padding:20px;margin-bottom:16px;';
+    section.innerHTML = `
+      <div style="font-size:0.8rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;">${p.icon} ${p.name}</div>
+      ${p.captions.map((cap, i) => `
+        <div style="background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;position:relative;">
+          <p style="font-size:0.9rem;color:var(--dark);line-height:1.5;margin-bottom:8px;">${cap}${desc ? ' — ' + desc : ''}</p>
+          <p style="font-size:0.78rem;color:var(--primary)">${tags}</p>
+          ${lang !== 'en' && hinglish[i] ? `<p style="font-size:0.85rem;color:var(--accent);margin-top:6px;">${hinglish[i]}</p>` : ''}
+          <button onclick="copyCaption(this)" data-text="${(cap + ' ' + tags).replace(/"/g,'&quot;')}" style="position:absolute;top:10px;right:10px;background:var(--bg2);border:none;border-radius:8px;padding:5px 10px;font-size:0.75rem;font-weight:600;cursor:pointer;color:var(--text);">Copy</button>
+        </div>
+      `).join('')}
+    `;
+    cards.appendChild(section);
+  });
+
+  showToast('Captions generated!', 'success');
+}
+
+function copyCaption(btn) {
+  navigator.clipboard.writeText(btn.dataset.text).then(() => {
+    btn.textContent = '✓ Copied!'; btn.style.color = 'var(--success)';
+    setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = 'var(--text)'; }, 2000);
+  });
+}
+
+function resetTool() {
+  uploadArea.style.display = 'block'; editor.style.display = 'none'; fileInput.value = '';
+  document.getElementById('captions-container').style.display = 'none';
+}
+</script>
+</body>
+</html>

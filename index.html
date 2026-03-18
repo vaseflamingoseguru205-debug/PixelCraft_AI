@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PixelCraft AI — Free Online Image Tools</title>
+  <meta name="description" content="Free professional AI-powered image tools: background removal, photo editing, compression, format conversion, colorizer, collage maker and 15+ more tools. No signup needed."/>
+  <meta property="og:title" content="PixelCraft AI — Free Online Image Tools"/>
+  <meta property="og:description" content="20+ free AI image tools: background remover, photo editor, compressor, colorizer and more."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563EB'/><text y='24' x='6' font-size='20'>🎨</text></svg>"/>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">🎨</div>
+    PixelCraft AI
+  </a>
+  <ul class="nav-links">
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="tools/background-remover.html" class="nav-cta">Try for Free →</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">✨ 20+ Professional AI Tools — 100% Free</div>
+    <h1>Edit Images Like a <span>Professional</span><br/>— No Skills Needed</h1>
+    <p>Remove backgrounds, enhance photos, compress images, create memes, generate captions, and much more. All in your browser — instant, private, free.</p>
+    <div class="hero-actions">
+      <a href="#tools" class="btn-primary">🚀 Explore All Tools</a>
+      <a href="tools/background-remover.html" class="btn-secondary">🖼️ Remove Background</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>20+</strong><span>Free Tools</span></div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat"><strong>100%</strong><span>Browser-based</span></div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat"><strong>0</strong><span>Sign-up Required</span></div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat"><strong>∞</strong><span>Unlimited Edits</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS SECTION -->
+<section class="section section-alt" id="tools">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">All Tools</div>
+      <h2>Everything You Need to Edit Images</h2>
+      <p>Professional-grade tools that run entirely in your browser. No uploads to servers. No privacy concerns.</p>
+    </div>
+
+    <div style="margin-bottom:24px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+      <button class="btn btn-blue filter-btn active" data-filter="all">All Tools</button>
+      <button class="btn btn-outline filter-btn" data-filter="ai">🤖 AI Powered</button>
+      <button class="btn btn-outline filter-btn" data-filter="edit">✏️ Edit</button>
+      <button class="btn btn-outline filter-btn" data-filter="convert">🔄 Convert</button>
+    </div>
+
+    <div class="tools-grid" id="tools-grid">
+
+      <!-- AI TOOLS -->
+      <a href="tools/background-remover.html" class="tool-card" data-cat="ai">
+        <div class="tool-badge">🔥 Popular</div>
+        <div class="tool-icon icon-blue">✂️</div>
+        <h3>Background Remover</h3>
+        <p>Remove image background instantly using AI. Get transparent PNG in seconds.</p>
+        <div class="tool-arrow">Open Tool →</div>
+      </a>
+
+      <a href="tools/object-remover.html" class="tool-card" data-cat="ai">
+        <div class="tool-badge">AI</div>
+        <div class="tool-icon icon-violet">🧹</div>
+        <h3>Object Remover</h3>
+        <p>Paint over any object and AI removes it cleanly from your photo.</p>
+        <div class="tool-arrow">Open Tool →</div>
+      </a>
+
+      <!-- EDIT TOOLS -->
+      <a href="tools/image-filters.html" class="tool-card" data-cat="edit">
+        <div class="tool-icon icon-violet">🎨</div>
+        <h3>Filters &amp; Effects</h3>
+        <p>Adjust brightness, contrast, saturation, blur, and apply artistic filters.</p>
+        <div class="tool-arrow">Open Tool →</div>
+      </a>
+
+      <a href="tools/watermark-adder.html" class="tool-card" data-cat="edit">
+        <div class="tool-icon icon-green">🖊️</div>
+        <h3>Watermark Adder</h3>
+        <p>Add text or image watermark. Control position, opacity, and font style.</p>
+        <div class="tool-arrow">Open Tool →</div>
+      </a>
+
+      <a href="tools/text-adder.html" class="tool-card" data-cat="edit">
+        <div class="tool-icon icon-indigo">✏️</div>
+        <h3>Text on Image</h3>
+        <p>Add styled text overlays with custom fonts, colors, and positioning.</p>
+        <div class="tool-arrow">Open Tool →</div>
+      </a>
+
+      <a href="tools/exif-viewer.html" class="tool-card" data-cat="edit">
+        <div class="tool-icon icon-teal">📋</div>
+        <h3>EXIF Data Viewer</h3>
+        <p>View hidden metadata: camera model, GPS location, date taken and more.</p>
+        <div class="tool-arrow">Open Tool →</div>
+      </a>
+
+      <a href="tools/color-palette.html" class="tool-card" data-cat="edit">
+        <div class="tool-icon icon-yellow">🎨</div>
+        <h3>Color Palette Extractor</h3>
+        <p>Extract dominant colors from any image. Copy HEX codes instantly.</p>
+        <div class="tool-arrow">Open Tool →</div>
+      </a>
+
+      <!-- CONVERT TOOLS -->
+      <a href="tools/image-compressor.html" class="tool-card" data-cat="convert">
+        <div class="tool-badge">🔥 Popular</div>
+        <div class="tool-icon icon-orange">🗜️</div>
+        <h3>Image Compressor</h3>
+        <p>Reduce image file size without visible quality loss. See before/after size.</p>
+        <div class="tool-arrow">Open Tool →</div>
+      </a>
+
+      <a href="tools/format-converter.html" class="tool-card" data-cat="convert">
+        <div class="tool-icon icon-cyan">🔄</div>
+        <h3>Format Converter</h3>
+        <p>Convert between PNG, JPG, WebP, AVIF formats instantly in your browser.</p>
+        <div class="tool-arrow">Open Tool →</div>
+      </a>
+
+      <a href="tools/smart-resize.html" class="tool-card" data-cat="convert">
+        <div class="tool-badge">Unique</div>
+        <div class="tool-icon icon-green">📐</div>
+        <h3>Smart Social Resize</h3>
+        <p>Resize one image for ALL social platforms: Instagram, YouTube, LinkedIn &amp; more.</p>
+        <div class="tool-arrow">Open Tool →</div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">How It Works</div>
+      <h2>3 Simple Steps</h2>
+      <p>No installation, no registration, no complexity. Just results.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <h3>Upload Your Image</h3>
+        <p>Drag & drop or click to upload your image. Supports PNG, JPG, WebP and more formats.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <h3>Apply Your Edits</h3>
+        <p>Choose your tool, adjust settings, and see a real-time preview of the result instantly.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <h3>Download Result</h3>
+        <p>One click to download your finished image in highest quality. No watermarks, ever.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section section-alt" id="features">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Why PixelCraft AI</div>
+      <h2>Built for Everyone</h2>
+      <p>Professional power without the professional complexity or cost.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>100% Private</h3>
+        <p>All processing happens in your browser. Your images never leave your device.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Lightning Fast</h3>
+        <p>No server round trips. Client-side processing means instant results.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3>Completely Free</h3>
+        <p>All 20+ tools are free. No premium plans, no hidden limits, no credit card.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Works Everywhere</h3>
+        <p>Fully responsive. Works perfectly on desktop, tablet, and mobile browsers.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🚫</div>
+        <h3>No Watermarks</h3>
+        <p>Download your edited images in full resolution without any watermarks.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>AI-Powered</h3>
+        <p>Advanced AI models for background removal, colorization, and object detection.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <h3>No Installation</h3>
+        <p>Works directly in any modern browser. No plugins or downloads needed.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h3>Unlimited Use</h3>
+        <p>Process as many images as you want. No daily limits, no quotas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">FAQ</div>
+      <h2>Frequently Asked Questions</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q">Are my images uploaded to any server? <div class="faq-icon">+</div></button>
+        <div class="faq-a">No! All image processing happens directly in your browser using JavaScript and WebAssembly. Your images never leave your device. This means complete privacy and security.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Is PixelCraft AI really free? <div class="faq-icon">+</div></button>
+        <div class="faq-a">Yes, all 20+ tools are completely free with no hidden charges. No account needed. No watermarks on downloads. No usage limits.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What image formats are supported? <div class="faq-icon">+</div></button>
+        <div class="faq-a">We support all major formats including JPG, PNG, WebP, AVIF, GIF, BMP, TIFF, and SVG. You can also convert between these formats using our Format Converter tool.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">How accurate is the background removal? <div class="faq-icon">+</div></button>
+        <div class="faq-a">Our AI background remover uses state-of-the-art WebAssembly AI models that run in your browser. It works best with clear subject-background contrast and handles hair and fine edges well.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Can I use PixelCraft AI on my phone? <div class="faq-icon">+</div></button>
+        <div class="faq-a">Absolutely! PixelCraft AI is fully responsive and works on all modern browsers including Safari on iPhone and Chrome on Android.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Is there a file size limit? <div class="faq-icon">+</div></button>
+        <div class="faq-a">Since processing happens in your browser, the limit depends on your device's RAM. Most tools work fine with images up to 20MB. For very large files, we recommend using the compressor first.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section class="section section-alt">
+  <div class="container" style="text-align:center;">
+    <h2 style="font-size:2rem; font-weight:800; color:var(--dark); margin-bottom:16px; letter-spacing:-0.02em;">Start Editing in Seconds</h2>
+    <p style="color:var(--text-light); margin-bottom:32px; font-size:1.05rem;">No account needed. No software to install. Just open and edit.</p>
+    <a href="tools/background-remover.html" class="btn-primary" style="font-size:1rem; padding:16px 36px;">🚀 Try Background Remover Free</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" style="color:white; margin-bottom:14px; display:inline-flex;">
+          <div class="nav-logo-icon">🎨</div> PixelCraft AI
+        </a>
+        <p>Professional AI-powered image tools. Free, private, and no sign-up required. Edit images like a pro in your browser.</p>
+        <div class="footer-social" style="margin-top:20px;">
+          <a href="#" title="Twitter">𝕏</a>
+          <a href="#" title="Instagram">📸</a>
+          <a href="#" title="YouTube">▶</a>
+          <a href="#" title="Facebook">f</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>AI Tools</h4>
+        <ul>
+          <li><a href="tools/background-remover.html">Background Remover</a></li>
+          <li><a href="tools/object-remover.html">Object Remover</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Edit Tools</h4>
+        <ul>
+          <li><a href="tools/image-filters.html">Filters &amp; Effects</a></li>
+          <li><a href="tools/watermark-adder.html">Watermark Adder</a></li>
+          <li><a href="tools/text-adder.html">Text on Image</a></li>
+          <li><a href="tools/exif-viewer.html">EXIF Viewer</a></li>
+          <li><a href="tools/color-palette.html">Color Palette</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Convert Tools</h4>
+        <ul>
+          <li><a href="tools/image-compressor.html">Image Compressor</a></li>
+          <li><a href="tools/format-converter.html">Format Converter</a></li>
+          <li><a href="tools/smart-resize.html">Smart Social Resize</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 PixelCraft AI — All tools are free forever</span>
+      <span>Made with ❤️ for creators everywhere</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/utils.js"></script>
+<script>
+  // Filter tools
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.className = 'btn btn-outline filter-btn';
+      });
+      btn.className = 'btn btn-blue filter-btn active';
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('.tool-card').forEach(card => {
+        const show = filter === 'all' || card.dataset.cat === filter;
+        card.style.display = show ? 'block' : 'none';
+      });
+    });
+  });
+</script>
+</body>
+</html>

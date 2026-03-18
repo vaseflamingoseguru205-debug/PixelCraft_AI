@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Object Remover — PixelCraft AI</title>
+  <meta name="description" content="Remove unwanted objects from photos by painting over them. Free online object removal tool."/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">🧹</div>
+    <h1>Object Remover</h1>
+    <p>Paint over any object you want to remove. The tool will fill the area with surrounding content.</p>
+  </div>
+  <div class="tool-workspace">
+    <div class="info-box">
+      <span>💡</span>
+      <span>Paint over the object using your mouse or finger. Adjust brush size for precision. Works best on simple backgrounds (sky, walls, grass).</span>
+    </div>
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" style="display:none"/>
+      <div class="upload-icon">🧹</div>
+      <h3>Upload your photo</h3>
+      <p>Then paint over the object you want to remove</p>
+    </div>
+    <div id="editor" style="display:none;">
+      <div class="result-area show" style="margin-top:0;">
+        <div class="result-header">
+          <span class="result-header-title">🖌️ Paint over objects to remove them</span>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-outline" id="btn-undo">↩ Undo</button>
+            <button class="btn btn-blue" id="btn-remove">🧹 Remove Objects</button>
+            <button class="btn btn-gray" id="btn-clear-mask">Clear Mask</button>
+            <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+            <button class="btn btn-green" id="btn-download" style="display:none;">⬇️ Download</button>
+          </div>
+        </div>
+        <div class="result-body">
+          <div class="controls-row" style="margin-bottom:16px;">
+            <div class="control-group">
+              <label>Brush Size <span class="value-label" id="brush-size-val">30px</span></label>
+              <input type="range" id="brush-size" min="5" max="100" value="30"/>
+            </div>
+            <div class="control-group">
+              <label>Inpaint Radius <span class="value-label" id="radius-val">10px</span></label>
+              <input type="range" id="inpaint-radius" min="5" max="50" value="10"/>
+            </div>
+          </div>
+          <div style="position:relative;display:inline-block;width:100%;">
+            <canvas id="base-canvas" style="display:none;"></canvas>
+            <canvas id="draw-canvas" style="width:100%;border-radius:12px;border:1.5px solid var(--border);cursor:crosshair;touch-action:none;"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../js/utils.js"></script>
+<script>
+let currentImg = null, isDrawing = false, undoStack = [];
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('upload-area');
+const editor = document.getElementById('editor');
+const baseCanvas = document.getElementById('base-canvas');
+const drawCanvas = document.getElementById('draw-canvas');
+const baseCtx = baseCanvas.getContext('2d');
+const drawCtx = drawCanvas.getContext('2d');
+
+document.getElementById('brush-size').addEventListener('input', () => {
+  document.getElementById('brush-size-val').textContent = document.getElementById('brush-size').value + 'px';
+});
+document.getElementById('inpaint-radius').addEventListener('input', () => {
+  document.getElementById('radius-val').textContent = document.getElementById('inpaint-radius').value + 'px';
+});
+
+setupDragDrop(uploadArea, handleFile);
+fileInput.addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+async function handleFile(file) {
+  currentImg = await fileToImage(file);
+  drawImageToCanvas(baseCanvas, currentImg, 900, 600);
+  drawCanvas.width = baseCanvas.width;
+  drawCanvas.height = baseCanvas.height;
+  drawCtx.drawImage(baseCanvas, 0, 0);
+  uploadArea.style.display = 'none';
+  editor.style.display = 'block';
+}
+
+function getPos(e) {
+  const rect = drawCanvas.getBoundingClientRect();
+  const scaleX = drawCanvas.width / rect.width;
+  const scaleY = drawCanvas.height / rect.height;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+}
+
+drawCanvas.addEventListener('mousedown', startDraw);
+drawCanvas.addEventListener('mousemove', draw);
+drawCanvas.addEventListener('mouseup', stopDraw);
+drawCanvas.addEventListener('mouseleave', stopDraw);
+drawCanvas.addEventListener('touchstart', e => { e.preventDefault(); startDraw(e); }, { passive: false });
+drawCanvas.addEventListener('touchmove', e => { e.preventDefault(); draw(e); }, { passive: false });
+drawCanvas.addEventListener('touchend', stopDraw);
+
+function startDraw(e) {
+  isDrawing = true;
+  undoStack.push(drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height));
+  draw(e);
+}
+
+function draw(e) {
+  if (!isDrawing) return;
+  const pos = getPos(e);
+  const brushSize = parseInt(document.getElementById('brush-size').value);
+  drawCtx.save();
+  drawCtx.globalAlpha = 0.65;
+  drawCtx.fillStyle = 'rgba(255, 80, 80, 0.8)';
+  drawCtx.beginPath();
+  drawCtx.arc(pos.x, pos.y, brushSize / 2, 0, Math.PI * 2);
+  drawCtx.fill();
+  drawCtx.restore();
+}
+
+function stopDraw() { isDrawing = false; }
+
+document.getElementById('btn-undo').addEventListener('click', () => {
+  if (undoStack.length === 0) return;
+  const prev = undoStack.pop();
+  drawCtx.putImageData(prev, 0, 0);
+});
+
+document.getElementById('btn-clear-mask').addEventListener('click', () => {
+  drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+  drawCtx.drawImage(baseCanvas, 0, 0);
+  undoStack = [];
+});
+
+document.getElementById('btn-remove').addEventListener('click', inpaintImage);
+
+function inpaintImage() {
+  const w = drawCanvas.width, h = drawCanvas.height;
+  const drawData = drawCtx.getImageData(0, 0, w, h);
+  const baseData = baseCtx.getImageData(0, 0, w, h);
+  const result = baseCtx.getImageData(0, 0, w, h);
+  const radius = parseInt(document.getElementById('inpaint-radius').value);
+
+  // Find masked pixels (red overlay, alpha > 100)
+  const mask = new Uint8Array(w * h);
+  for (let i = 0; i < drawData.data.length; i += 4) {
+    const px = i / 4;
+    const isRed = drawData.data[i] > 180 && drawData.data[i+1] < 100 && drawData.data[i+3] > 100;
+    if (isRed) mask[px] = 1;
+  }
+
+  // Simple inpainting: for masked pixels, sample from surrounding non-masked pixels
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const px = y * w + x;
+      if (!mask[px]) continue;
+      let rSum=0, gSum=0, bSum=0, count=0;
+      for (let dy = -radius; dy <= radius; dy++) {
+        for (let dx = -radius; dx <= radius; dx++) {
+          const nx = x + dx, ny = y + dy;
+          if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
+          const nPx = ny * w + nx;
+          if (mask[nPx]) continue;
+          const nIdx = nPx * 4;
+          const weight = 1 / (1 + Math.sqrt(dx*dx + dy*dy));
+          rSum += baseData.data[nIdx] * weight;
+          gSum += baseData.data[nIdx+1] * weight;
+          bSum += baseData.data[nIdx+2] * weight;
+          count += weight;
+        }
+      }
+      if (count > 0) {
+        const idx = px * 4;
+        result.data[idx] = rSum / count;
+        result.data[idx+1] = gSum / count;
+        result.data[idx+2] = bSum / count;
+        result.data[idx+3] = 255;
+      }
+    }
+  }
+
+  // Update both canvases
+  baseCtx.putImageData(result, 0, 0);
+  drawCtx.putImageData(result, 0, 0);
+  undoStack = [];
+  document.getElementById('btn-download').style.display = 'flex';
+  showToast('Objects removed! Paint more or download.', 'success');
+}
+
+document.getElementById('btn-download').addEventListener('click', () => {
+  downloadFile(drawCanvas.toDataURL('image/png'), 'pixelcraft-object-removed.png');
+});
+
+function resetTool() {
+  currentImg = null; undoStack = [];
+  uploadArea.style.display = 'block'; editor.style.display = 'none'; fileInput.value = '';
+  document.getElementById('btn-download').style.display = 'none';
+}
+</script>
+</body>
+</html>

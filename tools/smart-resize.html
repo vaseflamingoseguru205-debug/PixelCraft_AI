@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Social Resize — PixelCraft AI</title>
+  <meta name="description" content="Resize one image for all social media platforms: Instagram, YouTube, Twitter, LinkedIn, Facebook — all at once!"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">📐</div>
+    <h1>Smart Social Media Resizer</h1>
+    <p>Upload one image and resize it for ALL social media platforms simultaneously. Download any size instantly.</p>
+  </div>
+  <div class="tool-workspace">
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" style="display:none"/>
+      <div class="upload-icon">📐</div>
+      <h3>Upload your image to resize for all platforms</h3>
+      <p>One upload → All sizes ready</p>
+    </div>
+    <div id="editor" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:24px;">
+        <h3 style="font-weight:700;color:var(--dark);">📲 All Platform Sizes Ready</h3>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-blue" id="btn-download-all">⬇️ Download All (ZIP)</button>
+          <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+        </div>
+      </div>
+      <div id="sizes-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script src="../js/utils.js"></script>
+<script>
+const PLATFORMS = [
+  { platform:'Instagram', type:'Square Post', w:1080, h:1080, icon:'📷' },
+  { platform:'Instagram', type:'Portrait Post', w:1080, h:1350, icon:'📷' },
+  { platform:'Instagram', type:'Story/Reel', w:1080, h:1920, icon:'📱' },
+  { platform:'Instagram', type:'Profile Photo', w:320, h:320, icon:'👤' },
+  { platform:'YouTube', type:'Thumbnail', w:1280, h:720, icon:'▶️' },
+  { platform:'YouTube', type:'Channel Banner', w:2560, h:1440, icon:'▶️' },
+  { platform:'YouTube', type:'Profile Photo', w:800, h:800, icon:'👤' },
+  { platform:'Twitter/X', type:'Post Image', w:1200, h:675, icon:'𝕏' },
+  { platform:'Twitter/X', type:'Header Photo', w:1500, h:500, icon:'𝕏' },
+  { platform:'LinkedIn', type:'Post Image', w:1200, h:627, icon:'💼' },
+  { platform:'LinkedIn', type:'Profile Photo', w:400, h:400, icon:'👤' },
+  { platform:'LinkedIn', type:'Cover Photo', w:1584, h:396, icon:'💼' },
+  { platform:'Facebook', type:'Post Image', w:1200, h:630, icon:'f' },
+  { platform:'Facebook', type:'Cover Photo', w:820, h:312, icon:'f' },
+  { platform:'Facebook', type:'Profile Photo', w:170, h:170, icon:'👤' },
+  { platform:'WhatsApp', type:'Profile Photo', w:640, h:640, icon:'💬' },
+  { platform:'Pinterest', type:'Pin', w:1000, h:1500, icon:'📌' },
+  { platform:'TikTok', type:'Profile Photo', w:200, h:200, icon:'🎵' },
+];
+
+let currentImg = null;
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('upload-area');
+const editor = document.getElementById('editor');
+const sizesGrid = document.getElementById('sizes-grid');
+
+setupDragDrop(uploadArea, handleFile);
+fileInput.addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+async function handleFile(file) {
+  currentImg = await fileToImage(file);
+  uploadArea.style.display = 'none';
+  editor.style.display = 'block';
+  renderCards();
+}
+
+function resizeToCanvas(img, w, h) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, w, h);
+  // cover-fit
+  const ratio = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+  const sw = img.naturalWidth * ratio, sh = img.naturalHeight * ratio;
+  const sx = (w - sw) / 2, sy = (h - sh) / 2;
+  ctx.drawImage(img, sx, sy, sw, sh);
+  return c;
+}
+
+function renderCards() {
+  sizesGrid.innerHTML = '';
+  PLATFORMS.forEach((p, i) => {
+    const preview = resizeToCanvas(currentImg, Math.min(p.w, 400), Math.round(Math.min(p.w, 400) * p.h / p.w));
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--white);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;transition:var(--transition);';
+    card.onmouseenter = () => { card.style.boxShadow = 'var(--shadow-lg)'; card.style.transform = 'translateY(-3px)'; };
+    card.onmouseleave = () => { card.style.boxShadow = ''; card.style.transform = ''; };
+    const img = document.createElement('img');
+    img.src = preview.toDataURL('image/jpeg', 0.85);
+    img.style.cssText = 'width:100%;height:160px;object-fit:cover;display:block;background:#f1f5f9;';
+    const info = document.createElement('div');
+    info.style.cssText = 'padding:14px 16px;';
+    info.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span style="font-size:1rem;">${p.icon}</span>
+        <span style="font-size:0.7rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;">${p.platform}</span>
+      </div>
+      <div style="font-weight:700;color:var(--dark);font-size:0.92rem;margin-bottom:4px;">${p.type}</div>
+      <div style="font-size:0.78rem;color:var(--text-light);margin-bottom:12px;">${p.w} × ${p.h} px</div>
+      <button class="btn btn-blue" style="width:100%;justify-content:center;padding:10px;" data-idx="${i}">⬇️ Download</button>
+    `;
+    card.appendChild(img);
+    card.appendChild(info);
+    sizesGrid.appendChild(card);
+  });
+
+  sizesGrid.querySelectorAll('[data-idx]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = PLATFORMS[parseInt(btn.dataset.idx)];
+      const c = resizeToCanvas(currentImg, p.w, p.h);
+      downloadFile(c.toDataURL('image/png'), `${p.platform.toLowerCase().replace('/','')}-${p.type.toLowerCase().replace(/\s/g,'-')}-${p.w}x${p.h}.png`);
+    });
+  });
+}
+
+document.getElementById('btn-download-all').addEventListener('click', async () => {
+  if (!window.JSZip) { showToast('ZIP library not loaded. Try downloading individually.', 'error'); return; }
+  showToast('Creating ZIP file...', 'default');
+  const zip = new JSZip();
+  PLATFORMS.forEach(p => {
+    const c = resizeToCanvas(currentImg, p.w, p.h);
+    const base64 = c.toDataURL('image/png').split(',')[1];
+    zip.file(`${p.platform.replace('/','')}-${p.type.replace(/\s/g,'-')}-${p.w}x${p.h}.png`, base64, { base64: true });
+  });
+  const blob = await zip.generateAsync({ type: 'blob' });
+  saveAs(blob, 'pixelcraft-all-sizes.zip');
+  showToast('ZIP downloaded!', 'success');
+});
+
+function resetTool() {
+  currentImg = null; sizesGrid.innerHTML = '';
+  uploadArea.style.display = 'block'; editor.style.display = 'none'; fileInput.value = '';
+}
+</script>
+</body>
+</html>

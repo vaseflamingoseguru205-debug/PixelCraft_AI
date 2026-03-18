@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image Compressor — PixelCraft AI</title>
+  <meta name="description" content="Compress images online for free. Reduce file size without quality loss. JPG, PNG, WebP supported."/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">🗜️</div>
+    <h1>Image Compressor</h1>
+    <p>Reduce image file size without visible quality loss. See real-time before/after size comparison.</p>
+  </div>
+  <div class="tool-workspace">
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" style="display:none"/>
+      <div class="upload-icon">🗜️</div>
+      <h3>Drop image here or click to upload</h3>
+      <p>JPG, PNG, WebP supported</p>
+    </div>
+    <div id="editor" style="display:none;">
+      <div class="result-area show" style="margin-top:0;">
+        <div class="result-header">
+          <span class="result-header-title">Compression Settings</span>
+          <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+        </div>
+        <div class="result-body">
+          <div class="controls-row">
+            <div class="control-group" style="flex:2;">
+              <label>Quality: <span class="value-label" id="quality-val">75%</span></label>
+              <input type="range" id="quality-slider" min="1" max="100" value="75"/>
+            </div>
+            <div class="control-group">
+              <label>Output Format</label>
+              <select id="format-select">
+                <option value="image/jpeg">JPG</option>
+                <option value="image/webp">WebP</option>
+                <option value="image/png">PNG</option>
+              </select>
+            </div>
+          </div>
+          <!-- Size comparison -->
+          <div style="background:var(--bg);border-radius:12px;padding:20px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;text-align:center;">
+            <div>
+              <div style="font-size:0.75rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Original</div>
+              <div style="font-size:1.4rem;font-weight:800;color:var(--dark);" id="orig-size">—</div>
+            </div>
+            <div style="font-size:1.5rem;">→</div>
+            <div>
+              <div style="font-size:0.75rem;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Compressed</div>
+              <div style="font-size:1.4rem;font-weight:800;color:var(--success);" id="comp-size">—</div>
+              <div style="font-size:0.8rem;color:var(--text-light);" id="savings-pct"></div>
+            </div>
+          </div>
+          <div class="before-after">
+            <div><label>Original</label><img id="orig-img" src="" alt="Original"/></div>
+            <div><label>Compressed Preview</label><canvas id="result-canvas"></canvas></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+            <button class="btn btn-green" id="btn-download">⬇️ Download Compressed</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../js/utils.js"></script>
+<script>
+let currentFile = null, currentImg = null;
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('upload-area');
+const editor = document.getElementById('editor');
+const origImg = document.getElementById('orig-img');
+const resultCanvas = document.getElementById('result-canvas');
+const qualitySlider = document.getElementById('quality-slider');
+const qualityVal = document.getElementById('quality-val');
+const formatSelect = document.getElementById('format-select');
+
+setupDragDrop(uploadArea, handleFile);
+fileInput.addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+async function handleFile(file) {
+  currentFile = file;
+  currentImg = await fileToImage(file);
+  origImg.src = URL.createObjectURL(file);
+  document.getElementById('orig-size').textContent = formatFileSize(file.size);
+  uploadArea.style.display = 'none';
+  editor.style.display = 'block';
+  compress();
+}
+
+function compress() {
+  if (!currentImg) return;
+  const q = parseInt(qualitySlider.value) / 100;
+  const fmt = formatSelect.value;
+  drawImageToCanvas(resultCanvas, currentImg, 1200, 900);
+  const dataUrl = resultCanvas.toDataURL(fmt, q);
+  // estimate size
+  const base64 = dataUrl.split(',')[1];
+  const bytes = Math.round((base64.length * 3) / 4);
+  document.getElementById('comp-size').textContent = formatFileSize(bytes);
+  const savings = Math.round((1 - bytes / currentFile.size) * 100);
+  document.getElementById('savings-pct').textContent = savings > 0 ? `${savings}% smaller` : 'Larger than original (try lower quality)';
+  document.getElementById('savings-pct').style.color = savings > 0 ? 'var(--success)' : 'var(--error)';
+}
+
+qualitySlider.addEventListener('input', () => { qualityVal.textContent = qualitySlider.value + '%'; compress(); });
+formatSelect.addEventListener('change', compress);
+
+document.getElementById('btn-download').addEventListener('click', () => {
+  const fmt = formatSelect.value;
+  const ext = fmt === 'image/jpeg' ? 'jpg' : fmt === 'image/webp' ? 'webp' : 'png';
+  const q = parseInt(qualitySlider.value) / 100;
+  downloadFile(resultCanvas.toDataURL(fmt, q), `pixelcraft-compressed.${ext}`);
+});
+
+function resetTool() {
+  currentFile = null; currentImg = null;
+  uploadArea.style.display = 'block'; editor.style.display = 'none'; fileInput.value = '';
+}
+</script>
+</body>
+</html>

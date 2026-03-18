@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Background Remover — PixelCraft AI</title>
+  <meta name="description" content="Remove image background instantly using AI. Get transparent PNG for free. No signup required."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    .remover-layout { display:flex; gap:28px; flex-wrap:wrap; align-items:flex-start; }
+    .remover-left  { flex:1; min-width:280px; }
+    .remover-right { flex:1; min-width:280px; display:none; }
+    .remover-right.show { display:block; }
+
+    .drop-zone {
+      border: 2.5px dashed #C7D2FE;
+      border-radius: 20px;
+      padding: 56px 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      background: #FAFAFE;
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+    }
+    .drop-zone:hover, .drop-zone.over {
+      border-color: var(--primary);
+      background: #EEF2FF;
+    }
+    .drop-zone .dz-icon { font-size:3.2rem; margin-bottom:14px; display:block; }
+    .drop-zone h3 { font-size:1.15rem; font-weight:700; color:var(--dark); margin-bottom:8px; }
+    .drop-zone p  { font-size:0.88rem; color:var(--text-light); }
+
+    /* Processing overlay */
+    .proc-overlay {
+      position:absolute; inset:0; background:rgba(255,255,255,0.96);
+      border-radius:18px; display:none;
+      flex-direction:column; align-items:center; justify-content:center; gap:14px;
+    }
+    .proc-overlay.active { display:flex; }
+    .spin {
+      width:52px; height:52px;
+      border:4px solid #E0E7FF; border-top-color:#6366F1;
+      border-radius:50%; animation:spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .proc-msg  { font-size:0.9rem; font-weight:600; color:var(--dark); }
+    .prog-wrap { width:220px; height:8px; background:#E0E7FF; border-radius:99px; overflow:hidden; }
+    .prog-bar  { height:100%; background:linear-gradient(90deg,#6366F1,#A855F7); border-radius:99px; transition:width 0.35s ease; }
+    .proc-note { font-size:0.78rem; color:var(--text-light); padding:0 16px; text-align:center; }
+
+    /* Image panels */
+    .img-label {
+      font-size:0.78rem; font-weight:700; letter-spacing:0.06em;
+      text-transform:uppercase; color:var(--text-light); margin-bottom:10px;
+    }
+    .img-panel {
+      border-radius:16px; overflow:hidden;
+      border:1.5px solid var(--border);
+      background:repeating-conic-gradient(#e8e8e8 0% 25%,#fff 0% 50%) 0 0 / 18px 18px;
+      display:flex; align-items:center; justify-content:center; min-height:120px;
+    }
+    .img-panel img, .img-panel canvas {
+      max-width:100%; max-height:380px; display:block; object-fit:contain;
+    }
+
+    /* Background swatches */
+    .bg-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    .bg-row span { font-size:0.8rem; font-weight:600; color:var(--text-light); }
+    .bg-swatch {
+      width:30px; height:30px; border-radius:50%;
+      border:2px solid #ddd; cursor:pointer; transition:transform 0.18s;
+    }
+    .bg-swatch:hover  { transform:scale(1.18); }
+    .bg-swatch.active { border-color:#6366F1; box-shadow:0 0 0 2px #C7D2FE; }
+    .bg-swatch.checker {
+      background:repeating-conic-gradient(#bbb 0% 25%,#fff 0% 50%) 0 0 / 10px 10px;
+    }
+
+    .ctrl-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+
+    .ai-note {
+      background:#F0FDF4; border:1.5px solid #BBF7D0;
+      border-radius:12px; padding:12px 16px;
+      font-size:0.83rem; color:#15803D;
+      display:flex; gap:8px; align-items:flex-start; margin-bottom:22px;
+    }
+    .error-box {
+      background:#FFF1F2; border:1.5px solid #FECDD3;
+      border-radius:12px; padding:16px 18px;
+      font-size:0.86rem; color:#BE123C;
+      display:none; margin-top:14px;
+    }
+    .error-box.show { display:block; }
+  </style>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links">
+    <li><a href="../index.html#tools">All Tools</a></li>
+    <li><a href="../index.html#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">✂️</div>
+    <h1>AI Background Remover</h1>
+    <p>Upload any photo — AI detects and removes the background precisely. Download as transparent PNG.</p>
+  </div>
+
+  <div class="tool-workspace">
+
+    <div class="ai-note">
+      <span>🔒</span>
+      <span><strong>100% Private:</strong> Everything processes in your browser. Your image is <strong>never sent to any server</strong>.</span>
+    </div>
+
+    <div class="remover-layout">
+
+      <!-- LEFT: Upload + Original -->
+      <div class="remover-left">
+        <div class="drop-zone" id="drop-zone">
+          <input type="file" id="file-input" accept="image/*" style="display:none"/>
+          <span class="dz-icon">🖼️</span>
+          <h3>Drop image here or click to upload</h3>
+          <p>PNG, JPG, WebP — max 15 MB</p>
+          <div style="margin-top:14px;">
+            <span class="format-tag">PNG</span>
+            <span class="format-tag">JPG</span>
+            <span class="format-tag">WebP</span>
+          </div>
+
+          <div class="proc-overlay" id="proc-overlay">
+            <div class="spin"></div>
+            <p class="proc-msg" id="proc-msg">Initializing AI…</p>
+            <div class="prog-wrap"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+            <p class="proc-note" id="proc-note">First load downloads the AI model (~30 MB). Cached after that.</p>
+          </div>
+        </div>
+
+        <div class="error-box" id="error-box">
+          ⚠️ <strong>Error:</strong> <span id="error-msg"></span>
+          <ul style="margin:10px 0 0 16px;line-height:1.9;">
+            <li>Try Chrome or Edge browser</li>
+            <li>Make sure internet is connected (model downloads once)</li>
+            <li>Use a smaller image (&lt;5 MB)</li>
+          </ul>
+        </div>
+
+        <div id="orig-section" style="display:none;margin-top:20px;">
+          <p class="img-label">Original Image</p>
+          <div class="img-panel"><img id="orig-img" src="" alt="Original"/></div>
+          <div class="ctrl-row" style="margin-top:12px;">
+            <button class="btn btn-gray" id="btn-new-img">🔄 Upload Different</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Result -->
+      <div class="remover-right" id="result-section">
+        <p class="img-label">Background Removed ✅</p>
+        <div class="img-panel">
+          <canvas id="result-canvas"></canvas>
+        </div>
+
+        <div class="bg-row">
+          <span>Background:</span>
+          <div class="bg-swatch checker active" data-bg="transparent" title="Transparent"></div>
+          <div class="bg-swatch" style="background:#fff;border-color:#ccc;" data-bg="#ffffff" title="White"></div>
+          <div class="bg-swatch" style="background:#111;" data-bg="#111111" title="Black"></div>
+          <div class="bg-swatch" style="background:#EEF2FF;" data-bg="#EEF2FF" title="Soft Blue"></div>
+          <div class="bg-swatch" style="background:#F0FDF4;" data-bg="#F0FDF4" title="Soft Green"></div>
+          <div class="bg-swatch" style="background:#FFF7ED;" data-bg="#FFF7ED" title="Warm Cream"></div>
+          <div class="bg-swatch" style="background:#FDF4FF;" data-bg="#FDF4FF" title="Soft Purple"></div>
+          <input type="color" id="custom-bg" title="Custom color"
+            style="width:30px;height:30px;border-radius:50%;border:2px solid #ddd;cursor:pointer;padding:2px;background:none;"/>
+        </div>
+
+        <div class="ctrl-row">
+          <button class="btn btn-green" id="btn-dl">⬇️ Download PNG</button>
+          <button class="btn btn-gray" id="btn-reset">↩️ Start Over</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Tips -->
+    <div style="margin-top:52px;">
+      <h3 style="font-weight:700;color:var(--dark);margin-bottom:18px;">💡 Tips for Best Results</h3>
+      <div class="three-col">
+        <div style="background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:20px;">
+          <div style="font-size:1.6rem;margin-bottom:10px;">☀️</div>
+          <h4 style="font-weight:700;margin-bottom:6px;font-size:0.9rem;">Good Lighting</h4>
+          <p style="font-size:0.82rem;color:var(--text-light);">Well-lit subjects give AI cleaner edges to detect.</p>
+        </div>
+        <div style="background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:20px;">
+          <div style="font-size:1.6rem;margin-bottom:10px;">🎯</div>
+          <h4 style="font-weight:700;margin-bottom:6px;font-size:0.9rem;">Clear Subject</h4>
+          <p style="font-size:0.82rem;color:var(--text-light);">Main subject should contrast well with the background.</p>
+        </div>
+        <div style="background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:20px;">
+          <div style="font-size:1.6rem;margin-bottom:10px;">📐</div>
+          <h4 style="font-weight:700;margin-bottom:6px;font-size:0.9rem;">Resize if Slow</h4>
+          <p style="font-size:0.82rem;color:var(--text-light);">For very large images, resize to under 2048px wide first.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../js/utils.js"></script>
+<script type="module">
+import { AutoModel, AutoProcessor, RawImage } from
+  'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3/dist/transformers.min.js';
+
+// ─── DOM refs ────────────────────────────────────────────────────────────────
+const dropZone    = document.getElementById('drop-zone');
+const fileInput   = document.getElementById('file-input');
+const procOverlay = document.getElementById('proc-overlay');
+const procMsg     = document.getElementById('proc-msg');
+const progBar     = document.getElementById('prog-bar');
+const procNote    = document.getElementById('proc-note');
+const origSection = document.getElementById('orig-section');
+const origImg     = document.getElementById('orig-img');
+const resultSec   = document.getElementById('result-section');
+const resultCanvas= document.getElementById('result-canvas');
+const errorBox    = document.getElementById('error-box');
+const errorMsgEl  = document.getElementById('error-msg');
+
+let model     = null;
+let processor = null;
+let savedMask = null;   // { data: Float32Array, width, height }
+let currentBg = 'transparent';
+
+// ─── Upload triggers ─────────────────────────────────────────────────────────
+dropZone.addEventListener('click', e => {
+  // Don't trigger if clicking a button inside
+  if (e.target.tagName === 'BUTTON') return;
+  fileInput.click();
+});
+dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('over');
+  const f = e.dataTransfer.files[0];
+  if (f) processFile(f);
+});
+fileInput.addEventListener('change', e => {
+  if (e.target.files[0]) processFile(e.target.files[0]);
+});
+
+// ─── Main flow ───────────────────────────────────────────────────────────────
+async function processFile(file) {
+  if (!file.type.startsWith('image/')) { window.showToast?.('Please upload an image file.', 'error'); return; }
+  if (file.size > 15 * 1024 * 1024)  { window.showToast?.('File too large. Max 15 MB.', 'error'); return; }
+
+  hideError();
+  savedMask = null;
+  origSection.style.display = 'none';
+  resultSec.classList.remove('show');
+
+  // Load image into origImg element first
+  const dataURL = await readFileAsDataURL(file);
+  origImg.src = dataURL;
+  await imgLoaded(origImg);
+
+  showProc(4, 'Starting AI…', 'First load takes 20–40 sec (model download ~30MB, cached after).');
+
+  try {
+    // 1 ── Load processor & model (once) ─────────────────────────────────────
+    if (!processor) {
+      showProc(8, 'Downloading AI processor…', '');
+      processor = await AutoProcessor.from_pretrained('briaai/RMBG-1.4', {
+        config: {
+          do_normalize: true, do_pad: false, do_rescale: true, do_resize: true,
+          image_mean: [0.5, 0.5, 0.5], image_std: [1, 1, 1],
+          resample: 2, rescale_factor: 0.00392156862745098,
+          size: { width: 1024, height: 1024 },
+        }
+      });
+    }
+
+    if (!model) {
+      showProc(28, 'Downloading segmentation model…', 'Please wait, this is a one-time download.');
+      try {
+        model = await AutoModel.from_pretrained('briaai/RMBG-1.4', {
+          config: { model_type: 'custom' }, device: 'webgpu',
+        });
+      } catch {
+        showProc(28, 'GPU not available, using CPU…', 'May take 30–60 sec on CPU.');
+        model = await AutoModel.from_pretrained('briaai/RMBG-1.4', {
+          config: { model_type: 'custom' }, device: 'cpu',
+        });
+      }
+    }
+
+    // 2 ── Prepare image ──────────────────────────────────────────────────────
+    showProc(55, 'Preparing image…', '');
+    const rawImg = await RawImage.fromURL(dataURL);
+
+    // 3 ── Inference ──────────────────────────────────────────────────────────
+    showProc(65, 'Running AI segmentation…', 'Identifying subject and background…');
+    const { pixel_values } = await processor(rawImg);
+    const { output } = await model({ input: pixel_values });
+
+    // 4 ── Extract mask ───────────────────────────────────────────────────────
+    showProc(86, 'Applying mask…', '');
+    const maskTensor  = output[0].squeeze();   // shape [H, W], values 0..1
+    const maskRaw     = await RawImage.fromTensor(maskTensor);
+    const maskResized = await maskRaw.resize(rawImg.width, rawImg.height);
+
+    savedMask = { data: maskResized.data, width: rawImg.width, height: rawImg.height };
+
+    // 5 ── Draw result ────────────────────────────────────────────────────────
+    showProc(95, 'Rendering…', '');
+    renderCanvas(currentBg);
+
+    procOverlay.classList.remove('active');
+    origSection.style.display = 'block';
+    resultSec.classList.add('show');
+    window.showToast?.('Background removed successfully! 🎉', 'success');
+
+  } catch (err) {
+    console.error('BG remover error:', err);
+    procOverlay.classList.remove('active');
+    origSection.style.display = 'block';
+    showError(err.message || 'Unknown error. Please try again.');
+  }
+}
+
+// ─── Canvas rendering ────────────────────────────────────────────────────────
+function renderCanvas(bgColor) {
+  if (!savedMask) return;
+  const { data: maskData, width: W, height: H } = savedMask;
+
+  resultCanvas.width  = W;
+  resultCanvas.height = H;
+  const ctx = resultCanvas.getContext('2d');
+
+  // Draw original at full resolution
+  ctx.clearRect(0, 0, W, H);
+  ctx.drawImage(origImg, 0, 0, W, H);
+
+  // Apply segmentation mask as alpha
+  const imgData = ctx.getImageData(0, 0, W, H);
+  const px = imgData.data;
+  for (let i = 0; i < W * H; i++) {
+    // maskData is RGBA or single-channel; take first channel
+    const maskVal = maskData[i * (maskData.length / (W * H) | 0)];  // handles both
+    px[i * 4 + 3] = Math.round(maskVal * 255);
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  // Composite onto a solid background if chosen
+  if (bgColor !== 'transparent') {
+    const flat = document.createElement('canvas');
+    flat.width = W; flat.height = H;
+    const fCtx = flat.getContext('2d');
+    fCtx.fillStyle = bgColor;
+    fCtx.fillRect(0, 0, W, H);
+    fCtx.drawImage(resultCanvas, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(flat, 0, 0);
+  }
+}
+
+// ─── Background swatch controls ──────────────────────────────────────────────
+document.querySelectorAll('.bg-swatch').forEach(sw => {
+  sw.addEventListener('click', () => {
+    document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
+    sw.classList.add('active');
+    currentBg = sw.dataset.bg;
+    renderCanvas(currentBg);
+  });
+});
+
+document.getElementById('custom-bg').addEventListener('input', e => {
+  document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
+  currentBg = e.target.value;
+  renderCanvas(currentBg);
+});
+
+// ─── Download ─────────────────────────────────────────────────────────────────
+document.getElementById('btn-dl').addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.download = 'pixelcraft-bg-removed.png';
+  a.href = resultCanvas.toDataURL('image/png');
+  a.click();
+  window.showToast?.('Download started!', 'success');
+});
+
+// ─── Reset ───────────────────────────────────────────────────────────────────
+function resetAll() {
+  savedMask = null;
+  fileInput.value = '';
+  origSection.style.display = 'none';
+  resultSec.classList.remove('show');
+  procOverlay.classList.remove('active');
+  progBar.style.width = '0%';
+  hideError();
+}
+document.getElementById('btn-reset').addEventListener('click', resetAll);
+document.getElementById('btn-new-img').addEventListener('click', resetAll);
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function showProc(pct, msg, note) {
+  procOverlay.classList.add('active');
+  progBar.style.width = pct + '%';
+  procMsg.textContent = msg;
+  if (note !== '') procNote.textContent = note;
+}
+function showError(msg) { errorMsgEl.textContent = msg; errorBox.classList.add('show'); }
+function hideError()    { errorBox.classList.remove('show'); }
+
+function readFileAsDataURL(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+function imgLoaded(imgEl) {
+  return new Promise(res => {
+    if (imgEl.complete && imgEl.naturalWidth) return res();
+    imgEl.onload = res;
+  });
+}
+</script>
+</body>
+</html>

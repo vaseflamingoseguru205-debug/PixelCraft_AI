@@ -1,0 +1,21 @@
+# OS Metadata
+.DS_Store
+Thumbs.db
+
+# VS Code / IDE
+.vscode/
+.idea/
+*.swp
+
+# Node / Build tools
+node_modules/
+dist/
+build/
+npm-debug.log*
+
+# Gemini/AI Logs
+.gemini/
+.agent/
+.agents/
+logs/
+tmp/

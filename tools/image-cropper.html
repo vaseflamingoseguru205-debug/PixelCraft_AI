@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image Cropper — PixelCraft AI</title>
+  <meta name="description" content="Crop images online for free. Free crop, aspect ratio presets for Instagram, YouTube, Twitter."/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">✂️</div>
+    <h1>Image Cropper</h1>
+    <p>Crop your image with aspect ratio presets for all major platforms or use free crop mode.</p>
+  </div>
+  <div class="tool-workspace">
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" style="display:none"/>
+      <div class="upload-icon">✂️</div>
+      <h3>Upload your image to crop</h3>
+    </div>
+    <div id="editor" style="display:none;">
+      <div class="result-area show" style="margin-top:0;">
+        <div class="result-header">
+          <span class="result-header-title">✂️ Select Crop Area</span>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+            <button class="btn btn-green" id="btn-crop">✂️ Crop & Download</button>
+          </div>
+        </div>
+        <div class="result-body">
+          <div style="margin-bottom:16px;">
+            <div style="font-size:0.78rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Aspect Ratio Presets</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="ratio-btn btn btn-outline active-ratio" data-r="0">Free</button>
+              <button class="ratio-btn btn btn-outline" data-r="1">1:1 Square</button>
+              <button class="ratio-btn btn btn-outline" data-r="1.778">16:9</button>
+              <button class="ratio-btn btn btn-outline" data-r="0.5625">9:16</button>
+              <button class="ratio-btn btn btn-outline" data-r="1.333">4:3</button>
+              <button class="ratio-btn btn btn-outline" data-r="0.75">3:4</button>
+              <button class="ratio-btn btn btn-outline" data-r="1.5">3:2</button>
+              <button class="ratio-btn btn btn-outline" data-r="2.39">Cinematic</button>
+            </div>
+          </div>
+          <div style="position:relative;overflow:hidden;border-radius:12px;border:1.5px solid var(--border);user-select:none;" id="crop-wrapper">
+            <img id="crop-img" style="display:block;max-width:100%;"/>
+            <div id="crop-box" style="position:absolute;border:2px solid var(--primary);box-shadow:0 0 0 9999px rgba(0,0,0,0.4);cursor:move;"></div>
+          </div>
+          <div style="margin-top:12px;font-size:0.83rem;color:var(--text-light);" id="crop-info"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../js/utils.js"></script>
+<script>
+let currentFile = null, cropRatio = 0;
+let cropX=50, cropY=50, cropW=300, cropH=200;
+let dragging=false, resizing=false, dragMode='move';
+let startMX=0, startMY=0, startCropX=0, startCropY=0, startCropW=0, startCropH=0;
+
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('upload-area');
+const editor = document.getElementById('editor');
+const cropImg = document.getElementById('crop-img');
+const cropBox = document.getElementById('crop-box');
+const wrapper = document.getElementById('crop-wrapper');
+
+setupDragDrop(uploadArea, handleFile);
+fileInput.addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+document.querySelectorAll('.ratio-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ratio-btn').forEach(b => b.className='ratio-btn btn btn-outline');
+    btn.className='ratio-btn btn btn-blue active-ratio';
+    cropRatio = parseFloat(btn.dataset.r);
+    if (cropRatio > 0) {
+      const rect = wrapper.getBoundingClientRect();
+      cropW = rect.width * 0.6;
+      cropH = cropW / cropRatio;
+      if (cropH > rect.height * 0.8) { cropH = rect.height * 0.6; cropW = cropH * cropRatio; }
+    }
+    updateCropBox();
+  });
+});
+
+function handleFile(file) {
+  currentFile = file;
+  cropImg.src = URL.createObjectURL(file);
+  cropImg.onload = () => {
+    const rect = wrapper.getBoundingClientRect();
+    cropX = rect.width * 0.1; cropY = rect.height * 0.1;
+    cropW = rect.width * 0.8; cropH = rect.height * 0.8;
+    uploadArea.style.display = 'none'; editor.style.display = 'block';
+    updateCropBox();
+  };
+}
+
+function updateCropBox() {
+  cropBox.style.left = cropX + 'px'; cropBox.style.top = cropY + 'px';
+  cropBox.style.width = cropW + 'px'; cropBox.style.height = cropH + 'px';
+  const iW = cropImg.naturalWidth, iH = cropImg.naturalHeight;
+  const dW = cropImg.offsetWidth, dH = cropImg.offsetHeight;
+  const scaleX = iW / dW, scaleY = iH / dH;
+  document.getElementById('crop-info').textContent = `Crop area: ${Math.round(cropW * scaleX)} × ${Math.round(cropH * scaleY)} px`;
+}
+
+cropBox.addEventListener('mousedown', e => {
+  dragging = true; dragMode = 'move';
+  startMX=e.clientX; startMY=e.clientY; startCropX=cropX; startCropY=cropY;
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const dx = e.clientX - startMX, dy = e.clientY - startMY;
+  const rect = wrapper.getBoundingClientRect();
+  cropX = Math.max(0, Math.min(rect.width - cropW, startCropX + dx));
+  cropY = Math.max(0, Math.min(rect.height - cropH, startCropY + dy));
+  updateCropBox();
+});
+
+document.addEventListener('mouseup', () => { dragging = false; });
+
+wrapper.addEventListener('mousedown', e => {
+  if (e.target === cropBox) return;
+  const rect = wrapper.getBoundingClientRect();
+  cropX = e.clientX - rect.left - 50; cropY = e.clientY - rect.top - 30;
+  cropW = 200; cropH = cropRatio > 0 ? 200 / cropRatio : 160;
+  cropX = Math.max(0, Math.min(rect.width - cropW, cropX));
+  cropY = Math.max(0, Math.min(rect.height - cropH, cropY));
+  updateCropBox();
+});
+
+document.getElementById('btn-crop').addEventListener('click', () => {
+  if (!currentFile) return;
+  const dW = cropImg.offsetWidth, dH = cropImg.offsetHeight;
+  const scaleX = cropImg.naturalWidth / dW, scaleY = cropImg.naturalHeight / dH;
+  const sx = cropX * scaleX, sy = cropY * scaleY;
+  const sw = cropW * scaleX, sh = cropH * scaleY;
+  const canvas = document.createElement('canvas');
+  canvas.width = sw; canvas.height = sh;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(cropImg, sx, sy, sw, sh, 0, 0, sw, sh);
+  downloadFile(canvas.toDataURL('image/png'), 'pixelcraft-cropped.png');
+});
+
+function resetTool() {
+  currentFile = null; uploadArea.style.display = 'block'; editor.style.display = 'none'; fileInput.value = '';
+}
+</script>
+</body>
+</html>

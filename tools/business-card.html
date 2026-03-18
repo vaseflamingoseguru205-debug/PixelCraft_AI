@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Business Card Scanner — PixelCraft AI</title>
+  <meta name="description" content="Scan business card photos and extract contact info automatically. Save as VCF contact file."/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">🃏</div>
+    <h1>Business Card Scanner</h1>
+    <p>Upload a business card photo and extract contact details automatically. Save as a .vcf contact.</p>
+  </div>
+  <div class="tool-workspace">
+    <div class="info-box">
+      <span>ℹ️</span>
+      <span>Uses browser-based OCR (Optical Character Recognition) to read text from the card. For best results: clear photo, good lighting, card filling the frame.</span>
+    </div>
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" style="display:none"/>
+      <div class="upload-icon">🃏</div>
+      <h3>Upload business card photo</h3>
+      <p>JPG, PNG, WebP — Take a clear, well-lit photo</p>
+    </div>
+    <div id="processing" style="display:none;">
+      <div class="loader-wrap">
+        <div class="loader"></div>
+        <p id="ocr-msg">Loading OCR engine...</p>
+        <div class="progress-wrap" style="width:300px;"><div class="progress-bar" id="ocr-progress" style="width:0%;"></div></div>
+      </div>
+    </div>
+    <div id="editor" style="display:none;">
+      <div class="result-area show" style="margin-top:0;">
+        <div class="result-header">
+          <span class="result-header-title">🃏 Extracted Contact Info</span>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-blue" id="btn-vcf">💾 Save as Contact (.vcf)</button>
+            <button class="btn btn-gray" onclick="resetTool()">🔄 New Card</button>
+          </div>
+        </div>
+        <div class="result-body">
+          <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:24px;align-items:start;">
+            <div>
+              <img id="preview-img" style="width:100%;border-radius:12px;border:1.5px solid var(--border);"/>
+              <div style="margin-top:12px;background:var(--bg);border-radius:10px;padding:12px;">
+                <div style="font-size:0.75rem;font-weight:700;color:var(--text-light);text-transform:uppercase;margin-bottom:8px;">Raw OCR Text</div>
+                <div id="raw-text" style="font-size:0.82rem;color:var(--text);white-space:pre-wrap;line-height:1.5;max-height:150px;overflow-y:auto;"></div>
+              </div>
+            </div>
+            <div id="contact-form"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
+<script src="../js/utils.js"></script>
+<script>
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('upload-area');
+const editor = document.getElementById('editor');
+const processing = document.getElementById('processing');
+
+setupDragDrop(uploadArea, handleFile);
+fileInput.addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+async function handleFile(file) {
+  document.getElementById('preview-img').src = URL.createObjectURL(file);
+  uploadArea.style.display = 'none';
+  processing.style.display = 'block';
+
+  try {
+    const result = await Tesseract.recognize(file, 'eng', {
+      logger: m => {
+        if (m.status === 'recognizing text') {
+          document.getElementById('ocr-progress').style.width = Math.round(m.progress * 100) + '%';
+          document.getElementById('ocr-msg').textContent = 'Reading text... ' + Math.round(m.progress * 100) + '%';
+        } else {
+          document.getElementById('ocr-msg').textContent = m.status;
+        }
+      }
+    });
+    const text = result.data.text;
+    document.getElementById('raw-text').textContent = text;
+    processing.style.display = 'none';
+    editor.style.display = 'block';
+    extractAndRender(text);
+    showToast('Text extracted!', 'success');
+  } catch(e) {
+    processing.style.display = 'none';
+    uploadArea.style.display = 'block';
+    showToast('OCR failed. Please try again.', 'error');
+  }
+}
+
+function extractAndRender(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+  const phoneRegex = /[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}/;
+  const urlRegex = /(?:www\.|https?:\/\/)[^\s]+/;
+
+  let email = '', phone = '', website = '', name = '', company = '';
+  lines.forEach(l => {
+    if (!email && emailRegex.test(l)) email = l.match(emailRegex)[0];
+    if (!phone && phoneRegex.test(l)) phone = l.match(phoneRegex)[0];
+    if (!website && urlRegex.test(l)) website = l.match(urlRegex)[0];
+  });
+  // Simple name/company guessing
+  if (lines.length > 0) name = lines[0];
+  if (lines.length > 1) company = lines[1];
+
+  const form = document.getElementById('contact-form');
+  form.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="font-size:0.78rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Edit & Save Contact</div>
+      ${field('👤','Name','name-field',name)}
+      ${field('🏢','Company','company-field',company)}
+      ${field('📧','Email','email-field',email)}
+      ${field('📱','Phone','phone-field',phone)}
+      ${field('🌐','Website','website-field',website)}
+      ${field('📍','Address','address-field','')}
+    </div>
+  `;
+}
+
+function field(icon, label, id, val) {
+  return `
+    <div class="control-group">
+      <label>${icon} ${label}</label>
+      <input type="text" id="${id}" value="${val}" placeholder="Not detected"/>
+    </div>
+  `;
+}
+
+document.getElementById('btn-vcf').addEventListener('click', () => {
+  const n = val('name-field'), co = val('company-field'), em = val('email-field'), ph = val('phone-field'), web = val('website-field'), addr = val('address-field');
+  const vcf = `BEGIN:VCARD\nVERSION:3.0\nFN:${n}\nN:${n.split(' ').reverse().join(';')};;;\nORG:${co}\nEMAIL:${em}\nTEL:${ph}\nURL:${web}\nADR:;;${addr};;;;\nEND:VCARD`;
+  const blob = new Blob([vcf], { type: 'text/vcard' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${n || 'contact'}.vcf`;
+  a.click();
+  showToast('Contact saved as .vcf!', 'success');
+});
+
+function val(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function resetTool() {
+  uploadArea.style.display = 'block'; editor.style.display = 'none'; processing.style.display = 'none'; fileInput.value = '';
+}
+</script>
+</body>
+</html>

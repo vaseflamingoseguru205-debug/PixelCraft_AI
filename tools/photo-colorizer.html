@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Photo Colorizer — PixelCraft AI</title>
+  <meta name="description" content="Colorize old black and white photos for free. Bring your vintage photos back to life with AI."/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">🌈</div>
+    <h1>Photo Colorizer</h1>
+    <p>Bring old black & white photos back to life. Choose a colorization style and see the transformation.</p>
+  </div>
+  <div class="tool-workspace">
+    <div class="info-box">
+      <span>ℹ️</span>
+      <span>This tool applies intelligent color mapping to black & white photos. For best results, upload clear black and white portrait or landscape photos.</span>
+    </div>
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" style="display:none"/>
+      <div class="upload-icon">🌈</div>
+      <h3>Upload a black & white photo to colorize</h3>
+      <p>PNG, JPG, WebP supported</p>
+    </div>
+    <div id="editor" style="display:none;">
+      <div class="result-area show" style="margin-top:0;">
+        <div class="result-header">
+          <span class="result-header-title">🌈 Colorization Result</span>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+            <button class="btn btn-green" id="btn-download">⬇️ Download</button>
+          </div>
+        </div>
+        <div class="result-body">
+          <!-- Style picker -->
+          <div style="margin-bottom:20px;">
+            <div style="font-size:0.8rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Choose Colorization Style</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;" id="style-grid">
+              <button class="style-btn active-style" data-style="natural">🌿 Natural</button>
+              <button class="style-btn" data-style="warm">🌅 Warm Vintage</button>
+              <button class="style-btn" data-style="cinematic">🎬 Cinematic</button>
+              <button class="style-btn" data-style="cool">❄️ Cool Tone</button>
+              <button class="style-btn" data-style="sepia">📜 Sepia</button>
+              <button class="style-btn" data-style="vibrant">✨ Vibrant</button>
+            </div>
+          </div>
+          <!-- Intensity slider -->
+          <div class="control-group" style="max-width:400px;margin-bottom:20px;">
+            <label>Colorization Intensity <span class="value-label" id="intensity-val">75%</span></label>
+            <input type="range" id="intensity" min="10" max="100" value="75"/>
+          </div>
+          <div class="before-after">
+            <div><label>Original</label><canvas id="orig-canvas"></canvas></div>
+            <div><label>Colorized</label><canvas id="result-canvas"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../js/utils.js"></script>
+<script>
+let currentImg = null, selectedStyle = 'natural';
+
+const STYLES = {
+  natural:    { shadows:[72,52,32], midtones:[140,130,110], highlights:[235,225,205] },
+  warm:       { shadows:[80,45,20], midtones:[160,115,70], highlights:[240,210,170] },
+  cinematic:  { shadows:[20,30,50], midtones:[90,110,130], highlights:[200,215,230] },
+  cool:       { shadows:[30,40,70], midtones:[100,130,170], highlights:[200,225,255] },
+  sepia:      { shadows:[60,40,20], midtones:[130,100,65], highlights:[220,185,140] },
+  vibrant:    { shadows:[50,20,80], midtones:[100,180,100], highlights:[255,220,80] }
+};
+
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('upload-area');
+const editor = document.getElementById('editor');
+const origCanvas = document.getElementById('orig-canvas');
+const resultCanvas = document.getElementById('result-canvas');
+
+setupDragDrop(uploadArea, handleFile);
+fileInput.addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+document.querySelectorAll('.style-btn').forEach(btn => {
+  btn.style.cssText = 'background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:10px 8px;cursor:pointer;font-size:0.82rem;font-weight:600;color:var(--text);transition:all 0.2s;';
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.style-btn').forEach(b => { b.style.background='var(--white)'; b.style.borderColor='var(--border)'; b.style.color='var(--text)'; });
+    btn.style.background = 'var(--primary-light)'; btn.style.borderColor = 'var(--primary)'; btn.style.color = 'var(--primary)';
+    selectedStyle = btn.dataset.style;
+    colorize();
+  });
+});
+
+document.getElementById('intensity').addEventListener('input', () => {
+  document.getElementById('intensity-val').textContent = document.getElementById('intensity').value + '%';
+  colorize();
+});
+
+async function handleFile(file) {
+  currentImg = await fileToImage(file);
+  drawImageToCanvas(origCanvas, currentImg, 800, 550);
+  // Convert to grayscale first
+  const ctx = origCanvas.getContext('2d');
+  const imgData = ctx.getImageData(0, 0, origCanvas.width, origCanvas.height);
+  const d = imgData.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const gray = Math.round(d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114);
+    d[i] = d[i+1] = d[i+2] = gray;
+  }
+  ctx.putImageData(imgData, 0, 0);
+  uploadArea.style.display = 'none';
+  editor.style.display = 'block';
+  colorize();
+}
+
+function lerp(a, b, t) { return Math.round(a + (b - a) * t); }
+
+function colorize() {
+  if (!currentImg) return;
+  const style = STYLES[selectedStyle] || STYLES.natural;
+  const intensity = parseInt(document.getElementById('intensity').value) / 100;
+
+  const src = origCanvas.getContext('2d').getImageData(0, 0, origCanvas.width, origCanvas.height);
+  resultCanvas.width = origCanvas.width; resultCanvas.height = origCanvas.height;
+  const dst = resultCanvas.getContext('2d').createImageData(resultCanvas.width, resultCanvas.height);
+  const s = src.data; const d = dst.data;
+
+  for (let i = 0; i < s.length; i += 4) {
+    const gray = s[i]; // already grayscale
+    let t, cr, cg, cb;
+    if (gray < 85) {
+      t = gray / 85;
+      cr = lerp(style.shadows[0], style.midtones[0], t);
+      cg = lerp(style.shadows[1], style.midtones[1], t);
+      cb = lerp(style.shadows[2], style.midtones[2], t);
+    } else if (gray < 170) {
+      t = (gray - 85) / 85;
+      cr = lerp(style.midtones[0], style.highlights[0], t);
+      cg = lerp(style.midtones[1], style.highlights[1], t);
+      cb = lerp(style.midtones[2], style.highlights[2], t);
+    } else {
+      t = (gray - 170) / 85;
+      cr = lerp(style.highlights[0], 255, t);
+      cg = lerp(style.highlights[1], 255, t);
+      cb = lerp(style.highlights[2], 255, t);
+    }
+    d[i]   = Math.round(gray * (1 - intensity) + cr * intensity);
+    d[i+1] = Math.round(gray * (1 - intensity) + cg * intensity);
+    d[i+2] = Math.round(gray * (1 - intensity) + cb * intensity);
+    d[i+3] = s[i+3];
+  }
+  resultCanvas.getContext('2d').putImageData(dst, 0, 0);
+}
+
+document.getElementById('btn-download').addEventListener('click', () => {
+  downloadFile(resultCanvas.toDataURL('image/png'), 'pixelcraft-colorized.png');
+});
+
+function resetTool() {
+  currentImg = null; uploadArea.style.display = 'block'; editor.style.display = 'none'; fileInput.value = '';
+}
+</script>
+</body>
+</html>

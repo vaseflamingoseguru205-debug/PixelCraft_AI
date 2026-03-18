@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Watermark Adder — PixelCraft AI</title>
+  <meta name="description" content="Add text or image watermark to your photos for free. Control position, opacity, and font style."/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">🖊️</div>
+    <h1>Watermark Adder</h1>
+    <p>Protect your images with a custom text watermark. Control position, opacity, and font.</p>
+  </div>
+  <div class="tool-workspace">
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" style="display:none"/>
+      <div class="upload-icon">🖊️</div>
+      <h3>Upload your image</h3>
+      <p>PNG, JPG, WebP supported</p>
+    </div>
+    <div id="editor" style="display:none;">
+      <div class="result-area show" style="margin-top:0;">
+        <div class="result-header">
+          <span class="result-header-title">✏️ Watermark Settings</span>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+            <button class="btn btn-green" id="btn-download">⬇️ Download</button>
+          </div>
+        </div>
+        <div class="result-body">
+          <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:24px;">
+            <div>
+              <div class="control-group" style="margin-bottom:14px;">
+                <label>Watermark Text</label>
+                <input type="text" id="wm-text" value="© PixelCraft AI" placeholder="Enter watermark text"/>
+              </div>
+              <div class="control-group" style="margin-bottom:14px;">
+                <label>Font Size <span class="value-label" id="font-size-val">36px</span></label>
+                <input type="range" id="font-size" min="12" max="150" value="36"/>
+              </div>
+              <div class="control-group" style="margin-bottom:14px;">
+                <label>Opacity <span class="value-label" id="opacity-val">50%</span></label>
+                <input type="range" id="opacity" min="5" max="100" value="50"/>
+              </div>
+              <div class="control-group" style="margin-bottom:14px;">
+                <label>Rotation <span class="value-label" id="rotation-val">-30°</span></label>
+                <input type="range" id="rotation" min="-90" max="90" value="-30"/>
+              </div>
+              <div class="control-group" style="margin-bottom:14px;">
+                <label>Color</label>
+                <input type="color" id="wm-color" value="#ffffff" style="width:100%;height:44px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;"/>
+              </div>
+              <div class="control-group" style="margin-bottom:14px;">
+                <label>Position</label>
+                <select id="position">
+                  <option value="center">Center</option>
+                  <option value="tile">Tile (Repeat)</option>
+                  <option value="bottom-right">Bottom Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="top-left">Top Left</option>
+                </select>
+              </div>
+              <div class="control-group" style="margin-bottom:14px;">
+                <label>Font Style</label>
+                <select id="font-style">
+                  <option value="bold">Bold</option>
+                  <option value="normal">Normal</option>
+                  <option value="italic bold">Bold Italic</option>
+                </select>
+              </div>
+              <button class="btn btn-blue" id="btn-apply" style="width:100%;justify-content:center;">Apply Watermark</button>
+            </div>
+            <div>
+              <label style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-light);display:block;margin-bottom:8px;">Preview</label>
+              <canvas id="result-canvas" style="width:100%;border-radius:12px;border:1.5px solid var(--border);object-fit:contain;max-height:500px;display:block;"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../js/utils.js"></script>
+<script>
+let currentImg = null;
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('upload-area');
+const editor = document.getElementById('editor');
+const canvas = document.getElementById('result-canvas');
+
+setupDragDrop(uploadArea, handleFile);
+fileInput.addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+async function handleFile(file) {
+  currentImg = await fileToImage(file);
+  uploadArea.style.display = 'none';
+  editor.style.display = 'block';
+  applyWatermark();
+}
+
+['font-size','opacity','rotation'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    const units = { 'font-size':'px', opacity:'%', rotation:'°' };
+    document.getElementById(id+'-val').textContent = document.getElementById(id).value + (units[id] || '');
+  });
+});
+
+document.getElementById('btn-apply').addEventListener('click', applyWatermark);
+['wm-text','wm-color','position','font-style'].forEach(id => {
+  document.getElementById(id).addEventListener('change', applyWatermark);
+});
+['font-size','opacity','rotation'].forEach(id => {
+  document.getElementById(id).addEventListener('input', applyWatermark);
+});
+
+function applyWatermark() {
+  if (!currentImg) return;
+  drawImageToCanvas(canvas, currentImg, 900, 600);
+  const ctx = canvas.getContext('2d');
+  const text = document.getElementById('wm-text').value || '© Watermark';
+  const fontSize = parseInt(document.getElementById('font-size').value);
+  const opacity = parseInt(document.getElementById('opacity').value) / 100;
+  const rotation = parseInt(document.getElementById('rotation').value) * Math.PI / 180;
+  const color = document.getElementById('wm-color').value;
+  const position = document.getElementById('position').value;
+  const fontStyle = document.getElementById('font-style').value;
+
+  ctx.save();
+  ctx.globalAlpha = opacity;
+  ctx.font = `${fontStyle} ${fontSize}px 'Plus Jakarta Sans', Arial, sans-serif`;
+  ctx.fillStyle = color;
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+  ctx.lineWidth = 2;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const w = canvas.width, h = canvas.height;
+  const metrics = ctx.measureText(text);
+  const tw = metrics.width;
+
+  if (position === 'tile') {
+    const stepX = tw + 80, stepY = fontSize + 60;
+    for (let x = -stepX; x < w + stepX; x += stepX) {
+      for (let y = -stepY; y < h + stepY; y += stepY) {
+        ctx.save(); ctx.translate(x, y); ctx.rotate(rotation);
+        ctx.strokeText(text, 0, 0); ctx.fillText(text, 0, 0);
+        ctx.restore();
+      }
+    }
+  } else {
+    let x = w / 2, y = h / 2;
+    if (position === 'bottom-right') { x = w - tw/2 - 20; y = h - fontSize/2 - 20; }
+    else if (position === 'bottom-left') { x = tw/2 + 20; y = h - fontSize/2 - 20; }
+    else if (position === 'top-right') { x = w - tw/2 - 20; y = fontSize/2 + 20; }
+    else if (position === 'top-left') { x = tw/2 + 20; y = fontSize/2 + 20; }
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rotation);
+    ctx.strokeText(text, 0, 0); ctx.fillText(text, 0, 0);
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+document.getElementById('btn-download').addEventListener('click', () => {
+  downloadFile(canvas.toDataURL('image/png'), 'pixelcraft-watermarked.png');
+});
+
+function resetTool() {
+  currentImg = null; uploadArea.style.display = 'block'; editor.style.display = 'none'; fileInput.value = '';
+}
+</script>
+</body>
+</html>

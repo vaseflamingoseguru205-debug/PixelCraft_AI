@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image to Video Slideshow — PixelCraft AI</title>
+  <meta name="description" content="Turn multiple photos into a beautiful video slideshow. Download as MP4. Free online tool."/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">🎬</div>
+    <h1>Image to Video Slideshow</h1>
+    <p>Upload multiple photos and create a beautiful cinematic slideshow video. Download as WebM/MP4.</p>
+  </div>
+  <div class="tool-workspace">
+    <div class="info-box">
+      <span>ℹ️</span>
+      <span>Upload 2–20 images. We'll create a video slideshow using your browser's MediaRecorder API. Works best in Chrome/Edge.</span>
+    </div>
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" multiple style="display:none"/>
+      <div class="upload-icon">🎬</div>
+      <h3>Upload multiple photos (2–20 images)</h3>
+      <p>Hold Ctrl/Cmd to select multiple files</p>
+    </div>
+    <div id="editor" style="display:none;">
+      <div class="result-area show" style="margin-top:0;margin-bottom:20px;">
+        <div class="result-header">
+          <span class="result-header-title">⚙️ Slideshow Settings</span>
+          <button class="btn btn-gray" onclick="resetTool()">🔄 New Upload</button>
+        </div>
+        <div class="result-body">
+          <div id="image-strip" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;"></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:20px;">
+            <div class="control-group">
+              <label>Duration per image <span class="value-label" id="duration-val">3s</span></label>
+              <input type="range" id="duration" min="1" max="10" value="3"/>
+            </div>
+            <div class="control-group">
+              <label>Transition Effect</label>
+              <select id="transition">
+                <option value="fade">Fade</option>
+                <option value="slide">Slide</option>
+                <option value="zoom">Zoom In</option>
+                <option value="none">None</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label>Resolution</label>
+              <select id="resolution">
+                <option value="1280x720">720p (1280×720)</option>
+                <option value="854x480">480p (854×480)</option>
+                <option value="640x360">360p (640×360)</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-blue" id="btn-create" style="gap:10px;">🎬 Create Slideshow Video</button>
+        </div>
+      </div>
+      <div id="progress-section" style="display:none;">
+        <div style="background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:32px;text-align:center;">
+          <div class="loader" style="margin:0 auto 16px;"></div>
+          <p id="progress-msg" style="font-weight:600;color:var(--dark);margin-bottom:8px;">Creating your video...</p>
+          <div class="progress-wrap" style="max-width:400px;margin:0 auto;"><div class="progress-bar" id="progress-bar" style="width:0%;"></div></div>
+          <p id="progress-detail" style="font-size:0.82rem;color:var(--text-light);margin-top:8px;"></p>
+        </div>
+      </div>
+      <div id="result-video" style="display:none;">
+        <div class="result-area show" style="margin-top:0;">
+          <div class="result-header">
+            <span class="result-header-title">✅ Slideshow Ready!</span>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-gray" onclick="resetTool()">🔄 New Slideshow</button>
+              <button class="btn btn-green" id="btn-download">⬇️ Download Video</button>
+            </div>
+          </div>
+          <div class="result-body"><video id="preview-video" controls style="width:100%;border-radius:12px;background:#000;"></video></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../js/utils.js"></script>
+<script>
+let uploadedImages = [];
+let videoBlob = null;
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('upload-area');
+const editor = document.getElementById('editor');
+
+setupDragDrop(uploadArea, handleFiles);
+fileInput.addEventListener('change', e => { if(e.target.files.length) handleFiles(Array.from(e.target.files)); });
+
+async function handleFiles(files) {
+  if (files.length < 2) { showToast('Please upload at least 2 images', 'error'); return; }
+  if (files.length > 20) { showToast('Max 20 images allowed', 'error'); return; }
+  uploadedImages = [];
+  for (const f of files) {
+    if (!f.type.startsWith('image/')) continue;
+    uploadedImages.push(await fileToImage(f));
+  }
+  renderStrip();
+  uploadArea.style.display = 'none';
+  editor.style.display = 'block';
+}
+
+function renderStrip() {
+  const strip = document.getElementById('image-strip');
+  strip.innerHTML = uploadedImages.map((img, i) => `
+    <div style="position:relative;width:80px;flex-shrink:0;">
+      <img src="${img.src}" style="width:80px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--border);display:block;"/>
+      <div style="position:absolute;bottom:2px;left:2px;background:rgba(0,0,0,0.6);color:white;font-size:0.65rem;font-weight:700;padding:1px 5px;border-radius:4px;">${i+1}</div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('duration').addEventListener('input', () => {
+  document.getElementById('duration-val').textContent = document.getElementById('duration').value + 's';
+});
+
+document.getElementById('btn-create').addEventListener('click', createVideo);
+
+async function createVideo() {
+  if (!uploadedImages.length) return;
+  const resolution = document.getElementById('resolution').value.split('x');
+  const W = parseInt(resolution[0]), H = parseInt(resolution[1]);
+  const duration = parseInt(document.getElementById('duration').value);
+  const transition = document.getElementById('transition').value;
+  const FPS = 30;
+  const frameDuration = duration * FPS;
+  const transitionFrames = transition === 'none' ? 0 : Math.min(15, frameDuration / 3);
+
+  editor.querySelector('#progress-section').style.display = 'block';
+  document.getElementById('result-video').style.display = 'none';
+  document.getElementById('btn-create').style.display = 'none';
+
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  const stream = canvas.captureStream(FPS);
+  const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 2500000 });
+  const chunks = [];
+  recorder.ondataavailable = e => chunks.push(e.data);
+
+  recorder.start(100);
+  const totalFrames = uploadedImages.length * frameDuration;
+  let frameCount = 0;
+
+  async function renderFrame(imgIdx, frame) {
+    const img = uploadedImages[imgIdx];
+    const nextImg = uploadedImages[(imgIdx + 1) % uploadedImages.length];
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, W, H);
+
+    // Draw image cover-fit
+    function drawCover(image, alpha = 1, scale = 1, offsetX = 0, offsetY = 0) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      const r = Math.max(W / image.naturalWidth, H / image.naturalHeight) * scale;
+      const sw = image.naturalWidth * r, sh = image.naturalHeight * r;
+      const sx = (W - sw) / 2 + offsetX, sy = (H - sh) / 2 + offsetY;
+      ctx.drawImage(image, sx, sy, sw, sh);
+      ctx.restore();
+    }
+
+    const isTransitioning = frame >= frameDuration - transitionFrames;
+    const tProgress = isTransitioning ? (frame - (frameDuration - transitionFrames)) / transitionFrames : 0;
+
+    if (transition === 'fade') {
+      drawCover(img, 1);
+      if (isTransitioning && imgIdx < uploadedImages.length - 1) drawCover(nextImg, tProgress);
+    } else if (transition === 'zoom') {
+      const scale = 1 + frame / frameDuration * 0.08;
+      drawCover(img, 1, scale);
+    } else if (transition === 'slide') {
+      if (isTransitioning && imgIdx < uploadedImages.length - 1) {
+        ctx.save();
+        ctx.drawImage(img, -tProgress * W, 0, W, H);
+        ctx.drawImage(nextImg, (1 - tProgress) * W, 0, W, H);
+        ctx.restore();
+      } else {
+        drawCover(img, 1);
+      }
+    } else {
+      drawCover(img, 1);
+    }
+  }
+
+  let currentImg = 0, currentFrame = 0;
+  const frameInterval = setInterval(async () => {
+    if (currentImg >= uploadedImages.length) {
+      clearInterval(frameInterval);
+      recorder.stop();
+      return;
+    }
+    await renderFrame(currentImg, currentFrame);
+    const pct = Math.round((frameCount / totalFrames) * 100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('progress-detail').textContent = `Image ${currentImg + 1}/${uploadedImages.length} — Frame ${currentFrame + 1}/${frameDuration}`;
+    currentFrame++;
+    frameCount++;
+    if (currentFrame >= frameDuration) { currentFrame = 0; currentImg++; }
+  }, 1000 / FPS);
+
+  recorder.onstop = () => {
+    videoBlob = new Blob(chunks, { type: 'video/webm' });
+    const url = URL.createObjectURL(videoBlob);
+    document.getElementById('preview-video').src = url;
+    document.getElementById('progress-section').style.display = 'none';
+    document.getElementById('result-video').style.display = 'block';
+    showToast('Slideshow created!', 'success');
+  };
+}
+
+document.getElementById('btn-download').addEventListener('click', () => {
+  if(!videoBlob) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(videoBlob);
+  a.download = 'pixelcraft-slideshow.webm';
+  a.click();
+  showToast('Download started!', 'success');
+});
+
+function resetTool() {
+  uploadedImages = []; videoBlob = null;
+  uploadArea.style.display = 'block'; editor.style.display = 'none'; fileInput.value = '';
+  document.getElementById('progress-section').style.display = 'none';
+  document.getElementById('result-video').style.display = 'none';
+  document.getElementById('btn-create').style.display = 'flex';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EXIF Data Viewer — PixelCraft AI</title>
+  <meta name="description" content="View hidden EXIF metadata from photos: camera model, GPS location, date taken, focal length and more."/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">📋</div>
+    <h1>EXIF Data Viewer</h1>
+    <p>View hidden metadata inside your photos: camera, date, GPS coordinates, exposure settings and more.</p>
+  </div>
+  <div class="tool-workspace">
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/jpeg,image/jpg,image/tiff" style="display:none"/>
+      <div class="upload-icon">📋</div>
+      <h3>Upload a JPEG photo to read metadata</h3>
+      <p>Best with JPEG/JPG files — PNG usually has no EXIF data</p>
+    </div>
+    <div id="editor" style="display:none;">
+      <div class="result-area show" style="margin-top:0;">
+        <div class="result-header">
+          <span class="result-header-title">📋 Image Metadata</span>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-blue" id="btn-copy-all">📋 Copy All Data</button>
+            <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+          </div>
+        </div>
+        <div class="result-body">
+          <div style="display:grid;grid-template-columns:1fr 2fr;gap:24px;">
+            <div>
+              <img id="preview-img" style="width:100%;border-radius:12px;border:1.5px solid var(--border);object-fit:contain;max-height:280px;"/>
+              <div id="basic-info" style="margin-top:16px;background:var(--bg);border-radius:10px;padding:14px;font-size:0.85rem;line-height:1.7;color:var(--text);"></div>
+            </div>
+            <div id="exif-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.esm.js" type="module" id="exifr-script"></script>
+<script src="../js/utils.js"></script>
+<script type="module">
+import * as Exifr from 'https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.esm.js';
+
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('upload-area');
+const editor = document.getElementById('editor');
+
+setupDragDrop(uploadArea, handleFile);
+fileInput.addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+async function handleFile(file) {
+  const url = URL.createObjectURL(file);
+  document.getElementById('preview-img').src = url;
+  document.getElementById('basic-info').innerHTML = `
+    <strong>File:</strong> ${file.name}<br/>
+    <strong>Size:</strong> ${formatFileSize(file.size)}<br/>
+    <strong>Type:</strong> ${file.type}
+  `;
+  uploadArea.style.display = 'none';
+  editor.style.display = 'block';
+
+  try {
+    const exif = await Exifr.parse(file, true);
+    if (!exif || Object.keys(exif).length === 0) {
+      document.getElementById('exif-grid').innerHTML = `
+        <div class="info-box">ℹ️ No EXIF data found in this image. Try a JPEG taken with a camera or smartphone.</div>
+      `;
+      return;
+    }
+    renderExif(exif);
+    storeExifText(exif);
+  } catch(e) {
+    document.getElementById('exif-grid').innerHTML = `<div class="info-box" style="color:var(--error)">❌ Could not read EXIF data from this file.</div>`;
+  }
+}
+
+let allExifText = '';
+
+function renderExif(exif) {
+  const groups = {
+    '📷 Camera': ['Make','Model','LensModel','Software'],
+    '📸 Capture Settings': ['ExposureTime','FNumber','ISO','FocalLength','Flash','WhiteBalance','MeteringMode','ExposureMode'],
+    '📐 Image Info': ['ImageWidth','ImageHeight','Orientation','ColorSpace','BitsPerSample'],
+    '📅 Date & Time': ['DateTimeOriginal','CreateDate','ModifyDate'],
+    '🌍 GPS Location': ['latitude','longitude','altitude','GPSAltitude'],
+    '⚙️ Other': ['ApertureValue','ShutterSpeedValue','BrightnessValue','Copyright','Artist','XResolution','YResolution']
+  };
+
+  const container = document.getElementById('exif-grid');
+  container.innerHTML = '';
+
+  Object.entries(groups).forEach(([group, keys]) => {
+    const entries = keys.map(k => [k, exif[k]]).filter(([,v]) => v !== undefined && v !== null && v !== '');
+    if (!entries.length) return;
+    const section = document.createElement('div');
+    section.style.cssText = 'background:var(--bg);border-radius:12px;padding:16px;margin-bottom:12px;';
+    section.innerHTML = `<div style="font-weight:700;color:var(--dark);font-size:0.9rem;margin-bottom:12px;">${group}</div>`;
+    entries.forEach(([k, v]) => {
+      let display = String(v);
+      if (k === 'ExposureTime' && typeof v === 'number') display = v < 1 ? `1/${Math.round(1/v)}s` : `${v}s`;
+      if (k === 'FNumber') display = `f/${v}`;
+      if (k === 'FocalLength') display = `${v}mm`;
+      if (k === 'ISO') display = String(v);
+      if ((k === 'latitude' || k === 'longitude') && typeof v === 'number') display = v.toFixed(6) + '°';
+      if (k === 'DateTimeOriginal' && v instanceof Date) display = v.toLocaleString();
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.84rem;';
+      row.innerHTML = `<span style="color:var(--text-light);font-weight:500;">${k}</span><span style="color:var(--dark);font-weight:600;text-align:right;word-break:break-all;">${display}</span>`;
+      section.appendChild(row);
+    });
+    container.appendChild(section);
+  });
+
+  // GPS Map Link
+  if (exif.latitude && exif.longitude) {
+    const mapLink = document.createElement('a');
+    mapLink.href = `https://maps.google.com/?q=${exif.latitude},${exif.longitude}`;
+    mapLink.target = '_blank';
+    mapLink.className = 'btn btn-blue';
+    mapLink.style.marginTop = '12px';
+    mapLink.textContent = '🗺️ View on Google Maps';
+    container.appendChild(mapLink);
+  }
+}
+
+function storeExifText(exif) {
+  allExifText = Object.entries(exif).map(([k,v]) => `${k}: ${v}`).join('\n');
+}
+
+document.getElementById('btn-copy-all').addEventListener('click', () => {
+  if(allExifText) navigator.clipboard.writeText(allExifText).then(() => showToast('EXIF data copied!','success'));
+});
+
+function resetTool() {
+  uploadArea.style.display = 'block'; editor.style.display = 'none'; fileInput.value = '';
+}
+window.resetTool = resetTool;
+</script>
+</body>
+</html>

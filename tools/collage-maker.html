@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Collage Maker — PixelCraft AI</title>
+  <meta name="description" content="Create beautiful photo collages online for free. Choose layouts, upload photos and download."/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">🖼️</div>
+    <h1>Photo Collage Maker</h1>
+    <p>Choose a layout, upload your photos, and create a beautiful collage instantly.</p>
+  </div>
+  <div class="tool-workspace">
+    <!-- Layout picker -->
+    <div class="result-area show" style="margin-top:0;">
+      <div class="result-header"><span class="result-header-title">📐 Choose Layout</span></div>
+      <div class="result-body">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;" id="layout-grid">
+          <!-- layouts rendered by JS -->
+        </div>
+      </div>
+    </div>
+    <div id="upload-section" style="display:none;margin-top:20px;">
+      <div class="result-area show" style="margin-top:0;">
+        <div class="result-header">
+          <span class="result-header-title" id="upload-title">Upload Photos</span>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-gray" onclick="goBack()">← Change Layout</button>
+            <button class="btn btn-green" id="btn-create" disabled>🎨 Create Collage</button>
+          </div>
+        </div>
+        <div class="result-body">
+          <div id="upload-slots" style="display:grid;gap:12px;"></div>
+        </div>
+      </div>
+    </div>
+    <div id="result-section" style="display:none;margin-top:20px;">
+      <div class="result-area show" style="margin-top:0;">
+        <div class="result-header">
+          <span class="result-header-title">✅ Your Collage</span>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-gray" onclick="goBack()">← Edit</button>
+            <button class="btn btn-green" id="btn-download">⬇️ Download Collage</button>
+          </div>
+        </div>
+        <div class="result-body">
+          <div style="margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <div class="control-group" style="min-width:160px;">
+              <label>Gap <span class="value-label" id="gap-val">8px</span></label>
+              <input type="range" id="gap-slider" min="0" max="40" value="8"/>
+            </div>
+            <div class="control-group" style="min-width:160px;">
+              <label>Background Color</label>
+              <input type="color" id="bg-color" value="#ffffff" style="height:44px;width:100%;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;"/>
+            </div>
+            <div style="padding-top:20px;"><button class="btn btn-blue" id="btn-redraw">🔄 Update</button></div>
+          </div>
+          <canvas id="collage-canvas" style="width:100%;border-radius:12px;border:1.5px solid var(--border);"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../js/utils.js"></script>
+<script>
+const LAYOUTS = [
+  { id:'2h', name:'2 Side by Side', count:2, icon:'⬜⬜', cols:2, rows:1 },
+  { id:'2v', name:'2 Stacked', count:2, icon:'🟨\n🟨', cols:1, rows:2 },
+  { id:'3h', name:'3 in a Row', count:3, icon:'⬜⬜⬜', cols:3, rows:1 },
+  { id:'3l', name:'1 + 2 Right', count:3, icon:'🔲', cols:null, rows:null, custom:'3l' },
+  { id:'4g', name:'4 Grid', count:4, icon:'⬜⬜\n⬜⬜', cols:2, rows:2 },
+  { id:'5g', name:'5 Mixed', count:5, icon:'🔲', cols:null, rows:null, custom:'5g' },
+  { id:'6g', name:'6 Grid', count:6, icon:'⬜⬜⬜\n⬜⬜⬜', cols:3, rows:2 },
+  { id:'9g', name:'9 Grid', count:9, icon:'⬜⬜⬜×3', cols:3, rows:3 },
+];
+
+let selectedLayout = null, uploadedImages = [];
+
+// Render layout cards
+const layoutGrid = document.getElementById('layout-grid');
+LAYOUTS.forEach(l => {
+  const card = document.createElement('button');
+  card.style.cssText = 'background:var(--white);border:2px solid var(--border);border-radius:12px;padding:16px 10px;cursor:pointer;transition:all 0.2s;text-align:center;';
+  card.innerHTML = `<div style="font-size:1.2rem;margin-bottom:8px;">${l.icon}</div><div style="font-size:0.78rem;font-weight:700;color:var(--dark);">${l.name}</div><div style="font-size:0.7rem;color:var(--text-light);">${l.count} photos</div>`;
+  card.onmouseenter = () => { card.style.borderColor='var(--primary)'; card.style.background='var(--primary-light)'; };
+  card.onmouseleave = () => { card.style.borderColor='var(--border)'; card.style.background='var(--white)'; };
+  card.addEventListener('click', () => chooseLayout(l));
+  layoutGrid.appendChild(card);
+});
+
+function chooseLayout(l) {
+  selectedLayout = l;
+  uploadedImages = new Array(l.count).fill(null);
+  document.getElementById('upload-title').textContent = `Upload ${l.count} Photos`;
+  renderSlots();
+  document.getElementById('upload-section').style.display = 'block';
+  document.getElementById('result-section').style.display = 'none';
+  document.getElementById('btn-create').disabled = true;
+}
+
+function renderSlots() {
+  const container = document.getElementById('upload-slots');
+  container.style.gridTemplateColumns = `repeat(${Math.min(selectedLayout.count, 3)}, 1fr)`;
+  container.innerHTML = '';
+  for (let i = 0; i < selectedLayout.count; i++) {
+    const slot = document.createElement('div');
+    slot.style.cssText = 'border:2px dashed var(--border);border-radius:12px;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;overflow:hidden;position:relative;background:var(--bg);';
+    slot.innerHTML = uploadedImages[i]
+      ? `<img src="${uploadedImages[i].src}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"/><button onclick="clearSlot(${i}, event)" style="position:absolute;top:6px;right:6px;width:24px;height:24px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;color:white;cursor:pointer;font-size:0.8rem;">✕</button>`
+      : `<div style="font-size:1.8rem;margin-bottom:8px;">📷</div><div style="font-size:0.82rem;color:var(--text-light);font-weight:600;">Photo ${i+1}</div>`;
+    slot.addEventListener('click', () => triggerUpload(i));
+    slot.onmouseenter = () => { if(!uploadedImages[i]) { slot.style.borderColor='var(--primary)'; slot.style.background='var(--primary-light)'; }};
+    slot.onmouseleave = () => { if(!uploadedImages[i]) { slot.style.borderColor='var(--border)'; slot.style.background='var(--bg)'; }};
+    container.appendChild(slot);
+  }
+}
+
+function triggerUpload(idx) {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = async e => {
+    if (!e.target.files[0]) return;
+    uploadedImages[idx] = await fileToImage(e.target.files[0]);
+    renderSlots();
+    const allFilled = uploadedImages.every(Boolean);
+    document.getElementById('btn-create').disabled = !allFilled;
+  };
+  inp.click();
+}
+
+function clearSlot(i, e) { e.stopPropagation(); uploadedImages[i] = null; renderSlots(); document.getElementById('btn-create').disabled = true; }
+
+document.getElementById('btn-create').addEventListener('click', createCollage);
+document.getElementById('btn-redraw').addEventListener('click', createCollage);
+document.getElementById('gap-slider').addEventListener('input', () => { document.getElementById('gap-val').textContent = document.getElementById('gap-slider').value + 'px'; });
+
+function createCollage() {
+  const gap = parseInt(document.getElementById('gap-slider').value);
+  const bgColor = document.getElementById('bg-color').value;
+  const canvas = document.getElementById('collage-canvas');
+  const ctx = canvas.getContext('2d');
+  const l = selectedLayout;
+  const cellW = 400, cellH = 300;
+  let positions = [];
+
+  if (l.custom === '3l') {
+    canvas.width = cellW*2+gap*2; canvas.height = cellH+gap;
+    positions = [{x:0,y:0,w:cellW,h:cellH+gap},{x:cellW+gap,y:0,w:cellW,h:cellH/2},{x:cellW+gap,y:cellH/2+gap,w:cellW,h:cellH/2}];
+  } else if (l.custom === '5g') {
+    canvas.width = cellW*3+gap*2; canvas.height = cellH*2+gap;
+    positions = [{x:0,y:0,w:cellW*2,h:cellH},{x:cellW*2+gap,y:0,w:cellW,h:cellH},{x:0,y:cellH+gap,w:cellW,h:cellH},{x:cellW+gap,y:cellH+gap,w:cellW,h:cellH},{x:cellW*2+gap,y:cellH+gap,w:cellW,h:cellH}];
+  } else {
+    const cols = l.cols, rows = l.rows;
+    canvas.width = cellW*cols + gap*(cols-1);
+    canvas.height = cellH*rows + gap*(rows-1);
+    for (let r=0;r<rows;r++) for (let c=0;c<cols;c++) {
+      positions.push({x:c*(cellW+gap),y:r*(cellH+gap),w:cellW,h:cellH});
+    }
+  }
+
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  positions.forEach((p,i) => {
+    if (!uploadedImages[i]) return;
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(p.x, p.y, p.w, p.h, 4);
+    ctx.clip();
+    const img = uploadedImages[i];
+    const ratio = Math.max(p.w/img.naturalWidth, p.h/img.naturalHeight);
+    const sw=img.naturalWidth*ratio, sh=img.naturalHeight*ratio;
+    ctx.drawImage(img, p.x+(p.w-sw)/2, p.y+(p.h-sh)/2, sw, sh);
+    ctx.restore();
+  });
+
+  document.getElementById('result-section').style.display = 'block';
+  document.getElementById('upload-section').style.display = 'none';
+}
+
+document.getElementById('btn-download').addEventListener('click', () => {
+  downloadFile(document.getElementById('collage-canvas').toDataURL('image/png'), 'pixelcraft-collage.png');
+});
+
+function goBack() {
+  document.getElementById('upload-section').style.display = selectedLayout ? 'block' : 'none';
+  document.getElementById('result-section').style.display = 'none';
+}
+</script>
+</body>
+</html>
