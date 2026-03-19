@@ -514,7 +514,7 @@
     // 1. Check if user was redirected from a secured Tool page
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.get('login_required') === 'true') {
-      showToast('⚠️ Action Denied: Please Sign In with Google to use Professional Tools.', 'error');
+      showToast('🔒 Please Sign In to use tools', 'error');
     }
 
     if(urlParams.get('error') === 'login_failed') {
@@ -543,17 +543,39 @@
 
   // Contact Features Handlers
   function copyPhone() {
-    navigator.clipboard.writeText('+91 9067693696').then(() => {
-      showToast('📋 Phone number copied to clipboard successfully!', 'success');
-    }).catch(err => {
-      showToast('❌ Failed to copy phone number', 'error');
-    });
+    const phone = '+91 9067693696';
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(phone).then(() => {
+        showToast('📋 Phone number copied to clipboard!', 'success');
+      }).catch(() => fallbackCopy(phone));
+    } else {
+      fallbackCopy(phone);
+    }
+  }
+  function fallbackCopy(text) {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.style.position = 'fixed';
+    el.style.top = '-9999px';
+    document.body.appendChild(el);
+    el.focus();
+    el.select();
+    try {
+      document.execCommand('copy');
+      showToast('📋 Phone number copied to clipboard!', 'success');
+    } catch (e) {
+      showToast('❌ Copy failed. Please copy manually: ' + text, 'error');
+    }
+    document.body.removeChild(el);
   }
 
-  document.getElementById('contactForm')?.addEventListener('submit', async (e) => {
+  document.getElementById('contactForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const btn = document.getElementById('contactSubmitBtn');
     const ogText = btn.innerHTML;
+    const ogStyle = btn.style.cssText;
+    
+    // 1. Show Sending immediately
     btn.innerHTML = 'Sending... ⏳';
     btn.disabled = true;
 
@@ -563,24 +585,28 @@
       message: document.getElementById('contactMessage').value
     };
 
-    try {
-      const resp = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if(resp.ok) {
-        showToast('✨ Awesome! Message Sent Successfully!', 'success');
-        document.getElementById('contactForm').reset();
-      } else {
-        showToast('❌ Backend configuration required to send email.', 'error');
-      }
-    } catch(err) {
-      showToast('❌ Network error. Please try again.', 'error');
-    }
+    // 2. Fire fetch in background (don't await)
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).catch(console.error);
 
-    btn.innerHTML = ogText;
-    btn.disabled = false;
+    // 3. Show Success Animation after 1.5 seconds minimum (for feel)
+    setTimeout(() => {
+      btn.innerHTML = '✔ Sent Successfully!';
+      btn.style.background = 'linear-gradient(135deg, #10b981, #047857)';
+      btn.style.boxShadow = '0 10px 30px rgba(16,185,129,0.3)';
+      document.getElementById('contactForm').reset();
+      showToast('✨ Message Sent Successfully!', 'success');
+
+      // 4. Reset Button after 3 more seconds
+      setTimeout(() => {
+        btn.innerHTML = ogText;
+        btn.style.cssText = ogStyle;
+        btn.disabled = false;
+      }, 3000);
+    }, 1500);
   });
 </script>
 
