@@ -107,8 +107,7 @@
     gtag('config', 'G-PROTRACKER');
   </script>
 </head>
-<body style="position:relative; background: transparent;">
-<canvas id="bg-canvas" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-2; pointer-events:none;"></canvas>
+<body>
 
 <!-- TOAST -->
 <div id="toast-container" class="toast-container"></div>
@@ -370,6 +369,72 @@
   </div>
 </section>
 
+<!-- CONTACT SECTION -->
+<section class="section section-alt" id="contact">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Get in Touch</div>
+      <h2>Let's Connect</h2>
+      <p>Have a question or want to work together? I'm always open to new opportunities.</p>
+    </div>
+    
+    <div class="contact-grid">
+      <!-- Contact Info Cards -->
+      <div class="contact-info">
+        <div class="contact-card" onclick="window.open('https://mail.google.com/mail/?view=cm&fs=1&to=swapnil.biradar.cse@gmail.com', '_blank')">
+          <div class="contact-icon" style="color:#ef4444;">✉️</div>
+          <div class="contact-text">
+            <h4>Email Me</h4>
+            <p>swapnil.biradar.cse@gmail.com</p>
+          </div>
+          <div class="contact-arrow">↗</div>
+        </div>
+
+        <div class="contact-card" onclick="copyPhone()">
+          <div class="contact-icon" style="color:#10b981;">📞</div>
+          <div class="contact-text">
+            <h4>Call Me</h4>
+            <p id="phone-text">+91 9067693696</p>
+          </div>
+          <div class="contact-arrow">📋</div>
+        </div>
+
+        <h4 style="margin-top:20px; color:var(--text-main); font-family:'Outfit'; font-size:1.2rem;">Find Me Online</h4>
+        <div class="social-links-grid">
+          <a href="https://linkedin.com/in/" target="_blank" class="social-btn linkedin-btn">
+            <span>in</span> LinkedIn
+          </a>
+          <a href="https://github.com/BiradarSwapnilDeveloper" target="_blank" class="social-btn github-btn">
+            <span>&lt;/&gt;</span> GitHub
+          </a>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <form class="contact-form" id="contactForm">
+        <h3 style="margin-bottom: 24px; font-size: 1.5rem; color: var(--text-main); grid-column: 1 / -1; font-family:'Outfit'">Send a Message</h3>
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" id="contactName" required placeholder="John Doe">
+        </div>
+        <div class="form-group">
+          <label>Your Email</label>
+          <input type="email" id="contactEmail" required placeholder="john@example.com">
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>Message</label>
+          <textarea id="contactMessage" required rows="5" placeholder="How can I help you?"></textarea>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1; margin-top: 10px;">
+          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; border-radius: 12px;" id="contactSubmitBtn">
+            Send Message 🚀
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
 <!-- CTA BANNER -->
 <section class="section section-alt">
   <div class="container" style="text-align:center;">
@@ -475,79 +540,49 @@
       console.error('Core Backend Unreachable:', err);
     }
   });
-</script>
 
-<!-- Live Animated Background Script -->
-<script>
-  const canvas = document.getElementById('bg-canvas');
-  const ctx = canvas.getContext('2d');
-  let w, h;
-  const particles = [];
-
-  function resize() {
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  class Particle {
-    constructor() {
-      this.x = Math.random() * w;
-      this.y = Math.random() * h;
-      this.r = Math.random() * 2.5 + 0.5;
-      this.vx = (Math.random() - 0.5) * 0.8;
-      this.vy = (Math.random() - 0.5) * 0.8;
-      this.alpha = Math.random() * 0.5 + 0.1;
-      this.color = Math.random() > 0.5 ? '139, 92, 246' : '59, 130, 246'; // accent vs primary
-    }
-    update() {
-      this.x += this.vx;
-      this.y += this.vy;
-      if (this.x < 0 || this.x > w) this.vx *= -1;
-      if (this.y < 0 || this.y > h) this.vy *= -1;
-    }
-    draw() {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
-      ctx.fill();
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = `rgba(${this.color}, 1)`;
-    }
-  }
-
-  for(let i=0; i<60; i++) {
-    particles.push(new Particle());
-  }
-
-  function animate() {
-    ctx.clearRect(0, 0, w, h);
-    
-    // Draw connecting lines
-    for(let i=0; i<particles.length; i++) {
-      for(let j=i+1; j<particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if(dist < 120) {
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(59, 130, 246, ${0.15 - dist/120 * 0.15})`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-      }
-    }
-
-    particles.forEach(p => {
-      p.update();
-      p.draw();
+  // Contact Features Handlers
+  function copyPhone() {
+    navigator.clipboard.writeText('+91 9067693696').then(() => {
+      showToast('📋 Phone number copied to clipboard successfully!', 'success');
+    }).catch(err => {
+      showToast('❌ Failed to copy phone number', 'error');
     });
-    requestAnimationFrame(animate);
   }
-  animate();
+
+  document.getElementById('contactForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('contactSubmitBtn');
+    const ogText = btn.innerHTML;
+    btn.innerHTML = 'Sending... ⏳';
+    btn.disabled = true;
+
+    const data = {
+      name: document.getElementById('contactName').value,
+      email: document.getElementById('contactEmail').value,
+      message: document.getElementById('contactMessage').value
+    };
+
+    try {
+      const resp = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if(resp.ok) {
+        showToast('✨ Awesome! Message Sent Successfully!', 'success');
+        document.getElementById('contactForm').reset();
+      } else {
+        showToast('❌ Backend configuration required to send email.', 'error');
+      }
+    } catch(err) {
+      showToast('❌ Network error. Please try again.', 'error');
+    }
+
+    btn.innerHTML = ogText;
+    btn.disabled = false;
+  });
 </script>
+
 </body>
 </html>

@@ -115,6 +115,44 @@ app.use('/tools', (req, res, next) => {
   res.redirect('/?login_required=true');
 });
 
+const nodemailer = require('nodemailer');
+
+app.post('/api/contact', async (req, res) => {
+  const { name, email, message } = req.body;
+  if(!name || !email || !message) return res.status(400).json({ error: "Missing fields" });
+
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER || 'swapnil.biradar.cse@gmail.com',
+        pass: process.env.EMAIL_PASS || 'dummy-password' // Fallback used to prevent crash, user must provide actual Pass in .env
+      }
+    });
+
+    const mailOptions = {
+      from: email,
+      to: 'swapnil.biradar.cse@gmail.com',
+      subject: `New Message from PixelCraft Website: ${name}`,
+      text: `Someone just sent a message from your website contact form!
+      
+Name: ${name}
+Email: ${email}
+
+Message: 
+${message}
+`
+    };
+
+    // Attempt to send email
+    await transporter.sendMail(mailOptions);
+    res.json({ success: true, message: 'Email sent successfully!' });
+  } catch(err) {
+    console.error("🔴 Email Send Error (Check EMAIL_PASS App Password):", err.message);
+    res.status(500).json({ error: "Failed to send email" });
+  }
+});
+
 // Serve all static files (HTML, CSS, JS) from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
