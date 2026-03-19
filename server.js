@@ -122,16 +122,21 @@ app.post('/api/contact', async (req, res) => {
   if(!name || !email || !message) return res.status(400).json({ error: "Missing fields" });
 
   try {
+    console.log(`📩 Preparing to send email from contact form (Name: ${name}, Email: ${email})`);
+    
+    // Explicitly configure Gmail SMTP
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER || 'swapnil.biradar.cse@gmail.com',
-        pass: process.env.EMAIL_PASS || 'dummy-password' // Fallback used to prevent crash, user must provide actual Pass in .env
+        pass: process.env.EMAIL_PASS
       }
     });
 
+    // Gmail requires 'from' to match the authenticated email to prevent spam blocking
     const mailOptions = {
-      from: email,
+      from: `"PixelCraft Contact" <${process.env.EMAIL_USER || 'swapnil.biradar.cse@gmail.com'}>`,
+      replyTo: email,
       to: 'swapnil.biradar.cse@gmail.com',
       subject: `New Message from PixelCraft Website: ${name}`,
       text: `Someone just sent a message from your website contact form!
@@ -149,7 +154,7 @@ ${message}
     res.json({ success: true, message: 'Email sent successfully!' });
   } catch(err) {
     console.error("🔴 Email Send Error (Check EMAIL_PASS App Password):", err.message);
-    res.status(500).json({ error: "Failed to send email" });
+    res.status(500).json({ error: "Failed to send email", details: err.message });
   }
 });
 

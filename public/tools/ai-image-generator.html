@@ -59,14 +59,15 @@
     .gen-layout { display: flex; flex-direction: column; gap: 24px; max-width: 900px; margin: 0 auto; }
     
     .prompt-box {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: var(--radius);
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
       padding: 32px;
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--shadow-glass);
     }
-    .prompt-box h3 { font-size: 1.4rem; font-weight: 800; color: var(--dark); margin-bottom: 20px; }
+    .prompt-box h3 { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 20px; font-family: 'Outfit', sans-serif; }
     
     .input-wrapper { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
     
@@ -74,19 +75,19 @@
       width: 100%;
       height: 120px;
       padding: 18px;
-      background: var(--bg2);
-      border: 1.5px solid var(--border);
+      background: rgba(0,0,0,0.4);
+      border: 1.5px solid var(--glass-border);
       border-radius: var(--radius-sm);
-      color: var(--text);
+      color: var(--text-main);
       font-size: 1.05rem;
       font-family: inherit;
       resize: none;
       outline: none;
-      transition: var(--transition);
+      transition: var(--transition-smooth);
     }
     textarea.prompt-input:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+      box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.15);
     }
 
     .options-row {
@@ -100,33 +101,42 @@
       width: 100%;
       padding: 16px;
       font-size: 1.1rem;
-      border-radius: var(--radius-sm);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      border-radius: 100px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
       background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 30px var(--glow-primary);
+      transition: var(--transition-bounce);
     }
-    .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .generate-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 15px 40px var(--glow-primary); }
+    .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     .result-box {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: var(--radius);
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
       padding: 32px;
       min-height: 400px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--shadow-glass);
       text-align: center;
       position: relative;
     }
     
     .empty-state {
-      color: var(--text-light);
+      color: var(--text-muted);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -136,8 +146,9 @@
 
     .loader-overlay {
       position: absolute; inset: 0;
-      background: rgba(30, 41, 59, 0.9);
-      border-radius: var(--radius);
+      background: rgba(5, 5, 5, 0.8);
+      backdrop-filter: blur(8px);
+      border-radius: var(--radius-lg);
       display: none;
       flex-direction: column;
       align-items: center;
@@ -149,11 +160,11 @@
     
     .glowing-spinner {
       width: 60px; height: 60px;
-      border: 4px solid rgba(255,255,255,0.1);
+      border: 4px solid var(--glass-border);
       border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      box-shadow: 0 0 20px var(--primary-light);
+      box-shadow: 0 0 20px var(--glow-primary);
     }
 
     .generated-image-container {
@@ -234,14 +245,14 @@
         <div class="result-box">
           <div class="loader-overlay" id="loader">
             <div class="glowing-spinner"></div>
-            <p style="font-weight:600; color:var(--dark); margin-top:10px; font-size:1.1rem;">AI is painting your image...</p>
-            <p style="color:var(--text-light); font-size:0.9rem;">Usually takes 3-10 seconds.</p>
+            <p style="font-weight:600; color:var(--text-main); margin-top:10px; font-size:1.1rem; font-family:'Outfit'">AI is painting your image...</p>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Runs entirely in your browser in ~3-10 secs.</p>
           </div>
 
           <div class="empty-state" id="empty-state">
-            <div style="font-size:3rem; margin-bottom:10px;">🪄</div>
-            <h3 style="color:var(--dark); font-weight:700;">No image generated yet</h3>
-            <p>Enter a prompt above and click generate to create magic.</p>
+            <div style="width:72px; height:72px; background:rgba(26,86,219,0.1); border:1px solid rgba(26,86,219,0.25); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:2rem; margin-bottom:12px; box-shadow:0 10px 30px rgba(26,86,219,0.15);">🌌</div>
+            <h3 style="color:var(--text-main); font-weight:700; font-family:'Outfit'; font-size:1.3rem; margin-bottom:4px;">Ready to create magic</h3>
+            <p style="color:var(--text-muted); font-size:0.95rem;">Describe what you want to see and click generate.</p>
           </div>
 
           <div class="generated-image-container" id="result-container">
@@ -340,20 +351,39 @@
 
       // Preload image
       const img = new Image();
+      let isDone = false;
+      
       img.onload = () => {
+        if(isDone) return;
+        isDone = true;
         resultImg.src = img.src;
         currentImageUrl = img.src;
         loader.classList.remove('active');
         resultContainer.classList.add('show');
         btnGen.disabled = false;
-        showToast('Image Generated Successfully!', 'success');
+        showToast('✨ Masterpiece Generated Successfully!', 'success');
       };
+
       img.onerror = () => {
+        if(isDone) return;
+        isDone = true;
         loader.classList.remove('active');
         emptyState.style.display = 'flex';
         btnGen.disabled = false;
-        showToast('Failed to generate image. Please try again.', 'error');
+        showToast('❌ Failed to generate. Try a different prompt.', 'error');
       };
+
+      // Pollinations can sometimes take up to 20 seconds. Fallback timer:
+      setTimeout(() => {
+        if(!isDone) {
+          isDone = true;
+          loader.classList.remove('active');
+          emptyState.style.display = 'flex';
+          btnGen.disabled = false;
+          showToast('⏳ Generation timed out. Please try again.', 'error');
+        }
+      }, 30000);
+
       img.src = apiUrl;
     });
 
