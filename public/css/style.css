@@ -1,28 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --bg: #F8FAFC;
-  --bg2: #F1F5F9;
-  --white: #FFFFFF;
-  --primary: #2563EB;
-  --primary-dark: #1D4ED8;
-  --primary-light: #EFF6FF;
-  --accent: #7C3AED;
-  --accent-light: #F5F3FF;
-  --dark: #0F172A;
-  --text: #334155;
-  --text-light: #64748B;
-  --border: #E2E8F0;
+  --bg: #060B19;
+  --bg2: #0F172A;
+  --white: rgba(30, 41, 59, 0.7);
+  --primary: #3B82F6;
+  --primary-dark: #2563EB;
+  --primary-light: rgba(59, 130, 246, 0.15);
+  --accent: #8B5CF6;
+  --accent-light: rgba(139, 92, 246, 0.15);
+  --dark: #F8FAFC;
+  --text: #CBD5E1;
+  --text-light: #94A3B8;
+  --border: rgba(255, 255, 255, 0.1);
   --success: #10B981;
   --warning: #F59E0B;
   --error: #EF4444;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
-  --shadow-lg: 0 12px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
-  --shadow-blue: 0 8px 30px rgba(37,99,235,0.20);
-  --transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --shadow-sm: 0 4px 6px rgba(0,0,0,0.2);
+  --shadow: 0 10px 30px rgba(0,0,0,0.4);
+  --shadow-lg: 0 20px 40px rgba(0,0,0,0.5);
+  --shadow-blue: 0 8px 30px rgba(59, 130, 246, 0.3);
+  --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -42,10 +42,10 @@ body {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1000;
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
   padding: 0 24px;
   height: 68px;
   display: flex;
@@ -109,11 +109,12 @@ body {
 .hero::before {
   content: '';
   position: absolute;
-  top: -100px; left: 50%;
+  top: -150px; left: 50%;
   transform: translateX(-50%);
-  width: 800px; height: 800px;
-  background: radial-gradient(ellipse at center, rgba(37,99,235,0.07) 0%, transparent 70%);
+  width: 1000px; height: 1000px;
+  background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 40%, transparent 70%);
   pointer-events: none;
+  z-index: -1;
 }
 .hero-badge {
   display: inline-flex;
@@ -252,8 +253,10 @@ body {
   gap: 20px;
 }
 .tool-card {
-  background: var(--white);
-  border: 1.5px solid var(--border);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius);
   padding: 28px 24px;
   text-decoration: none;
@@ -262,7 +265,7 @@ body {
   position: relative;
   overflow: hidden;
   display: block;
-  group: true;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 .tool-card::before {
   content: '';
@@ -342,9 +345,10 @@ body {
 .step-card {
   text-align: center;
   padding: 32px 24px;
-  background: var(--bg);
+  background: var(--white);
+  backdrop-filter: blur(10px);
   border-radius: var(--radius);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   position: relative;
 }
 .step-num {

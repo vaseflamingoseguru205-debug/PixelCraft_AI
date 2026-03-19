@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <!-- ===== SEO META TAGS ===== -->
@@ -101,20 +101,20 @@
     .remover-right.show { display:block; }
 
     .drop-zone {
-      border: 2.5px dashed #C7D2FE;
+      border: 2.5px dashed rgba(255,255,255,0.2);
       border-radius: 20px;
       padding: 56px 32px;
       text-align: center;
       cursor: pointer;
       transition: all 0.25s;
-      background: #FAFAFE;
+      background: rgba(30,41,59,0.5);
       position: relative;
       overflow: hidden;
       user-select: none;
     }
     .drop-zone:hover, .drop-zone.over {
       border-color: var(--primary);
-      background: #EEF2FF;
+      background: rgba(59,130,246,0.1);
     }
     .drop-zone .dz-icon { font-size:3.2rem; margin-bottom:14px; display:block; }
     .drop-zone h3 { font-size:1.15rem; font-weight:700; color:var(--dark); margin-bottom:8px; }
@@ -122,20 +122,20 @@
 
     /* Processing overlay */
     .proc-overlay {
-      position:absolute; inset:0; background:rgba(255,255,255,0.96);
+      position:absolute; inset:0; background:rgba(6,11,25,0.96);
       border-radius:18px; display:none;
       flex-direction:column; align-items:center; justify-content:center; gap:14px;
     }
     .proc-overlay.active { display:flex; }
     .spin {
       width:52px; height:52px;
-      border:4px solid #E0E7FF; border-top-color:#6366F1;
+      border:4px solid rgba(255,255,255,0.1); border-top-color:var(--primary);
       border-radius:50%; animation:spin 0.9s linear infinite;
     }
     @keyframes spin { to { transform:rotate(360deg); } }
     .proc-msg  { font-size:0.9rem; font-weight:600; color:var(--dark); }
-    .prog-wrap { width:220px; height:8px; background:#E0E7FF; border-radius:99px; overflow:hidden; }
-    .prog-bar  { height:100%; background:linear-gradient(90deg,#6366F1,#A855F7); border-radius:99px; transition:width 0.35s ease; }
+    .prog-wrap { width:220px; height:8px; background:rgba(255,255,255,0.1); border-radius:99px; overflow:hidden; }
+    .prog-bar  { height:100%; background:linear-gradient(90deg,var(--primary),var(--accent)); border-radius:99px; transition:width 0.35s ease; }
     .proc-note { font-size:0.78rem; color:var(--text-light); padding:0 16px; text-align:center; }
 
     /* Image panels */
@@ -169,15 +169,15 @@
     .ctrl-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
 
     .ai-note {
-      background:#F0FDF4; border:1.5px solid #BBF7D0;
+      background:rgba(16,185,129,0.1); border:1.5px solid rgba(16,185,129,0.3);
       border-radius:12px; padding:12px 16px;
-      font-size:0.83rem; color:#15803D;
+      font-size:0.83rem; color:#A7F3D0;
       display:flex; gap:8px; align-items:flex-start; margin-bottom:22px;
     }
     .error-box {
-      background:#FFF1F2; border:1.5px solid #FECDD3;
+      background:rgba(239,68,68,0.1); border:1.5px solid rgba(239,68,68,0.3);
       border-radius:12px; padding:16px 18px;
-      font-size:0.86rem; color:#BE123C;
+      font-size:0.86rem; color:#FECDD3;
       display:none; margin-top:14px;
     }
     .error-box.show { display:block; }
@@ -306,8 +306,9 @@
 
 <script src="../js/utils.js"></script>
 <script type="module">
-import { AutoModel, AutoProcessor, RawImage } from
-  'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3/dist/transformers.min.js';
+import { pipeline, env, RawImage } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3/dist/transformers.min.js';
+env.allowLocalModels = false;
+env.backends.onnx.wasm.proxy = true;
 
 // ─── DOM refs ────────────────────────────────────────────────────────────────
 const dropZone    = document.getElementById('drop-zone');
@@ -367,34 +368,22 @@ async function processFile(file) {
     // 1 ── Load pipeline (once) ─────────────────────────────────────
     if (!processor) {
       showProc(8, 'Downloading AI model…', 'Please wait. Cached for future use.');
-      // Using pipeline is much more robust against tensor shape issues
-      const { pipeline } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3/dist/transformers.min.js');
-      processor = await pipeline('image-segmentation', 'briaai/RMBG-1.4', { device: 'webgpu' });
+      processor = await pipeline('image-segmentation', 'briaai/RMBG-1.4', { device: 'wasm' });
     }
 
     // 2 ── Inference ──────────────────────────────────────────────────────────
     showProc(55, 'Running AI segmentation…', 'Identifying subject and background…');
-    // The pipeline returns a list of results (usually { label: 'foreground', mask: RawImage, score })
-    // For background removal models, it generally returns the mask directly or an array of blobs.
-    // However, image-segmentation pipeline can just return foreground/background regions.
-    // Wait, RMBG-1.4 is often used directly via AutoModel/AutoProcessor. Let's fix the Tensor issue.
-    // The issue was: rawImg.toRGB() missing, or shape mismatch.
-    // Let's use image-segmentation pipeline directly.
     const results = await processor(dataURL);
     
-    // Process results. RMBG-1.4 typically returns a single image or mask of foreground
+    // Process results. RMBG-1.4 pipeline returns array of dicts with masks
     let maskData;
     if (Array.isArray(results) && results[0].mask) {
-      // It's a classification mask output
       maskData = results[0].mask;
     } else if (results instanceof RawImage) {
         maskData = results;
     } else if (results && results.mask) {
         maskData = results.mask;
     } else {
-        // Fallback if returned format is weird (some versions return foreground as an image)
-        // If it's a Pillow/RawImage image output, we can draw it directly.
-        // Wait, for RMBG-1.4 Transformers pipeline usually returns a DataURL or RawImage.
         maskData = results[0]?.mask || results; 
     }
 
@@ -403,17 +392,10 @@ async function processFile(file) {
     showProc(86, 'Applying mask…', '');
     
     // We resize mask back to original image size
-    const rawImg = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3/dist/transformers.min.js').then(m => m.RawImage.fromURL(dataURL));
+    const rawImg = await RawImage.fromURL(dataURL);
     let maskResized;
     if (maskData.resize) {
          maskResized = await maskData.resize(rawImg.width, rawImg.height);
-    } else if (maskData.bitmap) { // Image bitmap output
-         // create raw image from bitmap
-         const canvas = document.createElement('canvas');
-         canvas.width = rawImg.width; canvas.height = rawImg.height;
-         const ctx = canvas.getContext('2d');
-         ctx.drawImage(maskData, 0, 0, rawImg.width, rawImg.height);
-         maskResized = ctx.getImageData(0,0, rawImg.width, rawImg.height); // Fake it
     } else {
         maskResized = maskData;
     }
@@ -430,12 +412,6 @@ async function processFile(file) {
     window.showToast?.('Background removed successfully! 🎉', 'success');
 
   } catch (err) {
-    if (err.message && err.message.includes('webgpu')) {
-        // Fallback for WebGPU error
-        if (processor) processor.dispose && processor.dispose();
-        processor = null;
-        throw new Error("Device doesn't support WebGPU fully. Please try a different browser.");
-    }
     console.error('BG remover error:', err);
     procOverlay.classList.remove('active');
     origSection.style.display = 'block';

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <!-- ===== SEO META TAGS ===== -->
@@ -107,7 +107,8 @@
     gtag('config', 'G-PROTRACKER');
   </script>
 </head>
-<body>
+<body style="position:relative; background: transparent;">
+<canvas id="bg-canvas" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-2; pointer-events:none;"></canvas>
 
 <!-- TOAST -->
 <div id="toast-container" class="toast-container"></div>
@@ -134,11 +135,11 @@
 <section class="hero">
   <div class="container">
     <div class="hero-badge">✨ 20+ Professional AI Tools — 100% Free</div>
-    <h1>Edit Images Like a <span>Professional</span><br/>— No Skills Needed</h1>
-    <p>Remove backgrounds, enhance photos, compress images, create memes, generate captions, and much more. All in your browser — instant, private, free.</p>
+    <h1>Generate &amp; Edit Images With <span>AI</span><br/>— No Skills Needed</h1>
+    <p>Create stunning AI art from text, remove backgrounds, enhance photos, and much more. All instant, private, and 100% free.</p>
     <div class="hero-actions">
       <a href="#tools" class="btn-primary">🚀 Explore All Tools</a>
-      <a href="tools/background-remover.html" class="btn-secondary">🖼️ Remove Background</a>
+      <a href="tools/ai-image-generator.html" class="btn-secondary">✨ AI Image Generator</a>
     </div>
     <div class="hero-stats">
       <div class="hero-stat"><strong>20+</strong><span>Free Tools</span></div>
@@ -171,6 +172,14 @@
     <div class="tools-grid" id="tools-grid">
 
       <!-- AI TOOLS -->
+      <a href="tools/ai-image-generator.html" class="tool-card" data-cat="ai">
+        <div class="tool-badge">✨ Trending</div>
+        <div class="tool-icon icon-violet">🌌</div>
+        <h3>AI Image Generator</h3>
+        <p>Turn your words into stunning high-quality images and art instantly for free.</p>
+        <div class="tool-arrow">Open Tool →</div>
+      </a>
+
       <a href="tools/background-remover.html" class="tool-card" data-cat="ai">
         <div class="tool-badge">🔥 Popular</div>
         <div class="tool-icon icon-blue">✂️</div>
@@ -199,13 +208,6 @@
         <div class="tool-icon icon-green">🖊️</div>
         <h3>Watermark Adder</h3>
         <p>Add text or image watermark. Control position, opacity, and font style.</p>
-        <div class="tool-arrow">Open Tool →</div>
-      </a>
-
-      <a href="tools/text-adder.html" class="tool-card" data-cat="edit">
-        <div class="tool-icon icon-indigo">✏️</div>
-        <h3>Text on Image</h3>
-        <p>Add styled text overlays with custom fonts, colors, and positioning.</p>
         <div class="tool-arrow">Open Tool →</div>
       </a>
 
@@ -405,7 +407,6 @@
         <ul>
           <li><a href="tools/image-filters.html">Filters &amp; Effects</a></li>
           <li><a href="tools/watermark-adder.html">Watermark Adder</a></li>
-          <li><a href="tools/text-adder.html">Text on Image</a></li>
           <li><a href="tools/exif-viewer.html">EXIF Viewer</a></li>
           <li><a href="tools/color-palette.html">Color Palette</a></li>
         </ul>
@@ -474,6 +475,79 @@
       console.error('Core Backend Unreachable:', err);
     }
   });
+</script>
+
+<!-- Live Animated Background Script -->
+<script>
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h;
+  const particles = [];
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h;
+      this.r = Math.random() * 2.5 + 0.5;
+      this.vx = (Math.random() - 0.5) * 0.8;
+      this.vy = (Math.random() - 0.5) * 0.8;
+      this.alpha = Math.random() * 0.5 + 0.1;
+      this.color = Math.random() > 0.5 ? '139, 92, 246' : '59, 130, 246'; // accent vs primary
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < 0 || this.x > w) this.vx *= -1;
+      if (this.y < 0 || this.y > h) this.vy *= -1;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
+      ctx.fill();
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = `rgba(${this.color}, 1)`;
+    }
+  }
+
+  for(let i=0; i<60; i++) {
+    particles.push(new Particle());
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, w, h);
+    
+    // Draw connecting lines
+    for(let i=0; i<particles.length; i++) {
+      for(let j=i+1; j<particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(59, 130, 246, ${0.15 - dist/120 * 0.15})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+
+    particles.forEach(p => {
+      p.update();
+      p.draw();
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
 </script>
 </body>
 </html>
