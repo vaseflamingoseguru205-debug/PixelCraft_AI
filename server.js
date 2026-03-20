@@ -163,73 +163,63 @@ app.post('/api/generate-avatar', async (req, res) => {
   const { imageBase64, style } = req.body;
   if(!imageBase64 || !style) return res.status(400).json({ error: "Missing image or style" });
 
-  const hfToken = process.env.HF_API_KEY;
-  if(!hfToken || hfToken.trim() === '') {
-    return res.status(501).json({ 
-      error: "API_KEY_MISSING",
-      message: "Hey Admin! To generate genuine AI Avatars, you must add HF_API_KEY to your .env file."
-    });
-  }
-
   try {
-    console.log(`🤖 Generating AI Avatar via Hugging Face API (${style})...`);
-    
-    // Convert base64 to binary buffer
-    const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
-    const buffer = Buffer.from(base64Data, 'base64');
+    console.log(`🤖 Generating AI Avatar via Pollinations.ai (${style})...`);
 
-    // Create a robust prompt based on the style
+    // Style-specific prompts for best results
     let prompt = "";
-    if(style === "Anime Style") prompt = "Make them look like a highly detailed, beautiful anime character, masterpiece, studio ghibli style";
-    else if(style === "3D Avatar") prompt = "Turn them into a highly detailed Pixar 3D animated character, 3D render, octane render, beautiful lighting";
-    else if(style === "Cartoon Avatar") prompt = "Turn them into a western comic book cartoon character, flat colors, clean lines";
-    else if(style === "Sketch") prompt = "Turn them into a detailed pencil sketch drawing, shading, artistic";
-    else if(style === "Pixel Art") prompt = "Turn them into a retro 16-bit pixel art character, crisp pixels";
-    else prompt = "Turn them into an anime character";
+    if(style === "Anime Style")         prompt = "Transform this photo into a beautiful anime character illustration, studio ghibli art style, highly detailed, vibrant colors, clean anime face features, masterpiece quality";
+    else if(style === "3D Avatar")       prompt = "Transform this photo into a Pixar/Disney 3D animated character, ultra realistic 3D render, soft cinematic lighting, highly detailed, professional CGI quality";
+    else if(style === "Cartoon Avatar")  prompt = "Transform this photo into a cartoon character illustration, flat bold colors, clean thick outlines, comic book art style, friendly and expressive";
+    else if(style === "Sketch")          prompt = "Transform this photo into a realistic pencil sketch portrait, detailed cross-hatching, professional fine art drawing, black and white";
+    else if(style === "Pixel Art")       prompt = "Transform this photo into retro 16-bit pixel art character sprite, crisp pixels, game art style, vibrant limited color palette";
+    else                                 prompt = "Transform this photo into an anime illustration";
 
-    // For Instruct-Pix2Pix, we specify the instructions in the headers or custom body.
-    // However, Hugging Face standard inference for image-to-image takes image binary in body 
-    // and prompt in headers or json. A generic HuggingFace image-to-image call:
-    
-    // We will use standard fetch for stability base or instruct-pix2pix
-    // Instruct-pix2pix uses text as "inputs" and image as "image" in json OR
-    // standard huggingface image-to-image pipeline: 
-    // We send a POST request with the file buffer, but we need to pass the "prompt" somehow if using a model that accepts it.
-    // Instead of HF which is tricky with Img2Img via raw HTTP, let's provide a robust structured response
-    // if HF fails or is building. We will mock the output or return an API instruction if the model is loading.
-
-    // Using a more reliable open endpoint style if HF is too complex, but HF is best for free.
-    // We will use the free HuggingFace endpoints. To pass prompt and image:
-    const FormData = require('form-data');
-    const form = new FormData();
-    form.append('image', buffer, { filename: 'image.jpg', contentType: 'image/jpeg' });
-    form.append('prompt', prompt);
-
-    const fResponse = await fetch('https://api-inference.huggingface.co/models/timbrooks/instruct-pix2pix', {
+    // Pollinations.ai /v1/images/edits — accepts source image as base64 URL
+    // This is completely free, no API key needed!
+    const pollinationsRes = await fetch('https://gen.pollinations.ai/v1/images/edits', {
       method: 'POST',
       headers: { 
-        'Authorization': `Bearer ${hfToken}`,
-        ...form.getHeaders()
+        'Content-Type': 'application/json'
       },
-      body: form
+      body: JSON.stringify({
+        prompt: prompt,
+        image: imageBase64,   // base64 data URL accepted directly
+        model: 'gptimage',    // best image editing model
+        response_format: 'b64_json'
+      })
     });
 
-    if(!fResponse.ok) {
-        const errorText = await fResponse.text();
-        console.error("HF API Error:", errorText);
-        
-        // If Model is loading, HF returns 503
-        if (fResponse.status === 503) {
-           return res.status(503).json({ error: "Model is currently loading. Please wait 30 seconds and try again." });
-        }
-        throw new Error(`External API Error: ${fResponse.status} ${fResponse.statusText}. Please verify your HF_API_KEY inside .env`);
+    console.log(`Pollinations Response Status: ${pollinationsRes.status}`);
+
+    if(!pollinationsRes.ok) {
+      const errorText = await pollinationsRes.text();
+      console.error("Pollinations Error:", errorText.substring(0, 300));
+      throw new Error(`Pollinations API error ${pollinationsRes.status}: ${errorText.substring(0,150)}`);
     }
 
-    const arrayBuffer = await fResponse.arrayBuffer();
-    const resultBuffer = Buffer.from(arrayBuffer);
-    const resultBase64 = `data:image/jpeg;base64,${resultBuffer.toString('base64')}`;
+    const data = await pollinationsRes.json();
 
-    res.json({ success: true, resultImage: resultBase64 });
+    // Get the b64 result from the response
+    const resultB64 = data?.data?.[0]?.b64_json || data?.b64_json;
+    const resultUrl  = data?.data?.[0]?.url;
+    
+    if(resultB64) {
+      const resultBase64 = `data:image/png;base64,${resultB64}`;
+      console.log(`✅ Avatar generated successfully via Pollinations.ai!`);
+      return res.json({ success: true, resultImage: resultBase64 });
+    } else if(resultUrl) {
+      // Fetch the URL and convert to base64
+      const imgRes = await fetch(resultUrl);
+      const buf = Buffer.from(await imgRes.arrayBuffer());
+      const resultBase64 = `data:image/jpeg;base64,${buf.toString('base64')}`;
+      console.log(`✅ Avatar generated successfully via URL!`);
+      return res.json({ success: true, resultImage: resultBase64 });
+    } else {
+      console.error("Unexpected response structure:", JSON.stringify(data).substring(0, 300));
+      throw new Error("Could not extract image from Pollinations response.");
+    }
+
   } catch(err) {
     console.error("🔴 AI Generation Error:", err.message);
     res.status(500).json({ error: "Generation failed", details: err.message });
