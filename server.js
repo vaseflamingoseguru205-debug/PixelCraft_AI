@@ -30,7 +30,7 @@ app.use(session({
     collectionName: 'sessions' // Default is 'sessions'
   }),
   cookie: {
-    maxAge: 1000 * 60 * 60 * 24 * 30, // 30 Days persistent login
+    maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 Years persistent login
     secure: process.env.NODE_ENV === 'production', // true for HTTPS in production
     httpOnly: true
   }
