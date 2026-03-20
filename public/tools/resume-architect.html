@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- SEO META TAGS -->
+  <title>Free AI Resume Architect - Build Professional ATS Resumes | PixelCraft AI</title>
+  <meta name="description" content="Generate a 100% accurate, professional, realistic, and ATS-optimized resume using advanced AI. Simply input your details and let AI do the heavy lifting."/>
+  <meta name="robots" content="index, follow"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+
+  <style>
+    .gen-layout { display: flex; flex-direction: column; gap: 24px; max-width: 1000px; margin: 0 auto; }
+    
+    .prompt-box {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-glass);
+    }
+    .prompt-box h3 { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 24px; font-family: 'Outfit', sans-serif; display: flex; align-items: center; gap: 10px; }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .full-width { grid-column: 1 / -1; }
+
+    @media (max-width: 768px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { color: var(--text-main); font-weight: 600; font-size: 0.95rem; }
+    .form-group input, .form-group textarea, .form-group select {
+      padding: 14px 16px;
+      background: rgba(0,0,0,0.4);
+      border: 1.5px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: var(--transition-smooth);
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      border-color: var(--primary); 
+      box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.15); 
+      outline: none;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    .generate-btn {
+      width: 100%;
+      padding: 16px;
+      margin-top: 24px;
+      font-size: 1.1rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--primary), #8B5CF6);
+      color: white;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+      transition: var(--transition-bounce);
+    }
+    .generate-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(37, 99, 235, 0.5); }
+    .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .result-box {
+      background: rgba(37, 99, 235, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    .result-content {
+      flex: 1;
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--text-main);
+      white-space: pre-wrap;
+      font-family: 'Inter', sans-serif;
+      background: #1e293b;
+      padding: 24px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .loader-overlay {
+      position: absolute; inset: 0;
+      background: rgba(5, 5, 5, 0.85);
+      backdrop-filter: blur(8px);
+      border-radius: var(--radius-lg);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 10;
+    }
+    .loader-overlay.active { display: flex; }
+    
+    .glowing-spinner {
+      width: 60px; height: 60px;
+      border: 4px solid var(--glass-border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      border-top: 1px solid rgba(37, 99, 235, 0.2);
+      padding-top: 16px;
+      justify-content: flex-end;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <nav class="navbar">
+    <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+    <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  </nav>
+
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← Back to All Tools</a>
+      <div style="font-size:2.5rem;margin-bottom:12px;">📑</div>
+      <h1>AI Resume Architect</h1>
+      <p>Generate a 100% accurate, professional, realistic, and ATS-optimized resume. Tell us about yourself.</p>
+    </div>
+
+    <div class="tool-workspace">
+      <div class="gen-layout">
+        
+        <!-- Input Form -->
+        <div class="prompt-box">
+          <h3><span>📝</span> Candidate Information</h3>
+          <form id="resume-form">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="r-name" placeholder="John Doe" required />
+              </div>
+              <div class="form-group">
+                <label>Target Job Role *</label>
+                <input type="text" id="r-role" placeholder="e.g. Senior Software Engineer" required />
+              </div>
+
+              <div class="form-group">
+                <label>Email Address *</label>
+                <input type="email" id="r-email" placeholder="john@example.com" required />
+              </div>
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" id="r-phone" placeholder="+1 234 567 890" />
+              </div>
+
+              <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="r-location" placeholder="New York, USA" />
+              </div>
+              <div class="form-group">
+                <label>LinkedIn / Portfolio URL</label>
+                <input type="text" id="r-links" placeholder="linkedin.com/in/johndoe" />
+              </div>
+
+              <div class="form-group full-width">
+                <label>Career Objective / Summary (Optional)</label>
+                <textarea id="r-summary" placeholder="Briefly describe your goals..."></textarea>
+              </div>
+
+              <div class="form-group full-width">
+                <label>Work Experience</label>
+                <textarea id="r-experience" placeholder="Company, Role, Duration, Responsibilities (List main highlights)"></textarea>
+              </div>
+
+              <div class="form-group full-width">
+                <label>Education</label>
+                <textarea id="r-education" placeholder="Degree, College/University, Year"></textarea>
+              </div>
+
+              <div class="form-group full-width">
+                <label>Skills (Technical + Soft)</label>
+                <textarea id="r-skills" placeholder="JavaScript, React, Leadership, Project Management..."></textarea>
+              </div>
+
+              <div class="form-group full-width">
+                <label>Projects (with Details)</label>
+                <textarea id="r-projects" placeholder="Project Name, Tech Stack, What you built and outcome"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Certifications</label>
+                <textarea id="r-certs" placeholder="AWS Certified Solutions Architect..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Achievements</label>
+                <textarea id="r-achievements" placeholder="Employee of the month, Hackathon winner..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Languages</label>
+                <input type="text" id="r-languages" placeholder="English, Spanish, Hindi..." />
+              </div>
+              <div class="form-group">
+                <label>Experience Level *</label>
+                <select id="r-level" required>
+                  <option value="Fresher / Entry Level">Fresher / Entry Level</option>
+                  <option value="Mid Level (1-4 years)">Mid Level (1-4 years)</option>
+                  <option value="Senior Level (5+ years)">Senior Level (5+ years)</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="generate-btn" id="btn-generate">
+              ✨ Generate ATS-Optimized Resume
+            </button>
+          </form>
+        </div>
+
+        <!-- Result -->
+        <div class="result-box" id="result-box" style="display:none;">
+          <h3 style="font-size:1.2rem; color:var(--primary); margin-bottom: 20px; font-weight:700;">Your Generated Resume</h3>
+          <div class="result-content" id="result-output"></div>
+          
+          <div class="toolbar">
+             <button class="btn btn-gray" id="btn-copy">📋 Copy Markdown (Text)</button>
+             <button class="btn btn-blue" id="btn-download" style="border:none;">⬇️ Download as .txt</button>
+          </div>
+
+          <div class="loader-overlay" id="loader">
+            <div class="glowing-spinner"></div>
+            <p style="font-weight:600; color:var(--text-main); margin-top:10px; font-size:1.1rem; font-family:'Outfit'">Architecting your resume...</p>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Optimizing for ATS and professional impact...</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/utils.js"></script>
+  <script>
+    const form = document.getElementById('resume-form');
+    const btnGen = document.getElementById('btn-generate');
+    const loader = document.getElementById('loader');
+    const resBox = document.getElementById('result-box');
+    const resOutput = document.getElementById('result-output');
+    const btnCopy = document.getElementById('btn-copy');
+    const btnDownload = document.getElementById('btn-download');
+
+    let rawMarkdownResult = "";
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const pName = document.getElementById('r-name').value.trim();
+      const pRole = document.getElementById('r-role').value.trim();
+      const pEmail = document.getElementById('r-email').value.trim();
+      const pPhone = document.getElementById('r-phone').value.trim();
+      const pLocation = document.getElementById('r-location').value.trim();
+      const pLinks = document.getElementById('r-links').value.trim();
+      const pSummary = document.getElementById('r-summary').value.trim();
+      const pExp = document.getElementById('r-experience').value.trim();
+      const pEdu = document.getElementById('r-education').value.trim();
+      const pSkills = document.getElementById('r-skills').value.trim();
+      const pProj = document.getElementById('r-projects').value.trim();
+      const pCerts = document.getElementById('r-certs').value.trim();
+      const pAchieve = document.getElementById('r-achievements').value.trim();
+      const pLang = document.getElementById('r-languages').value.trim();
+      const pLevel = document.getElementById('r-level').value;
+
+      const systemPrompt = `You are an advanced AI Resume Architect with deep reasoning, professional writing expertise, and human-level understanding of careers, industries, and hiring standards.
+
+Your task is to generate a 100% accurate, professional, realistic, and ATS-optimized resume based ONLY on the information provided by the user. You must NEVER hallucinate, invent, or assume any details.
+
+🧠 CORE INTELLIGENCE BEHAVIOR:
+- Think step-by-step before generating output
+- Analyze user input deeply (skills, experience, gaps, career level)
+- Adapt resume style based on job role, industry, and seniority
+- Use human-like reasoning, not generic templates
+- Ensure all content is logical, consistent, and believable
+
+🚫 STRICT RULES:
+- Do NOT add fake experience, skills, or achievements
+- Do NOT exaggerate beyond given data
+- If data is missing, intelligently leave sections minimal or skip them
+- No placeholders like "Lorem ipsum"
+- No generic or robotic sentences
+
+🧠 AI PROCESSING LOGIC:
+- Identify strongest sections of candidate
+- Prioritize impact-based writing (action verbs + measurable outcomes if given)
+- Reframe raw input into professional statements
+- Remove redundancy
+- Optimize keywords for ATS based on target role
+
+🎯 OUTPUT REQUIREMENTS:
+- Provide the resume formatted clearly in Markdown.
+- Proper section hierarchy: Header, Summary, Skills, Work Experience, Projects, Education, Certifications, Achievements (only include sections that have data).
+
+Output ONLY the markdown resume. Do not wrap in markdown codeblocks (no \`\`\`markdown). Do not include any "Here is your resume" conversational text before or after.`;
+
+      const userMessage = `
+INPUT STRUCTURE:
+1. Full Name: ${pName}
+2. Contact Info: Email: ${pEmail}, Phone: ${pPhone}, Location: ${pLocation}, Links: ${pLinks}
+3. Career Objective / Summary: ${pSummary || 'None provided'}
+4. Work Experience: ${pExp || 'None provided'}
+5. Education: ${pEdu || 'None provided'}
+6. Skills: ${pSkills || 'None provided'}
+7. Projects: ${pProj || 'None provided'}
+8. Certifications: ${pCerts || 'None provided'}
+9. Achievements: ${pAchieve || 'None provided'}
+10. Languages: ${pLang || 'None provided'}
+11. Target Job Role: ${pRole}
+12. Experience Level: ${pLevel}
+
+Generate the ATS-Optimized resume now based strictly on these details.`;
+
+      // UI
+      btnGen.disabled = true;
+      resBox.style.display = 'flex';
+      loader.classList.add('active');
+      resOutput.innerHTML = '';
+      rawMarkdownResult = '';
+
+      try {
+        const response = await fetch('https://text.pollinations.ai/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userMessage }
+            ],
+            seed: Math.floor(Math.random() * 999999)
+          })
+        });
+
+        if (!response.ok) throw new Error("API failed");
+        
+        let generatedText = await response.text();
+        generatedText = generatedText.replace(/^```markdown/gi, '').replace(/```$/gi, '').trim();
+        
+        rawMarkdownResult = generatedText;
+        
+        // Parse markdown to HTML
+        resOutput.innerHTML = marked.parse(generatedText);
+
+        showToast('✨ Resume generated successfully!', 'success');
+      } catch(err) {
+        showToast('❌ Failed to generate resume. Please try again.', 'error');
+        resOutput.textContent = 'Error connecting to AI service.';
+        console.error(err);
+      }
+
+      loader.classList.remove('active');
+      btnGen.disabled = false;
+    });
+
+    btnCopy.addEventListener('click', () => {
+      if(!rawMarkdownResult) return;
+      navigator.clipboard.writeText(rawMarkdownResult).then(() => {
+        showToast('📋 Copied to clipboard!', 'success');
+      });
+    });
+
+    btnDownload.addEventListener('click', () => {
+      if(!rawMarkdownResult) return;
+      const blob = new Blob([rawMarkdownResult], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = document.getElementById('r-name').value.trim().replace(/\s+/g, '_') + '_Resume.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
