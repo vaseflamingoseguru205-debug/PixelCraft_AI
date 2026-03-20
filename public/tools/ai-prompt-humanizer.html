@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- SEO META TAGS -->
+  <title>Free AI Prompt Humanizer - Make AI Text Sound Human | PixelCraft AI</title>
+  <meta name="description" content="Instantly humanize AI-generated text. Make ChatGPT text sound natural, conversational, and human-written. 100% free with no signup."/>
+  <meta name="robots" content="index, follow"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+
+  <style>
+    .gen-layout { display: flex; flex-direction: column; gap: 24px; max-width: 900px; margin: 0 auto; }
+    
+    .prompt-box {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-glass);
+    }
+    .prompt-box h3 { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 20px; font-family: 'Outfit', sans-serif; }
+    
+    .input-wrapper { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+    
+    textarea.prompt-input {
+      width: 100%;
+      height: 180px;
+      padding: 18px;
+      background: rgba(0,0,0,0.4);
+      border: 1.5px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-size: 1.05rem;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+    textarea.prompt-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.15); }
+
+    .options-row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .options-row .control-group { flex: 1; min-width: 150px; }
+    
+    .generate-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--success), var(--primary));
+      color: white;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+      transition: var(--transition-bounce);
+    }
+    .generate-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(16, 185, 129, 0.5); }
+    .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .result-box {
+      background: rgba(16, 185, 129, 0.05); /* slightly green-tinted */
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    .result-content {
+      flex: 1;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-main);
+      white-space: pre-wrap;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .loader-overlay {
+      position: absolute; inset: 0;
+      background: rgba(5, 5, 5, 0.85);
+      backdrop-filter: blur(8px);
+      border-radius: var(--radius-lg);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 10;
+    }
+    .loader-overlay.active { display: flex; }
+    
+    .glowing-spinner {
+      width: 60px; height: 60px;
+      border: 4px solid var(--glass-border);
+      border-top-color: var(--success);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      border-top: 1px solid var(--glass-border);
+      padding-top: 16px;
+      justify-content: flex-end;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <nav class="navbar">
+    <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+    <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  </nav>
+
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← Back to All Tools</a>
+      <div style="font-size:2.5rem;margin-bottom:12px;">✍️</div>
+      <h1>AI Text Humanizer</h1>
+      <p>Bypass AI detectors and make dry, robotic ChatGPT text sound highly natural and conversational.</p>
+    </div>
+
+    <div class="tool-workspace">
+      <div class="gen-layout">
+        
+        <!-- Input -->
+        <div class="prompt-box">
+          <h3>Paste your AI-generated text here</h3>
+          <div class="input-wrapper">
+            <textarea id="ai-input" class="prompt-input" placeholder="e.g. 'In conclusion, the aforementioned paradigm shift is indicative of...'" spellcheck="false"></textarea>
+            
+            <div class="options-row">
+              <div class="control-group">
+                <label>Target Tone</label>
+                <select id="tone">
+                  <option value="Conversational & Friendly">Conversational & Friendly 💬</option>
+                  <option value="Professional & Clear">Professional & Clear 👔</option>
+                  <option value="Storyteller & Engaging">Storyteller & Engaging 📖</option>
+                  <option value="Gen-Z Slang (Humorous)">Gen-Z Casual / Relatable 🚀</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label>Reading Level</label>
+                <select id="level">
+                  <option value="Like a High Schooler">High School (Simple & Direct)</option>
+                  <option value="Like an Expert explaining to a beginner">Expert to Beginner</option>
+                  <option value="Like a College Graduate">College Graduate</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-blue generate-btn" id="btn-humanize">
+            ✨ Humanize Text Now
+          </button>
+        </div>
+
+        <!-- Result -->
+        <div class="result-box" id="result-box" style="display:none;">
+          <h3 style="font-size:1.1rem; color:#A7F3D0; margin-bottom: 20px; font-weight:700;">Humanized Output</h3>
+          <div class="result-content" id="result-output"></div>
+          
+          <div class="toolbar">
+             <button class="btn btn-gray" id="btn-copy">📋 Copy Text</button>
+             <button class="btn btn-gray" id="btn-clear">🧹 Clear</button>
+          </div>
+
+          <div class="loader-overlay" id="loader">
+            <div class="glowing-spinner"></div>
+            <p style="font-weight:600; color:var(--text-main); margin-top:10px; font-size:1.1rem; font-family:'Outfit'">Humanizing your text...</p>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Adding emotion, removing robotic words...</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/utils.js"></script>
+  <script>
+    const btnHum = document.getElementById('btn-humanize');
+    const aiInput = document.getElementById('ai-input');
+    const toneIn = document.getElementById('tone');
+    const levelIn = document.getElementById('level');
+    const loader = document.getElementById('loader');
+    const resBox = document.getElementById('result-box');
+    const resOutput = document.getElementById('result-output');
+    const btnCopy = document.getElementById('btn-copy');
+
+    btnHum.addEventListener('click', async () => {
+      const text = aiInput.value.trim();
+      if(!text) { showToast('Please paste some text first!', 'error'); return; }
+      
+      const tone = toneIn.value;
+      const level = levelIn.value;
+      
+      const systemPrompt = `You are an expert ghostwriter and humanizer. Your task is to rewrite the user's text to make it sound 100% natural, written by a real human. 
+Goal Tone: ${tone}. 
+Reading Level: ${level}.
+Instructions:
+1. Remove robotic transitions (e.g., 'Furthermore', 'In conclusion', 'It is worth noting').
+2. Use active voice and varied sentence structures.
+3. Make it flow smoothly with natural human conversational quirks.
+4. DO NOT output any introductory text like 'Here is your text:', JUST output the rewritten text itself.
+5. If the original text is an article, keep the formatting (paragraphs, lists).`;
+
+      // UI
+      btnHum.disabled = true;
+      resBox.style.display = 'flex';
+      loader.classList.add('active');
+      resOutput.innerHTML = '';
+
+      try {
+        const response = await fetch('https://text.pollinations.ai/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: text }
+            ],
+            seed: Math.floor(Math.random() * 999999)
+          })
+        });
+
+        if (!response.ok) throw new Error("API failed");
+        
+        let rewrittenText = await response.text();
+        
+        // Sometimes LLMs still append quotes or headers
+        rewrittenText = rewrittenText.replace(/^Here is the rewritten text.*?:?\n/gi, '').trim();
+
+        // format with breaks
+        resOutput.innerHTML = rewrittenText.replace(/\ng/, '<br>');
+        resOutput.textContent = rewrittenText; // safe from XSS
+
+        showToast('✨ Text humanized successfully!', 'success');
+      } catch(err) {
+        showToast('❌ Failed to humanize text. Please try again.', 'error');
+        resOutput.textContent = 'Error connecting to AI service.';
+      }
+
+      loader.classList.remove('active');
+      btnHum.disabled = false;
+    });
+
+    btnCopy.addEventListener('click', () => {
+      if(!resOutput.textContent.trim()) return;
+      navigator.clipboard.writeText(resOutput.textContent).then(() => {
+        showToast('📋 Copied to clipboard!', 'success');
+      });
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      aiInput.value = '';
+      resBox.style.display = 'none';
+      resOutput.innerHTML = '';
+    });
+  </script>
+</body>
+</html>
