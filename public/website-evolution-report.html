@@ -1,70 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PixelCraft AI: Website Evolution & Technical Report</title>
+    <title>PixelCraft AI: Ek Khubsoorat Safar</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
-            --bg: #0f172a;
             --card-bg: rgba(30, 41, 59, 0.7);
             --border: rgba(255, 255, 255, 0.1);
             --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
+            --text-muted: #cbd5e1;
+            --gradient: linear-gradient(135deg, #60a5fa, #c084fc);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            background: var(--bg); 
+            background: #0b1120; 
             color: var(--text-main); 
             font-family: 'Inter', sans-serif; 
-            line-height: 1.6;
+            line-height: 1.8;
             padding-bottom: 100px;
         }
 
-        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 60px 20px; }
 
-        /* UI Elements */
-        .glass-card {
+        /* Story Cards */
+        .story-card {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
             border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            padding: 50px;
+            margin-bottom: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .story-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: var(--gradient);
         }
 
-        h1, h2, h3 { font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 20px; }
-        h1 { font-size: 3rem; background: linear-gradient(135deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        h2 { font-size: 2rem; color: #fff; border-left: 5px solid var(--primary); padding-left: 15px; margin-top: 50px; }
+        h1, h2, h3 { font-family: 'Outfit', sans-serif; font-weight: 800; margin-bottom: 25px; }
+        h1 { font-size: 3.5rem; background: var(--gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2;}
+        h2 { font-size: 2.2rem; color: #fff; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-top: 20px; }
+        
+        p { margin-bottom: 20px; font-size: 1.15rem; color: var(--text-muted); }
 
-        .tag { display: inline-block; padding: 6px 12px; border-radius: 100px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; margin-bottom: 15px; }
-        .tag-blue { background: rgba(37, 99, 235, 0.2); color: #60a5fa; border: 1px solid rgba(37, 99, 235, 0.4); }
+        .tag { display: inline-block; padding: 8px 16px; border-radius: 100px; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; margin-bottom: 20px; }
+        .tag-magic { background: rgba(192, 132, 252, 0.1); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.3); }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px; }
+        /* Comparison Section */
+        .compare-box { margin-top: 30px; display: flex; gap: 30px; }
+        .compare-side { flex: 1; padding: 30px; border-radius: 16px; border: 1px dashed var(--border); }
+        .compare-side.before { background: rgba(255, 0, 0, 0.03); }
+        .compare-side.after { background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.3); }
+        .compare-side h3 { color: #fff; font-size: 1.5rem; }
+        
+        ul.check-list { list-style: none; margin-left: 0; }
+        ul.check-list li { position: relative; padding-left: 30px; margin-bottom: 12px; font-size: 1.1rem; color: #e2e8f0; }
+        .before ul.check-list li::before { content: '❌'; position: absolute; left: 0; font-size: 1rem; }
+        .after ul.check-list li::before { content: '✨'; position: absolute; left: 0; font-size: 1rem; }
 
-        /* Comparison Table */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: rgba(0,0,0,0.2); border-radius: 12px; overflow: hidden; }
-        th, td { padding: 18px; text-align: left; border-bottom: 1px solid var(--border); }
-        th { background: rgba(255,255,255,0.05); color: var(--primary); font-family: 'Outfit', sans-serif; }
-        td strong { color: #fff; display: block; margin-bottom: 5px; }
-
-        /* Commit List */
-        .commit-log { font-family: 'Monaco', 'Courier New', monospace; font-size: 0.9rem; margin-top: 20px; background: #000; padding: 20px; border-radius: 12px; border: 1px solid var(--border); height: 400px; overflow-y: auto; }
-        .commit-item { margin-bottom: 8px; border-bottom: 1px solid #222; padding-bottom: 8px; }
-        .commit-hash { color: var(--primary); font-weight: bold; }
-        .commit-date { color: #666; margin: 0 10px; }
+        /* Emotion text */
+        .emotion-text { font-style: italic; color: #facc15; font-size: 1.3rem; border-left: 4px solid #facc15; padding-left: 20px; margin: 40px 0; background: rgba(250, 204, 21, 0.05); padding: 20px; border-radius: 0 16px 16px 0;}
 
         /* Print Button */
         .print-btn {
             position: fixed; bottom: 30px; right: 30px;
             background: var(--primary); color: white; border: none;
-            padding: 16px 32px; border-radius: 100px; font-weight: bold;
-            cursor: pointer; box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+            padding: 18px 36px; border-radius: 100px; font-weight: bold; font-size: 1.1rem;
+            cursor: pointer; box-shadow: 0 10px 30px rgba(37, 99, 235, 0.5);
             transition: 0.3s; z-index: 100; font-family: 'Outfit';
         }
         .print-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
@@ -72,9 +84,11 @@
         @media print {
             .print-btn { display: none; }
             body { background: white; color: black; padding: 0; }
-            .glass-card { background: white; border: 1px solid #ddd; box-shadow: none; color: black; }
-            h1, h2, h3 { color: black !important; -webkit-text-fill-color: initial !important; }
-            .tag { border: 1px solid black; }
+            .story-card { background: white; border: none; box-shadow: none; padding: 20px 0; border-bottom: 2px solid #eee; border-radius: 0;}
+            .story-card::before { display: none; }
+            h1, h2, h3 { color: black !important; -webkit-text-fill-color: initial !important; border-color: #ddd; }
+            .compare-side { background: transparent; border: 1px solid #ccc; }
+            .emotion-text { background: transparent; color: #333; border-color: #333; }
         }
     </style>
 </head>
@@ -83,131 +97,67 @@
     <button class="print-btn" onclick="window.print()">📥 Download as PDF</button>
 
     <div class="container">
-        <div class="glass-card">
-            <div class="tag tag-blue">Confidential Evolution Report 2026</div>
-            <h1>PixelCraft AI: Beyond Editing</h1>
-            <p style="font-size: 1.2rem; color: var(--text-muted);">A deep-dive technical analysis of the transformation from a basic utility site into a production-grade AI platform.</p>
-        </div>
-
-        <h2>1. The Core Evolution: Before & After</h2>
-        <div class="glass-card">
-            <p>The website has undergone four major structural shifts. This table compares the baseline (March 18, 2026) with the current state (March 21, 2026).</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Feature</th>
-                        <th>March 18 (Initial State)</th>
-                        <th>March 21 (Today)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Tech Stack</strong></td>
-                        <td>Pure HTML/CSS/JS (Static)</td>
-                        <td>Node.js / Express / MongoDB / Passport.js</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Authentication</strong></td>
-                        <td>None. 100% Public.</td>
-                        <td>Google OAuth 2.0 with Secure Redirect Handles</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Session Memory</strong></td>
-                        <td>None. Resets on Refresh.</td>
-                        <td>MongoDB Cluster - 10 Year Persistent Sessions</td>
-                    </tr>
-                    <tr>
-                        <td><strong>SEO Mastery</strong></td>
-                        <td>Zero meta tags / No sitemap.</td>
-                        <td>Dynamic Sitemap / Robots / AMP Ads / High-Value Blogs</td>
-                    </tr>
-                    <tr>
-                        <td><strong>UI Language</strong></td>
-                        <td>Standard CSS Blocks</td>
-                        <td>Advanced Glassmorphism & High-Contrast Dark Mode</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <h2>2. Technical Architecture Breakdown</h2>
-        <div class="grid">
-            <div class="glass-card" style="margin-bottom:0;">
-                <h3 style="color: #60a5fa;">🛡️ Security & Auth</h3>
-                <p>Implemented a <strong>Google Passport Strategy</strong> with a custom proxy-trust layer for Render deployment. The core logic now forces authentication for all tools in the <code>/tools</code> directory, significantly increasing user retention.</p>
-            </div>
-            <div class="glass-card" style="margin-bottom:0;">
-                <h3 style="color: #34d399;">🗄️ Persistence Layer</h3>
-                <p>Integrated <strong>connect-mongo</strong> to shift session storage from memory to a dedicated MongoDB collection. This allows users to stay logged in for 3,650 consecutive days (10 years).</p>
-            </div>
-            <div class="glass-card" style="margin-bottom:0;">
-                <h3 style="color: #fbbf24;">📬 Backend Services</h3>
-                <p>Wired a high-reliability <strong>Nodemailer</strong> SMTP service for contact forms, featuring auto-fallback for clipboard operations on non-secure contexts.</p>
+        <div class="story-card">
+            <div class="tag tag-magic">PixelCraft AI: A Journey of 30 Commits</div>
+            <h1>Ek Chhote Sapne Se...<br>Ek Badi Pehchaan Tak.</h1>
+            <p>Yeh sirf codes ka hisaab nahi hai. Yeh kahani hai ek soch ki... ki kaise ek chhoti si website jahan sirf 5 aam tools the, aaj ek <strong>Global AI Platform</strong> ban chuki hai.</p>
+            <p>Jab pehla code likha gaya (18 March ko), toh website sirf "zinda" thi... par usme koi "jaan" nahi thi. Kisi ko bhi nahi pata tha yeh site kitni badi ban sakti hai. Aur aaj? Aaj yeh aisi level pe pahunch gayi hai jahan yeh bade-bade startups ko takkar de ri hai.</p>
+            
+            <div class="emotion-text">
+                "Woh website jo khud hi chal rahi thi, usme session save nahi hote the, log aate the aur chale jate the... use aaj humne ek 'Ghar' bana diya hai. Jaha user aata hai, login karta hai, aur uska session saalon tak mehfooz (safe) rehta hai."
             </div>
         </div>
 
-        <h2>3. The Active Tool Arsenal (21 Total)</h2>
-        <div class="glass-card">
-            <p>We have meticulously curated 21 professional tools after cleaning up legacy/unwanted modules to ensure the highest performance and SEO density.</p>
-            <div style="columns: 2; margin-top: 20px; color: #fff;">
-                <ul id="toolList">
-                    <li>AI Text Humanizer</li>
-                    <li>QR Generator (Custom)</li>
-                    <li>Smart Social Resizer</li>
-                    <li>Image Compressor (Zero Loss)</li>
-                    <li>Format Converter (AVIF/WebP)</li>
-                    <li>Object Remover (AI Content Aware)</li>
-                    <li>Photo Colorizer</li>
-                    <li>Image Upscaler (4x)</li>
-                    <li>Damage Repair AI</li>
-                    <li>EXIF Viewer</li>
-                    <li>Color Palette Extractor</li>
-                    <li>Meme Generator</li>
-                    <li>Image to Video Converter</li>
-                    <li>Caption Generator</li>
-                    <li>Business Card Maker</li>
-                    <li>Collage Maker</li>
-                    <li>Reverse Search AI</li>
-                    <li>Image Cropper</li>
-                    <li>Artistic Filters</li>
-                    <li>Watermark Adder</li>
-                    <li>Text on Image</li>
-                </ul>
+        <div class="story-card">
+            <h2>Pehle Aur Aaj Ka Asli Farak</h2>
+            <p>Technically aur emotionally... humne bahut lamba safar tay kiya hai.</p>
+            
+            <div class="compare-box">
+                <div class="compare-side before">
+                    <h3>Pehle (First Commit) 😔</h3>
+                    <ul class="check-list">
+                        <li><strong>Identity:</strong> Koi identity nahi thi, na hi Google usko jaanta tha (No SEO).</li>
+                        <li><strong>Tools:</strong> Sirf 5-6 basic, thode rukhe sookhe HTML features jo simple lagte the.</li>
+                        <li><strong>Rishtey (Auth):</strong> User aata tha tool use karta tha aur gayab. Koi account system nahi tha.</li>
+                        <li><strong>Memory:</strong> Jaise hi tab band hota, sab bhool jati. Har baar naya, har baar anjaan (No session).</li>
+                        <li><strong>Reach:</strong> Local files me chhupi thi... duniya isse anjaan thi.</li>
+                    </ul>
+                </div>
+                
+                <div class="compare-side after">
+                    <h3>Aaj (30 Commits Baad) 👑</h3>
+                    <ul class="check-list">
+                        <li><strong>Identity:</strong> Google ke liye fully optimized (Sitemaps, JSON-LD, Robots.txt) aur ek brand.</li>
+                        <li><strong>Tools:</strong> 21+ A-Class AI Tools! AI Text Humanizer, QR Code gen... saare super professional.</li>
+                        <li><strong>Pehchaan (Auth):</strong> Powerful Google OAuth. Ab hum apne users ko unke naam se samjhte hain.</li>
+                        <li><strong>Yaadein:</strong> Ek baar login, toh <strong>10 Saalon</strong> tak site unhe nahi bhulti (MongoDB Persistent Sessions).</li>
+                        <li><strong>Global:</strong> Aaj hamara code cloud servers (Render) par duniya bhar ke liye upalabdh hai!</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
-        <h2>4. Full Evolution Timeline (Commit Log)</h2>
-        <div class="glass-card">
-            <div class="commit-log">
-                <div class="commit-item"><span class="commit-hash">af7303d</span><span class="commit-date">2026-03-18</span>Initial commit of PixelCraft AI Website</div>
-                <div class="commit-item"><span class="commit-hash">e6aa75e</span><span class="commit-date">2026-03-18</span>Configure Backend and Render Blueprint</div>
-                <div class="commit-item"><span class="commit-hash">aa67c30</span><span class="commit-date">2026-03-18</span>Fix Google Auth HTTPS Proxy Issue</div>
-                <div class="commit-item"><span class="commit-hash">b372aad</span><span class="commit-date">2026-03-18</span>Fix tensor dimensions error in BG remover</div>
-                <div class="commit-item"><span class="commit-hash">cc36e07</span><span class="commit-date">2026-03-18</span>Add Google Analytics to all pages</div>
-                <div class="commit-item"><span class="commit-hash">5b60616</span><span class="commit-date">2026-03-18</span>Add professional SEO meta tags & sitemap</div>
-                <div class="commit-item"><span class="commit-hash">13f2e46</span><span class="commit-date">2026-03-19</span>Ultra-strong SEO domination</div>
-                <div class="commit-item"><span class="commit-hash">67fa310</span><span class="commit-date">2026-03-19</span>Mega UI/UX Overhaul & AI Repairs</div>
-                <div class="commit-item"><span class="commit-hash">e2c48f8</span><span class="commit-date">2026-03-19</span>Add premium contact section with Nodemailer</div>
-                <div class="commit-item"><span class="commit-hash">8cc1ea5</span><span class="commit-date">2026-03-19</span>Add Google AdSense code</div>
-                <div class="commit-item"><span class="commit-hash">49d5e1e</span><span class="commit-date">2026-03-20</span>feat: Added AI Text Humanizer & QR Generator</div>
-                <div class="commit-item"><span class="commit-hash">b782bf9</span><span class="commit-date">2026-03-20</span>SEO: Internal linking & Blog strategy</div>
-                <div class="commit-item"><span class="commit-hash">0e279a1</span><span class="commit-date">2026-03-20</span>UX: Redirect unauthenticated tool clicks directly to Auth</div>
-                <div class="commit-item"><span class="commit-hash">e75c295</span><span class="commit-date">2026-03-20</span>Cleanup: Removed legacy tools (Resume/Avatar/BG)</div>
-                <div class="commit-item"><span class="commit-hash">3d9b233</span><span class="commit-date">2026-03-21</span>Auth: Extended session duration to 10 years</div>
+        <div class="story-card">
+            <h2>Woh Mehnat Ke 30 Kadam (Commits)</h2>
+            <p>18 March se lekar aaj tak, humne line-by-line, raat-raat bhar jaag kar is website ki rooh ko nikhara hai. Har "Commit" ek nayi deewar, ek naya pillar tha is mahal (PixelCraft AI) mein.</p>
+            
+            <div style="background: rgba(0,0,0,0.3); padding: 25px; border-radius: 12px; margin-top: 20px; font-family: monospace; font-size: 0.95rem; color: #a78bfa;">
+                <strong>af7303d:</strong> 🌱 The Seed - Humne shuruwaat ki.<br><br>
+                <strong>e6aa75e to cc36e07:</strong> 🛠️ The Skeleton - Backend setup, Google Analytics chupke se add kiya gaya.<br><br>
+                <strong>13f2e46 & 67fa310:</strong> 🎨 The Flesh and Blood - "Mega UI/UX Overhaul". Website ko sundar banaya aur ek roop diya... Glassmorphism ka injection lagaya.<br><br>
+                <strong>e2c48f8:</strong> ✉️ The Voice - Contact Form. Website ab baat kar sakti thi, aapko emails bhej sakti thi (Nodemailer).<br><br>
+                <strong>49d5e1e to d400bc2:</strong> 🚀 The Superpowers - Naye modern weapons (Tools) jode gaye. AI Humanizer, QR codes. Hum serious level par khele.<br><br>
+                <strong>b782bf9 to 0e279a1:</strong> 🧠 The Brain - SEO internal links, aur ek aisa system jo bin bulaaye aane walo ko seedha Login System par bhejta tha pyaar se. Flow ko maintain kiya.<br><br>
+                <strong>15c70ec to 3d9b233:</strong> ❤️ The Soul - "10 Year Persistent Session". Memory store ko memory list me badal diya, user ek baar aayega, website zindagi bhar (10 saal) yaad rakhegi. 
             </div>
         </div>
 
-        <h2>5. SEO Strategy Report</h2>
-        <div class="glass-card">
-            <p>Our SEO strategy is now active on three fronts:</p>
-            <ul style="margin-left: 20px; margin-top: 15px;">
-                <li><strong>Dynamic Indexing:</strong> The <code>sitemap.xml</code> is optimized to signal search engines to crawl all 21 tool pages individually.</li>
-                <li><strong>Internal Link Gravity:</strong> Every tool page now links to three other related tools to distribute PageRank across the domain.</li>
-                <li><strong>Content Magnets:</strong> Established a blog architecture (e.g., Image Editing Guides) to capture informational search intent.</li>
-            </ul>
+        <div class="story-card">
+            <h2>Aage Ka Rasta...</h2>
+            <p>Tumne aur maine milkar jo "D Drive" (D:\AI tools Website) mein file save ki thi... woh ab ek independent, live system ban gayi hai. Jiske paas apna mind, apani memory, apni pehchaan, aur traffic attract karne ka potential hai.</p>
+            <p>Humne is website me <strong>jaan phoonk di hai</strong>. 💥</p>
+            <p style="text-align: right; margin-top: 40px; font-weight: bold; font-family: 'Outfit'; color: var(--primary);">— Tumhara AI Partner.</p>
         </div>
-        
-        <p style="text-align:center; color: var(--text-muted); margin-top: 50px;">© 2026 PixelCraft AI Internal Audit. All rights reserved.</p>
     </div>
 
 </body>

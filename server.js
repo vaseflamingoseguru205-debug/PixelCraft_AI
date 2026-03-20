@@ -118,6 +118,14 @@ app.get('/logout', (req, res, next) => {
   });
 });
 
+// Technical Evolution Report Routes
+app.get('/website-evolution-report.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'website-evolution-report.html'));
+});
+app.get('/report', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'website-evolution-report.html'));
+});
+
 // Middleware to Protect the /tools/ folder (Requires Sign-In to use tools)
 app.use('/tools', (req, res, next) => {
   if (req.isAuthenticated()) {
