@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- SEO META TAGS -->
+  <title>Free Advanced QR Code Generator | Custom Colors & Logo | PixelCraft AI</title>
+  <meta name="description" content="Turn any link into a beautifully stylized QR code. Customize shapes, colors, rounded dots, and upload a central logo. Instant, 100% free with no signup."/>
+  <meta name="robots" content="index, follow"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+
+  <!-- QR Code Styling Library -->
+  <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+
+  <style>
+    .gen-layout { display: flex; gap: 40px; max-width: 1000px; margin: 0 auto; align-items: flex-start; flex-wrap: wrap; }
+    
+    .prompt-box {
+      flex: 1.2;
+      min-width: 300px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-glass);
+    }
+    .prompt-box h3 { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 20px; font-family: 'Outfit', sans-serif; }
+    
+    .input-wrapper { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+    
+    input.prompt-input, textarea.prompt-input {
+      width: 100%;
+      padding: 18px;
+      background: rgba(0,0,0,0.4);
+      border: 1.5px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-size: 1.05rem;
+      font-family: inherit;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+    input.prompt-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.15); }
+
+    .options-row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .options-row .control-group { flex: 1; min-width: 150px; }
+    
+    .control-group label {
+      display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;
+    }
+    .control-group input[type="color"] {
+      padding: 0; width: 44px; height: 44px; border: none; border-radius: 8px; background: transparent; cursor: pointer;
+    }
+
+    .generate-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 30px var(--glow-primary);
+      transition: var(--transition-bounce);
+    }
+    .generate-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 15px 40px var(--glow-primary); }
+
+    .result-box {
+      flex: 0.8;
+      min-width: 300px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-glass);
+      text-align: center;
+      position: relative;
+    }
+
+    #qr-preview {
+      margin-bottom: 24px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    #qr-preview svg { max-width: 100%; height: auto; }
+
+    .toolbar {
+      display: flex; gap: 12px; width: 100%; justify-content: center;
+    }
+    .img-upload-group {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(0,0,0,0.4); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--glass-border);
+      margin-bottom: 16px;
+    }
+    .upload-btn {
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 8px; transition: var(--transition-smooth);
+    }
+    .upload-btn:hover { background: rgba(59,130,246,0.2); border-color: var(--primary); }
+
+  </style>
+</head>
+<body>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <nav class="navbar">
+    <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+    <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  </nav>
+
+  <div class="tool-page">
+    <div class="tool-page-header">
+      <a href="../index.html" class="back-link">← Back to All Tools</a>
+      <div style="font-size:2.5rem;margin-bottom:12px;">🔲</div>
+      <h1>Advanced Custom QR Generator</h1>
+      <p>Transform links into scannable art. Customize shapes, add a logo, choose your colors instantly.</p>
+    </div>
+
+    <div class="tool-workspace">
+      <div class="gen-layout">
+        
+        <!-- Controls -->
+        <div class="prompt-box">
+          <h3>QR Code Settings</h3>
+          <div class="input-wrapper" id="controls">
+            
+            <div class="control-group" style="margin-bottom: 12px;">
+              <label>🔗 Enter URL or Text</label>
+              <input type="text" id="qr-data" class="prompt-input" value="https://pixelcraft-ai.onrender.com/" placeholder="https://example.com" />
+            </div>
+            
+            <div class="options-row">
+              <div class="control-group">
+                <label>🎨 Foreground (Dots)</label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <input type="color" id="qr-color-fg" value="#0f172a" />
+                  <span id="fg-val" style="font-family:monospace; font-size:0.9rem; color:var(--text-muted)">#0f172a</span>
+                </div>
+              </div>
+              <div class="control-group">
+                <label>🖌️ Background</label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <input type="color" id="qr-color-bg" value="#ffffff" />
+                  <span id="bg-val" style="font-family:monospace; font-size:0.9rem; color:var(--text-muted)">#ffffff</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="options-row" style="margin-top: 10px;">
+              <div class="control-group" style="margin-bottom:0;">
+                <label>🌀 Dot Pattern</label>
+                <select id="qr-dots" class="prompt-input" style="padding:14px;">
+                  <option value="square">Classic Square</option>
+                  <option value="rounded" selected>Modern Rounded</option>
+                  <option value="dots">Circular Dots</option>
+                  <option value="classy">Classy Edge</option>
+                  <option value="extra-rounded">Extra Rounded</option>
+                </select>
+              </div>
+              <div class="control-group" style="margin-bottom:0;">
+                <label>👁️ Corner Shape</label>
+                <select id="qr-corners" class="prompt-input" style="padding:14px;">
+                  <option value="square">Sharp Square</option>
+                  <option value="extra-rounded" selected>Smooth Curved</option>
+                  <option value="dot">Circular Dot</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="img-upload-group" style="margin-top: 10px;">
+              <div>
+                <label style="display:block; font-size:0.9rem; font-weight:600; color:var(--text-main); margin-bottom:4px;">🎯 Center Logo / Icon</label>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Max 2MB image</span>
+              </div>
+              <input type="file" id="logo-upload" accept="image/png, image/jpeg, image/webp" style="display:none;" />
+              <button class="upload-btn" onclick="document.getElementById('logo-upload').click()">
+                📁 Choose File
+              </button>
+            </div>
+            <div id="logo-preview-text" style="font-size: 0.85rem; color:#A7F3D0; margin-top:-10px; display:none;">✅ Logo loaded</div>
+
+          </div>
+        </div>
+
+        <!-- Result -->
+        <div class="result-box">
+          
+          <div id="qr-preview"></div>
+          
+          <div class="toolbar">
+             <button class="btn btn-green" id="btn-dl-png" style="width:100%; justify-content:center;">⬇️ Download PNG</button>
+             <button class="btn btn-outline" id="btn-dl-svg" style="width:100%; justify-content:center;">⬇️ Vector SVG</button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/utils.js"></script>
+  <script>
+    const qrData = document.getElementById('qr-data');
+    const colorFg = document.getElementById('qr-color-fg');
+    const colorBg = document.getElementById('qr-color-bg');
+    const fgVal = document.getElementById('fg-val');
+    const bgVal = document.getElementById('bg-val');
+    const dotType = document.getElementById('qr-dots');
+    const cornerType = document.getElementById('qr-corners');
+    const logoUpload = document.getElementById('logo-upload');
+    const logoPreviewText = document.getElementById('logo-preview-text');
+    
+    let qrCode = null;
+    let logoUrl = null;
+
+    function renderQR() {
+      // Clean previous
+      document.getElementById('qr-preview').innerHTML = '';
+
+      qrCode = new QRCodeStyling({
+        width: 320,
+        height: 320,
+        type: "svg", // Render as SVG for crisp preview
+        data: qrData.value || "https://pixelcraft-ai.onrender.com",
+        image: logoUrl,
+        margin: 10,
+        qrOptions: {
+          typeNumber: 0,
+          mode: "Byte",
+          errorCorrectionLevel: "H" // High error correction to fit logos nicely
+        },
+        imageOptions: {
+          hideBackgroundDots: true,
+          imageSize: 0.4,
+          margin: 10,
+          crossOrigin: "anonymous",
+        },
+        dotsOptions: {
+          color: colorFg.value,
+          type: dotType.value
+        },
+        backgroundOptions: {
+          color: colorBg.value,
+        },
+        cornersSquareOptions: {
+          color: colorFg.value, // Keep corners matched to FG
+          type: cornerType.value
+        },
+        cornersDotOptions: {
+          color: colorFg.value,
+          type: "dot" // Default interior corner to dot looks modern
+        }
+      });
+
+      qrCode.append(document.getElementById("qr-preview"));
+    }
+
+    // Attach immediate rendering updates to inputs
+    qrData.addEventListener('input', renderQR);
+    dotType.addEventListener('change', renderQR);
+    cornerType.addEventListener('change', renderQR);
+    
+    colorFg.addEventListener('input', (e) => {
+      fgVal.textContent = e.target.value;
+      renderQR();
+    });
+    colorBg.addEventListener('input', (e) => {
+      bgVal.textContent = e.target.value;
+      renderQR();
+    });
+
+    // Handle Logo Loading using file-to-DataURL
+    logoUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.size > 2 * 1024 * 1024) {
+        showToast('Logo file too large! Please use under 2MB.', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        logoUrl = event.target.result;
+        logoPreviewText.style.display = 'block';
+        showToast('Logo added to QR code ✨', 'success');
+        renderQR();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Handle Downloads
+    document.getElementById('btn-dl-png').addEventListener('click', () => {
+      if(!qrCode) return;
+      qrCode.download({ name: "PixelCraft-QR", extension: "png" });
+      showToast('Downloading PNG...', 'success');
+    });
+
+    document.getElementById('btn-dl-svg').addEventListener('click', () => {
+      if(!qrCode) return;
+      qrCode.download({ name: "PixelCraft-QR-Vector", extension: "svg" });
+      showToast('Downloading SVG...', 'success');
+    });
+
+    // Initial render
+    window.onload = renderQR;
+
+  </script>
+</body>
+</html>
