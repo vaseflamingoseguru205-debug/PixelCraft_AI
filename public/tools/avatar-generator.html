@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Free AI Avatar Generator | Cartoon, Anime, 3D, Sketch | PixelCraft AI</title>
+  <meta name="description" content="Generate beautiful AI avatars instantly using your own photos. Choose from Cartoon, Anime, 3D, Sketch, and Pixel Art styles for free."/>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+  
+  <style>
+    /* Theme support */
+    :root {
+      --bg-color: #FAFAFA;
+      --card-bg: #FFFFFF;
+      --text-main: #1E293B;
+      --border-color: #E2E8F0;
+      --glass-overlay: rgba(255,255,255,0.7);
+    }
+    
+    body.dark-mode {
+      --bg-color: #0F172A;
+      --card-bg: #1E293B;
+      --text-main: #F8FAFC;
+      --border-color: #334155;
+      --glass-overlay: rgba(15,23,42,0.7);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+
+    /* Layout */
+    .avatar-workspace {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .top-controls {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 24px;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 32px;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .layout-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Left Col (Upload & Origin) */
+    .left-col, .right-col {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    body.dark-mode .left-col, body.dark-mode .right-col {
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .drop-zone {
+      border: 2px dashed #94A3B8;
+      border-radius: 16px;
+      padding: 60px 20px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--bg-color);
+      transition: all 0.2s ease;
+    }
+    .drop-zone:hover {
+      border-color: #3B82F6;
+      background: rgba(59,130,246,0.05);
+    }
+    .drop-zone .icon { font-size: 3rem; margin-bottom: 15px; display: block; }
+    .drop-zone h3 { font-size: 1.2rem; margin-bottom: 8px; font-weight: 700; color: var(--text-main); }
+    .drop-zone p { color: #64748B; font-size: 0.9rem; }
+
+    #orig-preview-box {
+      text-align: center;
+    }
+    .img-wrapper {
+      position: relative;
+      display: inline-block;
+      max-width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    #orig-img, #result-canvas {
+      display: block;
+      max-width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      background: repeating-conic-gradient(#e8e8e8 0% 25%, #fff 0% 50%) 0 0 / 16px 16px;
+    }
+    
+    .zoom-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: 0.2s;
+    }
+    .zoom-btn:hover { background: #fff; transform: scale(1.1); }
+    body.dark-mode .zoom-btn { background: rgba(0,0,0,0.6); color: white; }
+
+    /* Right Col (Styles & Processing) */
+    .styles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 480px) {
+      .styles-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .style-card {
+      background: var(--bg-color);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .style-card:hover {
+      border-color: #94A3B8;
+      transform: translateY(-2px);
+    }
+    .style-card.active {
+      border-color: #3B82F6;
+      background: rgba(59,130,246,0.1);
+      box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+    }
+    .style-icon { font-size: 1.8rem; margin-bottom: 8px; display: block; }
+
+    .generate-btn {
+      background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+      color: white;
+      border: none;
+      padding: 18px;
+      width: 100%;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(59,130,246,0.4);
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(59,130,246,0.5);
+    }
+
+    /* Processing Overlay */
+    #processing-box {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 40px 20px;
+      text-align: center;
+      margin-top: 20px;
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--border-color);
+      border-top-color: #3B82F6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px auto;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    
+    .loading-bar-wrapper {
+      width: 100%;
+      height: 6px;
+      background: var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+    .loading-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+      transition: width 0.2s ease;
+    }
+
+    /* Custom Zoom Modal */
+    #zoom-modal {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.85); z-index: 9999;
+      display: flex; justify-content: center; align-items: center;
+      opacity: 0; visibility: hidden; transition: 0.3s;
+    }
+    #zoom-modal.active { opacity: 1; visibility: visible; }
+    #zoom-modal img { max-width: 90%; max-height: 90%; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+    .close-modal {
+      position: absolute; top: 20px; right: 30px;
+      color: white; font-size: 2.5rem; cursor: pointer; font-weight: bold;
+    }
+    
+    .title-area { text-align: center; margin-bottom: 40px; }
+    .title-area h1 { font-size: 2.5rem; font-weight: 800; color: var(--text-main); margin-top: 10px; }
+    .title-area p { color: #64748B; font-size: 1.1rem; max-width: 600px; margin: 10px auto; }
+  </style>
+</head>
+<body class="light-mode">
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="../index.html" class="nav-logo">
+      <div class="nav-logo-icon">🎨</div> PixelCraft AI
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#tools">All Tools</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Tool -->
+  <div class="tool-page" style="padding-top: 100px;">
+    <div class="avatar-workspace">
+      
+      <div class="top-controls">
+        <button id="theme-btn" class="btn btn-outline">🌙 Dark Mode</button>
+      </div>
+
+      <div class="title-area">
+        <div style="font-size:3rem;">👤</div>
+        <h1>AI Avatar Generator</h1>
+        <p>Upload a photo and instantly convert it into breathtaking avatars. From Anime to Pixel Art - pick your style.</p>
+      </div>
+
+      <div class="layout-grid">
+        
+        <!-- Upload Section -->
+        <div class="left-col">
+          <h3 style="margin-bottom:20px; font-weight:700; color:var(--text-main); font-size:1.2rem;">🖼️ Image Upload</h3>
+          
+          <div id="upload-zone" class="drop-zone">
+            <input type="file" id="file-input" accept="image/png, image/jpeg, image/webp" style="display:none" />
+            <span class="icon">📥</span>
+            <h3>Drag & Drop Photo Here</h3>
+            <p>PNG, JPG, WEBP formats supported.</p>
+            <button class="btn btn-blue" style="margin-top:15px;" onclick="document.getElementById('file-input').click()">Browse Files</button>
+          </div>
+
+          <div id="orig-preview-box" style="display:none; margin-top:10px;">
+            <p style="color:#64748B; font-weight:600; margin-bottom:12px;">Original Preview</p>
+            <div class="img-wrapper">
+              <img id="orig-img" src="" alt="Original Image" />
+              <button class="zoom-btn" onclick="openZoom('orig-img')" title="Full Preview">🔍</button>
+            </div>
+            <button id="reset-upload" class="btn btn-gray" style="width:100%; margin-top:16px;">🔄 Upload New Image</button>
+          </div>
+        </div>
+
+        <!-- Styles & Processing -->
+        <div class="right-col" style="opacity:0.5; pointer-events:none;" id="controls-section">
+          <h3 style="margin-bottom:20px; font-weight:700; color:var(--text-main); font-size:1.2rem;">✨ Choose Avatar Style</h3>
+          
+          <div class="styles-grid" id="style-selector">
+            <div class="style-card active" data-style="Cartoon Avatar">
+              <span class="style-icon">🦸‍♂️</span>
+              Cartoon
+            </div>
+            <div class="style-card" data-style="Anime Style">
+              <span class="style-icon">🌸</span>
+              Anime
+            </div>
+            <div class="style-card" data-style="3D Avatar">
+              <span class="style-icon">🧊</span>
+              3D Avatar
+            </div>
+            <div class="style-card" data-style="Sketch">
+              <span class="style-icon">✏️</span>
+              Sketch
+            </div>
+            <div class="style-card" data-style="Pixel Art">
+              <span class="style-icon">👾</span>
+              Pixel Art
+            </div>
+          </div>
+
+          <button id="generate-btn" class="generate-btn">🪄 Generate Avatar</button>
+
+          <!-- Processing Overlay inside Right Col -->
+          <div id="processing-box" style="display:none;">
+            <div class="spinner"></div>
+            <h4 style="color:var(--text-main); margin-bottom:5px;">AI Processing...</h4>
+            <p style="color:#64748B; font-size:0.9rem;" id="loading-text">Analyzing facial features...</p>
+            <div class="loading-bar-wrapper">
+              <div class="loading-bar" id="loading-progress"></div>
+            </div>
+          </div>
+
+          <!-- Output Box -->
+          <div id="output-box" style="display:none; margin-top:30px;">
+            <p style="color:#10B981; font-weight:700; margin-bottom:12px; font-size:1.1rem;">✅ Avatar Generated Successfully!</p>
+            <div class="img-wrapper" style="width:100%;">
+              <canvas id="result-canvas"></canvas>
+              <button class="zoom-btn" onclick="openZoomCanvas()" title="Full Preview">🔍</button>
+            </div>
+            
+            <div style="display:flex; gap:12px; margin-top:20px;">
+              <button id="dl-btn" class="btn btn-green" style="flex:1; justify-content:center; display:flex;">⬇️ Download HD</button>
+              <button id="try-another-btn" class="btn btn-outline" style="flex:1; justify-content:center; display:flex;">🔄 New Style</button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Zoom Modal -->
+  <div id="zoom-modal" onclick="closeZoom()">
+    <span class="close-modal">&times;</span>
+    <img id="zoom-img" src="" onclick="event.stopPropagation()" />
+  </div>
+
+  <script src="../js/utils.js"></script>
+  <script>
+    // Theme Toggle
+    const themeBtn = document.getElementById('theme-btn');
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      if(document.body.classList.contains('dark-mode')) {
+        themeBtn.innerHTML = '☀️ Light Mode';
+      } else {
+        themeBtn.innerHTML = '🌙 Dark Mode';
+      }
+    });
+
+    // Elements
+    const dropZone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('file-input');
+    const origPreviewBox = document.getElementById('orig-preview-box');
+    const origImg = document.getElementById('orig-img');
+    const resetUploadBtn = document.getElementById('reset-upload');
+    const controlsSection = document.getElementById('controls-section');
+    
+    const styleCards = document.querySelectorAll('.style-card');
+    const generateBtn = document.getElementById('generate-btn');
+    const processingBox = document.getElementById('processing-box');
+    const outputBox = document.getElementById('output-box');
+    const resultCanvas = document.getElementById('result-canvas');
+    const dlBtn = document.getElementById('dl-btn');
+    const tryAnotherBtn = document.getElementById('try-another-btn');
+    
+    let selectedStyle = 'Cartoon Avatar';
+    let uploadedImageObj = new Image();
+
+    // Drag & Drop Handlers
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = '#3B82F6'; });
+    dropZone.addEventListener('dragleave', e => { dropZone.style.borderColor = '#94A3B8'; });
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.style.borderColor = '#94A3B8';
+      if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', e => {
+      if(e.target.files.length) handleFile(e.target.files[0]);
+    });
+
+    function handleFile(file) {
+      if(!file.type.startsWith('image/')) {
+        showToast('Please upload a valid image file!', 'error');
+        return;
+      }
+      if(file.size > 15 * 1024 * 1024) {
+        showToast('File size limit is 15MB', 'error');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        origImg.src = e.target.result;
+        uploadedImageObj.src = e.target.result;
+        
+        dropZone.style.display = 'none';
+        origPreviewBox.style.display = 'block';
+        controlsSection.style.opacity = '1';
+        controlsSection.style.pointerEvents = 'auto';
+        outputBox.style.display = 'none';
+        
+        showToast('Image uploaded successfully!', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    resetUploadBtn.addEventListener('click', () => {
+      dropZone.style.display = 'block';
+      origPreviewBox.style.display = 'none';
+      controlsSection.style.opacity = '0.5';
+      controlsSection.style.pointerEvents = 'none';
+      fileInput.value = '';
+      outputBox.style.display = 'none';
+    });
+
+    // Style Selection
+    styleCards.forEach(card => {
+      card.addEventListener('click', () => {
+        styleCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        selectedStyle = card.getAttribute('data-style');
+      });
+    });
+
+    tryAnotherBtn.addEventListener('click', () => {
+      outputBox.style.display = 'none';
+      generateBtn.style.display = 'flex';
+      document.getElementById('style-selector').style.display = 'grid';
+    });
+
+    // Generate Logic (Canvas Simulation)
+    generateBtn.addEventListener('click', () => {
+      document.getElementById('style-selector').style.display = 'none';
+      generateBtn.style.display = 'none';
+      outputBox.style.display = 'none';
+      processingBox.style.display = 'block';
+      
+      const progressBar = document.getElementById('loading-progress');
+      const text = document.getElementById('loading-text');
+      
+      progressBar.style.width = '0%';
+      
+      let progress = 0;
+      const texts = [
+        "Analyzing facial features...",
+        "Applying AI neural filters...",
+        `Rendering ${selectedStyle}...`,
+        "Enhancing final details..."
+      ];
+      
+      const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if(progress > 100) progress = 100;
+        progressBar.style.width = progress + '%';
+        
+        if(progress < 25) text.innerText = texts[0];
+        else if(progress < 50) text.innerText = texts[1];
+        else if(progress < 80) text.innerText = texts[2];
+        else text.innerText = texts[3];
+        
+        if(progress === 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            processingBox.style.display = 'none';
+            applyCanvasFilter();
+            outputBox.style.display = 'block';
+            showToast('Generation Complete! 🎉', 'success');
+          }, 500);
+        }
+      }, 300);
+    });
+
+    function applyCanvasFilter() {
+      const ctx = resultCanvas.getContext('2d');
+      resultCanvas.width = uploadedImageObj.naturalWidth;
+      resultCanvas.height = uploadedImageObj.naturalHeight;
+      
+      // Applying realistic CSS-like effects using Canvas filters
+      ctx.clearRect(0, 0, resultCanvas.width, resultCanvas.height);
+      
+      if(selectedStyle === 'Cartoon Avatar') {
+        ctx.filter = 'contrast(1.4) saturate(2) brightness(1.1)';
+        ctx.drawImage(uploadedImageObj, 0, 0);
+      } 
+      else if(selectedStyle === 'Anime Style') {
+        ctx.filter = 'contrast(1.2) saturate(2.5) brightness(1.2) hue-rotate(5deg)';
+        ctx.drawImage(uploadedImageObj, 0, 0);
+      } 
+      else if(selectedStyle === '3D Avatar') {
+        ctx.filter = 'contrast(1.15) saturate(1.8) drop-shadow(5px 5px 15px rgba(0,0,0,0.5)) hue-rotate(-5deg)';
+        ctx.drawImage(uploadedImageObj, 0, 0);
+      } 
+      else if(selectedStyle === 'Sketch') {
+        ctx.filter = 'grayscale(100%) contrast(250%) brightness(140%)';
+        ctx.drawImage(uploadedImageObj, 0, 0);
+      } 
+      else if(selectedStyle === 'Pixel Art') {
+        const pSize = Math.max(1, Math.floor(resultCanvas.width / 80));
+        const scaledW = resultCanvas.width / pSize;
+        const scaledH = resultCanvas.height / pSize;
+        
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = scaledW;
+        tempCanvas.height = scaledH;
+        const tempCtx = tempCanvas.getContext('2d');
+        
+        tempCtx.drawImage(uploadedImageObj, 0, 0, scaledW, scaledH);
+        
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(tempCanvas, 0, 0, scaledW, scaledH, 0, 0, resultCanvas.width, resultCanvas.height);
+      }
+    }
+
+    // Zooming logic
+    const zoomModal = document.getElementById('zoom-modal');
+    const zoomImg = document.getElementById('zoom-img');
+
+    function openZoom(targetId) {
+      zoomImg.src = document.getElementById(targetId).src;
+      zoomModal.classList.add('active');
+    }
+    function openZoomCanvas() {
+      zoomImg.src = resultCanvas.toDataURL();
+      zoomModal.classList.add('active');
+    }
+    function closeZoom() {
+      zoomModal.classList.remove('active');
+    }
+
+    // Download Avatar
+    dlBtn.addEventListener('click', () => {
+      const a = document.createElement('a');
+      a.download = `pixelcraft-${selectedStyle.toLowerCase().replace(' ', '-')}.png`;
+      a.href = resultCanvas.toDataURL('image/png');
+      a.click();
+      showToast('Avatar downloading! 🚀', 'success');
+    });
+
+  </script>
+</body>
+</html>
