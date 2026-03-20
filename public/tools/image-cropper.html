@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -108,30 +108,30 @@
 
 <div id="toast-container" class="toast-container"></div>
 <nav class="navbar">
-  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">??</div> PixelCraft AI</a>
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
   <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
-  
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
 </nav>
 <div class="tool-page">
   <div class="tool-page-header">
-    <a href="../index.html" class="back-link">? Back to All Tools</a>
-    <div style="font-size:2.5rem;margin-bottom:12px;">??</div>
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">✂️</div>
     <h1>Image Cropper</h1>
     <p>Crop your image with aspect ratio presets for all major platforms or use free crop mode.</p>
   </div>
   <div class="tool-workspace">
     <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
       <input type="file" id="file-input" accept="image/*" style="display:none"/>
-      <div class="upload-icon">??</div>
+      <div class="upload-icon">✂️</div>
       <h3>Upload your image to crop</h3>
     </div>
     <div id="editor" style="display:none;">
       <div class="result-area show" style="margin-top:0;">
         <div class="result-header">
-          <span class="result-header-title">?? Select Crop Area</span>
+          <span class="result-header-title">✂️ Select Crop Area</span>
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="btn btn-gray" onclick="resetTool()">?? New Image</button>
-            <button class="btn btn-green" id="btn-crop">?? Crop & Download</button>
+            <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+            <button class="btn btn-green" id="btn-crop">✂️ Crop & Download</button>
           </div>
         </div>
         <div class="result-body">
@@ -208,7 +208,7 @@ function updateCropBox() {
   const iW = cropImg.naturalWidth, iH = cropImg.naturalHeight;
   const dW = cropImg.offsetWidth, dH = cropImg.offsetHeight;
   const scaleX = iW / dW, scaleY = iH / dH;
-  document.getElementById('crop-info').textContent = `Crop area: ${Math.round(cropW * scaleX)} � ${Math.round(cropH * scaleY)} px`;
+  document.getElementById('crop-info').textContent = `Crop area: ${Math.round(cropW * scaleX)} × ${Math.round(cropH * scaleY)} px`;
 }
 
 cropBox.addEventListener('mousedown', e => {
@@ -257,4 +257,3 @@ function resetTool() {
 </script>
 </body>
 </html>
-

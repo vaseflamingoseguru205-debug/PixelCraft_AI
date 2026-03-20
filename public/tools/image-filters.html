@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -108,32 +108,32 @@
 
 <div id="toast-container" class="toast-container"></div>
 <nav class="navbar">
-  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">??</div> PixelCraft AI</a>
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
   <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
-  
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
 </nav>
 <div class="tool-page">
   <div class="tool-page-header">
-    <a href="../index.html" class="back-link">? Back to All Tools</a>
-    <div style="font-size:2.5rem;margin-bottom:12px;">??</div>
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">🎨</div>
     <h1>Image Filters & Effects</h1>
     <p>Adjust brightness, contrast, saturation, blur and apply beautiful preset filters.</p>
   </div>
   <div class="tool-workspace">
     <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
       <input type="file" id="file-input" accept="image/*" style="display:none"/>
-      <div class="upload-icon">??</div>
+      <div class="upload-icon">🎨</div>
       <h3>Upload an image to start editing</h3>
       <p>PNG, JPG, WebP supported</p>
     </div>
     <div id="editor" style="display:none;">
       <div class="result-area show" style="margin-top:0;">
         <div class="result-header">
-          <span class="result-header-title">?? Editing</span>
+          <span class="result-header-title">✏️ Editing</span>
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="btn btn-gray" id="btn-reset-filters">? Reset</button>
-            <button class="btn btn-gray" onclick="resetTool()">?? New Image</button>
-            <button class="btn btn-green" id="btn-download">?? Download</button>
+            <button class="btn btn-gray" id="btn-reset-filters">↺ Reset</button>
+            <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+            <button class="btn btn-green" id="btn-download">⬇️ Download</button>
           </div>
         </div>
         <div class="result-body">
@@ -156,7 +156,7 @@
             <div class="control-group"><label>Brightness <span class="value-label" id="brightness-val">100%</span></label><input type="range" id="brightness" min="0" max="200" value="100"/></div>
             <div class="control-group"><label>Contrast <span class="value-label" id="contrast-val">100%</span></label><input type="range" id="contrast" min="0" max="200" value="100"/></div>
             <div class="control-group"><label>Saturation <span class="value-label" id="saturation-val">100%</span></label><input type="range" id="saturation" min="0" max="300" value="100"/></div>
-            <div class="control-group"><label>Hue Rotate <span class="value-label" id="hue-val">0�</span></label><input type="range" id="hue" min="0" max="360" value="0"/></div>
+            <div class="control-group"><label>Hue Rotate <span class="value-label" id="hue-val">0°</span></label><input type="range" id="hue" min="0" max="360" value="0"/></div>
             <div class="control-group"><label>Blur <span class="value-label" id="blur-val">0px</span></label><input type="range" id="blur" min="0" max="20" value="0" step="0.5"/></div>
             <div class="control-group"><label>Sharpness <span class="value-label" id="sharp-val">0</span></label><input type="range" id="sharp" min="0" max="5" value="0" step="0.5"/></div>
             <div class="control-group"><label>Opacity <span class="value-label" id="opacity-val">100%</span></label><input type="range" id="opacity" min="10" max="100" value="100"/></div>
@@ -221,7 +221,7 @@ function applyFilters() {
 ['brightness','contrast','saturation','hue','blur','sharp','opacity','invert'].forEach(id => {
   const el = document.getElementById(id);
   el.addEventListener('input', () => {
-    const units = { brightness:'%', contrast:'%', saturation:'%', hue:'�', blur:'px', sharp:'', opacity:'%', invert:'%' };
+    const units = { brightness:'%', contrast:'%', saturation:'%', hue:'°', blur:'px', sharp:'', opacity:'%', invert:'%' };
     document.getElementById(id+'-val').textContent = el.value + (units[id] || '');
     applyFilters();
   });
@@ -266,4 +266,3 @@ function resetTool() {
 </script>
 </body>
 </html>
-

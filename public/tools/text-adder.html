@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -108,30 +108,30 @@
 
 <div id="toast-container" class="toast-container"></div>
 <nav class="navbar">
-  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">??</div> PixelCraft AI</a>
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
   <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
-  
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
 </nav>
 <div class="tool-page">
   <div class="tool-page-header">
-    <a href="../index.html" class="back-link">? Back to All Tools</a>
-    <div style="font-size:2.5rem;margin-bottom:12px;">??</div>
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">✏️</div>
     <h1>Add Text to Image</h1>
     <p>Add beautifully styled text overlays to your images with custom fonts, colors, and positions.</p>
   </div>
   <div class="tool-workspace">
     <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
       <input type="file" id="file-input" accept="image/*" style="display:none"/>
-      <div class="upload-icon">??</div>
+      <div class="upload-icon">✏️</div>
       <h3>Upload your image</h3>
     </div>
     <div id="editor" style="display:none;">
       <div class="result-area show" style="margin-top:0;">
         <div class="result-header">
-          <span class="result-header-title">?? Text Editor</span>
+          <span class="result-header-title">✏️ Text Editor</span>
           <div style="display:flex;gap:10px;">
-            <button class="btn btn-gray" onclick="resetTool()">?? New Image</button>
-            <button class="btn btn-green" id="btn-download">?? Download</button>
+            <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+            <button class="btn btn-green" id="btn-download">⬇️ Download</button>
           </div>
         </div>
         <div class="result-body">
@@ -173,9 +173,9 @@
               <div class="control-group">
                 <label>Alignment</label>
                 <div style="display:flex;gap:8px;">
-                  <button class="align-btn btn btn-outline" data-align="left">? Left</button>
-                  <button class="align-btn btn btn-blue" data-align="center">? Center</button>
-                  <button class="align-btn btn btn-outline" data-align="right">? Right</button>
+                  <button class="align-btn btn btn-outline" data-align="left">⬅ Left</button>
+                  <button class="align-btn btn btn-blue" data-align="center">⬛ Center</button>
+                  <button class="align-btn btn btn-outline" data-align="right">➡ Right</button>
                 </div>
               </div>
               <div class="control-group">
@@ -224,7 +224,7 @@ function renderLayers() {
   textLayers.forEach((l, i) => {
     const item = document.createElement('div');
     item.style.cssText = `display:flex;align-items:center;gap:8px;background:${i===activeLayer?'var(--primary-light)':'var(--bg)'};border:1.5px solid ${i===activeLayer?'var(--primary)':'var(--border)'};border-radius:8px;padding:8px 12px;cursor:pointer;`;
-    item.innerHTML = `<span style="flex:1;font-size:0.85rem;font-weight:600;color:var(--dark);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.text || 'Empty'}</span><button onclick="removeLayer(${i},event)" style="background:none;border:none;cursor:pointer;color:var(--text-light);font-size:0.9rem;padding:0 4px;">?</button>`;
+    item.innerHTML = `<span style="flex:1;font-size:0.85rem;font-weight:600;color:var(--dark);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.text || 'Empty'}</span><button onclick="removeLayer(${i},event)" style="background:none;border:none;cursor:pointer;color:var(--text-light);font-size:0.9rem;padding:0 4px;">✕</button>`;
     item.addEventListener('click', () => { activeLayer=i; loadLayerToControls(); renderLayers(); });
     const textarea = document.createElement('input');
     textarea.type='text'; textarea.value=l.text; textarea.style.cssText='width:100%;background:none;border:none;outline:none;font-size:0.85rem;font-family:inherit;color:var(--dark);font-weight:600;';
@@ -232,7 +232,7 @@ function renderLayers() {
     item.innerHTML = '';
     item.appendChild(textarea);
     const del = document.createElement('button');
-    del.textContent='?'; del.style.cssText='background:none;border:none;cursor:pointer;color:var(--text-light);font-size:0.9rem;padding:0 4px;flex-shrink:0;';
+    del.textContent='✕'; del.style.cssText='background:none;border:none;cursor:pointer;color:var(--text-light);font-size:0.9rem;padding:0 4px;flex-shrink:0;';
     del.addEventListener('click', e => { e.stopPropagation(); removeLayer(i); });
     item.appendChild(del);
     item.addEventListener('click', () => { activeLayer=i; loadLayerToControls(); renderLayers(); });
@@ -334,4 +334,3 @@ function resetTool() {
 </script>
 </body>
 </html>
-

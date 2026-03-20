@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -108,29 +108,29 @@
 
 <div id="toast-container" class="toast-container"></div>
 <nav class="navbar">
-  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">??</div> PixelCraft AI</a>
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
   <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
-  
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
 </nav>
 <div class="tool-page">
   <div class="tool-page-header">
-    <a href="../index.html" class="back-link">? Back to All Tools</a>
-    <div style="font-size:2.5rem;margin-bottom:12px;">??</div>
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">🔍</div>
     <h1>Reverse Image Search</h1>
     <p>Find where an image came from. Search across Google, Bing, Yandex, and TinEye simultaneously.</p>
   </div>
   <div class="tool-workspace">
     <div class="info-box">
-      <span>??</span>
+      <span>ℹ️</span>
       <span>Upload your image and we'll create direct search links for each engine. Click any button to open the reverse search in a new tab.</span>
     </div>
     <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
       <input type="file" id="file-input" accept="image/*" style="display:none"/>
-      <div class="upload-icon">??</div>
+      <div class="upload-icon">🔍</div>
       <h3>Upload image to search</h3>
       <p>Or paste an image URL below</p>
     </div>
-    <div style="text-align:center;margin:10px 0;color:var(--text-light);font-weight:500;">� or �</div>
+    <div style="text-align:center;margin:10px 0;color:var(--text-light);font-weight:500;">— or —</div>
     <div style="display:flex;gap:10px;margin-bottom:20px;">
       <input type="url" id="url-input" placeholder="Paste image URL here..." style="flex:1;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:0.9rem;outline:none;"/>
       <button class="btn btn-blue" id="btn-url-search">Search by URL</button>
@@ -139,8 +139,8 @@
     <div id="editor" style="display:none;">
       <div class="result-area show" style="margin-top:0;">
         <div class="result-header">
-          <span class="result-header-title">?? Search Results</span>
-          <button class="btn btn-gray" onclick="resetTool()">?? New Search</button>
+          <span class="result-header-title">🔍 Search Results</span>
+          <button class="btn btn-gray" onclick="resetTool()">🔄 New Search</button>
         </div>
         <div class="result-body">
           <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:24px;">
@@ -152,7 +152,7 @@
               <div style="font-size:0.8rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:14px;">Search on these engines</div>
               <div id="search-engines"></div>
               <div class="info-box" style="margin-top:16px;">
-                <span>??</span>
+                <span>💡</span>
                 <span>For best results with Google Lens, upload the image directly in the Google Images tab that opens.</span>
               </div>
             </div>
@@ -170,11 +170,11 @@ const editor = document.getElementById('editor');
 let currentImageUrl = null, currentFile = null;
 
 const ENGINES = [
-  { name: 'Google Lens', icon: '??', color: '#4285F4', getUrl: url => `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(url)}`, note: 'Best for object recognition' },
-  { name: 'Google Images', icon: '???', color: '#34A853', getUrl: url => `https://images.google.com/searchbyimage?image_url=${encodeURIComponent(url)}`, note: 'Find similar images' },
-  { name: 'Bing Visual Search', icon: '??', color: '#0078D7', getUrl: url => `https://www.bing.com/images/search?q=imgurl:${encodeURIComponent(url)}&view=detailv2&iss=sbi`, note: 'Microsoft image search' },
-  { name: 'Yandex Images', icon: '??', color: '#FF0000', getUrl: url => `https://yandex.com/images/search?rpt=imageview&url=${encodeURIComponent(url)}`, note: 'Best for finding original sources' },
-  { name: 'TinEye', icon: '???', color: '#FF6B00', getUrl: url => `https://tineye.com/search?url=${encodeURIComponent(url)}`, note: 'Exact match copyright search' },
+  { name: 'Google Lens', icon: '🔍', color: '#4285F4', getUrl: url => `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(url)}`, note: 'Best for object recognition' },
+  { name: 'Google Images', icon: '🖼️', color: '#34A853', getUrl: url => `https://images.google.com/searchbyimage?image_url=${encodeURIComponent(url)}`, note: 'Find similar images' },
+  { name: 'Bing Visual Search', icon: '🔷', color: '#0078D7', getUrl: url => `https://www.bing.com/images/search?q=imgurl:${encodeURIComponent(url)}&view=detailv2&iss=sbi`, note: 'Microsoft image search' },
+  { name: 'Yandex Images', icon: '🔴', color: '#FF0000', getUrl: url => `https://yandex.com/images/search?rpt=imageview&url=${encodeURIComponent(url)}`, note: 'Best for finding original sources' },
+  { name: 'TinEye', icon: '👁️', color: '#FF6B00', getUrl: url => `https://tineye.com/search?url=${encodeURIComponent(url)}`, note: 'Exact match copyright search' },
 ];
 
 setupDragDrop(uploadArea, handleFile);
@@ -209,8 +209,8 @@ function renderEngines(url, isLocal = false) {
   if (isLocal) {
     container.innerHTML = `
       <div class="info-box" style="margin-bottom:16px;">
-        <span>??</span>
-        <span>For local images: We'll open each search engine � drag & drop your image file onto the search page for best results.</span>
+        <span>⚠️</span>
+        <span>For local images: We'll open each search engine — drag & drop your image file onto the search page for best results.</span>
       </div>
     `;
   }
@@ -223,7 +223,7 @@ function renderEngines(url, isLocal = false) {
         <div style="font-weight:700;color:var(--dark);font-size:0.9rem;">${engine.name}</div>
         <div style="font-size:0.78rem;color:var(--text-light);">${engine.note}</div>
       </div>
-      <a href="${isLocal ? 'https://images.google.com/' : engine.getUrl(url)}" target="_blank" class="btn btn-blue" style="white-space:nowrap;">Open ?</a>
+      <a href="${isLocal ? 'https://images.google.com/' : engine.getUrl(url)}" target="_blank" class="btn btn-blue" style="white-space:nowrap;">Open →</a>
     `;
     container.appendChild(card);
   });
@@ -237,4 +237,3 @@ function resetTool() {
 </script>
 </body>
 </html>
-
