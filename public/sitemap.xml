@@ -126,4 +126,28 @@
     <priority>0.7</priority>
     <lastmod>2026-03-18</lastmod>
   </url>
+  <url>
+    <loc>https://pixelcraft-ai.onrender.com/tools/resume-architect.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+  <url>
+    <loc>https://pixelcraft-ai.onrender.com/tools/avatar-generator.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+  <url>
+    <loc>https://pixelcraft-ai.onrender.com/tools/ai-prompt-humanizer.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+  <url>
+    <loc>https://pixelcraft-ai.onrender.com/tools/qr-generator.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-03-20</lastmod>
+  </url>
 </urlset>
