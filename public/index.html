@@ -190,7 +190,7 @@
         <li><a href="#faq">FAQ</a></li>
         <li class="mobile-visible">
           <a href="/auth/google" class="nav-cta" id="nav-auth-btn"
-            >Sign In w/ Google</a
+            >Sign In<span class="desktop-only"> w/ Google</span></a
           >
         </li>
       </ul>
@@ -857,7 +857,7 @@
           if (data.authenticated) {
             // Update nav to show Logout & User Name
             authBtn.href = "/logout";
-            authBtn.innerHTML = `Log Out 👋 (${data.user.name})`;
+            authBtn.innerHTML = `Log Out 👋 <span class="desktop-only">(${data.user.name})</span>`;
             authBtn.style.backgroundColor = "#Ef4444"; // Make it red to signify logout
 
             // Record User Login in Analytics
