@@ -1205,6 +1205,8 @@ body::after {
   }
 }
 @media (max-width: 768px) {
+  .desktop-only { display: none; }
+  .nav-logo { font-size: 1.15rem; white-space: nowrap; }
   .nav-links li:not(.mobile-visible) {
     display: none;
   }
@@ -1219,6 +1221,7 @@ body::after {
     font-size: 0.9rem;
     padding: 8px 16px;
     margin-left: 0;
+    white-space: nowrap;
   }
   .hero {
     padding: 140px 20px 60px;
