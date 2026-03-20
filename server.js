@@ -17,12 +17,23 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(() => console.log('MongoDB Connected ✅'))
   .catch(err => console.error('MongoDB Error:', err));
 
+const MongoStore = require('connect-mongo');
+
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
 app.use(session({
   secret: process.env.SESSION_SECRET || 'super-secret-key-pixelcraft',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: 'sessions' // Default is 'sessions'
+  }),
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 * 30, // 30 Days persistent login
+    secure: process.env.NODE_ENV === 'production', // true for HTTPS in production
+    httpOnly: true
+  }
 }));
 
 // Initialize Passport
