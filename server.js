@@ -92,8 +92,10 @@ app.get('/auth/google',
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/?error=login_failed' }),
   (req, res) => {
-    // Successful authentication, redirect to home page.
-    res.redirect('/');
+    // Successful authentication, redirect back to intended tool OR home page.
+    const redirectTo = req.session.returnTo || '/';
+    delete req.session.returnTo;
+    res.redirect(redirectTo);
   }
 );
 
@@ -111,8 +113,10 @@ app.use('/tools', (req, res, next) => {
     // Allow tool access
     return next();
   }
-  // If not logged in and they try to visit a tool, redirect to home with a prompt
-  res.redirect('/?login_required=true');
+  // If not logged in and they try to visit a tool, redirect directly to Google Sign-In
+  // We store the original URL in session to return them back after login
+  req.session.returnTo = req.originalUrl;
+  res.redirect('/auth/google');
 });
 
 const nodemailer = require('nodemailer');

@@ -883,11 +883,7 @@
 
       // Handle Auth and Professional Tracking Setup
       document.addEventListener("DOMContentLoaded", async () => {
-        // 1. Check if user was redirected from a secured Tool page
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get("login_required") === "true") {
-          showToast("🔒 Please Sign In to use tools", "error");
-        }
 
         if (urlParams.get("error") === "login_failed") {
           showToast("❌ Login Failed. Please try again.", "error");
