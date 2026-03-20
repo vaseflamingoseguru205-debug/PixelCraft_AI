@@ -8,6 +8,12 @@
   </url>
   
   <url>
+    <loc>https://pixelcraft-ai.onrender.com/tools/ai-content-detector.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-03-21</lastmod>
+  </url>
+  <url>
     <loc>https://pixelcraft-ai.onrender.com/tools/image-compressor.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
