@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -108,28 +108,28 @@
 
 <div id="toast-container" class="toast-container"></div>
 <nav class="navbar">
-  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">??</div> PixelCraft AI</a>
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
   <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
-  
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
 </nav>
 <div class="tool-page">
   <div class="tool-page-header">
-    <a href="../index.html" class="back-link">? Back to All Tools</a>
-    <div style="font-size:2.5rem;margin-bottom:12px;">??</div>
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">🎨</div>
     <h1>Color Palette Extractor</h1>
     <p>Upload any image and instantly extract its dominant colors with HEX and RGB codes.</p>
   </div>
   <div class="tool-workspace">
     <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
       <input type="file" id="file-input" accept="image/*" style="display:none"/>
-      <div class="upload-icon">??</div>
+      <div class="upload-icon">🎨</div>
       <h3>Drop your image here to extract colors</h3>
       <p>PNG, JPG, WebP supported</p>
     </div>
     <div id="editor" style="display:none;">
       <div class="result-area show" style="margin-top:0;">
         <div class="result-header">
-          <span class="result-header-title">?? Extracted Color Palette</span>
+          <span class="result-header-title">🎨 Extracted Color Palette</span>
           <div style="display:flex;gap:10px;">
             <select id="num-colors" class="btn btn-outline" style="padding:8px 14px;border-radius:8px;font-family:inherit;font-weight:600;">
               <option value="5">5 Colors</option>
@@ -137,7 +137,7 @@
               <option value="12">12 Colors</option>
               <option value="16">16 Colors</option>
             </select>
-            <button class="btn btn-gray" onclick="resetTool()">?? New Image</button>
+            <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
           </div>
         </div>
         <div class="result-body">
@@ -148,8 +148,8 @@
             <div>
               <div id="palette-container"></div>
               <div style="margin-top:16px;display:flex;gap:10px;">
-                <button class="btn btn-blue" id="btn-copy-all">?? Copy All HEX</button>
-                <button class="btn btn-green" id="btn-export">?? Export Palette PNG</button>
+                <button class="btn btn-blue" id="btn-copy-all">📋 Copy All HEX</button>
+                <button class="btn btn-green" id="btn-export">⬇️ Export Palette PNG</button>
               </div>
             </div>
           </div>
@@ -276,7 +276,7 @@ function renderPalette() {
 function copyToClipboard(text, btn) {
   navigator.clipboard.writeText(text).then(() => {
     showToast(`Copied: ${text}`, 'success');
-    if (btn) { btn.textContent = '? Copied'; setTimeout(() => btn.textContent = 'Copy', 1500); }
+    if (btn) { btn.textContent = '✓ Copied'; setTimeout(() => btn.textContent = 'Copy', 1500); }
   }).catch(() => showToast('Copy error', 'error'));
 }
 
@@ -312,4 +312,3 @@ function resetTool() {
 </script>
 </body>
 </html>
-

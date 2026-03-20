@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -108,30 +108,30 @@
 
 <div id="toast-container" class="toast-container"></div>
 <nav class="navbar">
-  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">??</div> PixelCraft AI</a>
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
   <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
-  
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
 </nav>
 <div class="tool-page">
   <div class="tool-page-header">
-    <a href="../index.html" class="back-link">? Back to All Tools</a>
-    <div style="font-size:2.5rem;margin-bottom:12px;">??</div>
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">📐</div>
     <h1>Smart Social Media Resizer</h1>
     <p>Upload one image and resize it for ALL social media platforms simultaneously. Download any size instantly.</p>
   </div>
   <div class="tool-workspace">
     <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
       <input type="file" id="file-input" accept="image/*" style="display:none"/>
-      <div class="upload-icon">??</div>
+      <div class="upload-icon">📐</div>
       <h3>Upload your image to resize for all platforms</h3>
-      <p>One upload ? All sizes ready</p>
+      <p>One upload → All sizes ready</p>
     </div>
     <div id="editor" style="display:none;">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:24px;">
-        <h3 style="font-weight:700;color:var(--dark);">?? All Platform Sizes Ready</h3>
+        <h3 style="font-weight:700;color:var(--dark);">📲 All Platform Sizes Ready</h3>
         <div style="display:flex;gap:10px;">
-          <button class="btn btn-blue" id="btn-download-all">?? Download All (ZIP)</button>
-          <button class="btn btn-gray" onclick="resetTool()">?? New Image</button>
+          <button class="btn btn-blue" id="btn-download-all">⬇️ Download All (ZIP)</button>
+          <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
         </div>
       </div>
       <div id="sizes-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
@@ -143,24 +143,24 @@
 <script src="../js/utils.js"></script>
 <script>
 const PLATFORMS = [
-  { platform:'Instagram', type:'Square Post', w:1080, h:1080, icon:'??' },
-  { platform:'Instagram', type:'Portrait Post', w:1080, h:1350, icon:'??' },
-  { platform:'Instagram', type:'Story/Reel', w:1080, h:1920, icon:'??' },
-  { platform:'Instagram', type:'Profile Photo', w:320, h:320, icon:'??' },
-  { platform:'YouTube', type:'Thumbnail', w:1280, h:720, icon:'??' },
-  { platform:'YouTube', type:'Channel Banner', w:2560, h:1440, icon:'??' },
-  { platform:'YouTube', type:'Profile Photo', w:800, h:800, icon:'??' },
-  { platform:'Twitter/X', type:'Post Image', w:1200, h:675, icon:'??' },
-  { platform:'Twitter/X', type:'Header Photo', w:1500, h:500, icon:'??' },
-  { platform:'LinkedIn', type:'Post Image', w:1200, h:627, icon:'??' },
-  { platform:'LinkedIn', type:'Profile Photo', w:400, h:400, icon:'??' },
-  { platform:'LinkedIn', type:'Cover Photo', w:1584, h:396, icon:'??' },
+  { platform:'Instagram', type:'Square Post', w:1080, h:1080, icon:'📷' },
+  { platform:'Instagram', type:'Portrait Post', w:1080, h:1350, icon:'📷' },
+  { platform:'Instagram', type:'Story/Reel', w:1080, h:1920, icon:'📱' },
+  { platform:'Instagram', type:'Profile Photo', w:320, h:320, icon:'👤' },
+  { platform:'YouTube', type:'Thumbnail', w:1280, h:720, icon:'▶️' },
+  { platform:'YouTube', type:'Channel Banner', w:2560, h:1440, icon:'▶️' },
+  { platform:'YouTube', type:'Profile Photo', w:800, h:800, icon:'👤' },
+  { platform:'Twitter/X', type:'Post Image', w:1200, h:675, icon:'𝕏' },
+  { platform:'Twitter/X', type:'Header Photo', w:1500, h:500, icon:'𝕏' },
+  { platform:'LinkedIn', type:'Post Image', w:1200, h:627, icon:'💼' },
+  { platform:'LinkedIn', type:'Profile Photo', w:400, h:400, icon:'👤' },
+  { platform:'LinkedIn', type:'Cover Photo', w:1584, h:396, icon:'💼' },
   { platform:'Facebook', type:'Post Image', w:1200, h:630, icon:'f' },
   { platform:'Facebook', type:'Cover Photo', w:820, h:312, icon:'f' },
-  { platform:'Facebook', type:'Profile Photo', w:170, h:170, icon:'??' },
-  { platform:'WhatsApp', type:'Profile Photo', w:640, h:640, icon:'??' },
-  { platform:'Pinterest', type:'Pin', w:1000, h:1500, icon:'??' },
-  { platform:'TikTok', type:'Profile Photo', w:200, h:200, icon:'??' },
+  { platform:'Facebook', type:'Profile Photo', w:170, h:170, icon:'👤' },
+  { platform:'WhatsApp', type:'Profile Photo', w:640, h:640, icon:'💬' },
+  { platform:'Pinterest', type:'Pin', w:1000, h:1500, icon:'📌' },
+  { platform:'TikTok', type:'Profile Photo', w:200, h:200, icon:'🎵' },
 ];
 
 let currentImg = null;
@@ -212,8 +212,8 @@ function renderCards() {
         <span style="font-size:0.7rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;">${p.platform}</span>
       </div>
       <div style="font-weight:700;color:var(--dark);font-size:0.92rem;margin-bottom:4px;">${p.type}</div>
-      <div style="font-size:0.78rem;color:var(--text-light);margin-bottom:12px;">${p.w} � ${p.h} px</div>
-      <button class="btn btn-blue" style="width:100%;justify-content:center;padding:10px;" data-idx="${i}">?? Download</button>
+      <div style="font-size:0.78rem;color:var(--text-light);margin-bottom:12px;">${p.w} × ${p.h} px</div>
+      <button class="btn btn-blue" style="width:100%;justify-content:center;padding:10px;" data-idx="${i}">⬇️ Download</button>
     `;
     card.appendChild(img);
     card.appendChild(info);
@@ -250,4 +250,3 @@ function resetTool() {
 </script>
 </body>
 </html>
-

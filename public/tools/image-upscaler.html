@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -108,31 +108,31 @@
 
 <div id="toast-container" class="toast-container"></div>
 <nav class="navbar">
-  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">??</div> PixelCraft AI</a>
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
   <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
-  
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
 </nav>
 <div class="tool-page">
   <div class="tool-page-header">
-    <a href="../index.html" class="back-link">? Back to All Tools</a>
-    <div style="font-size:2.5rem;margin-bottom:12px;">??</div>
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">🔍</div>
     <h1>Image Upscaler</h1>
     <p>Enhance and upscale low resolution images using smart interpolation. Up to 4x enlargement.</p>
   </div>
   <div class="tool-workspace">
     <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
       <input type="file" id="file-input" accept="image/*" style="display:none"/>
-      <div class="upload-icon">??</div>
+      <div class="upload-icon">🔍</div>
       <h3>Upload a low-resolution image</h3>
-      <p>PNG, JPG, WebP � Best for images under 600px</p>
+      <p>PNG, JPG, WebP — Best for images under 600px</p>
     </div>
     <div id="editor" style="display:none;">
       <div class="result-area show" style="margin-top:0;">
         <div class="result-header">
-          <span class="result-header-title">?? Upscale Settings</span>
+          <span class="result-header-title">🔍 Upscale Settings</span>
           <div style="display:flex;gap:10px;">
-            <button class="btn btn-gray" onclick="resetTool()">?? New Image</button>
-            <button class="btn btn-green" id="btn-download" style="display:none;">?? Download</button>
+            <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+            <button class="btn btn-green" id="btn-download" style="display:none;">⬇️ Download</button>
           </div>
         </div>
         <div class="result-body">
@@ -142,7 +142,7 @@
             <button class="scale-btn btn btn-outline" data-scale="4">4x Upscale</button>
           </div>
           <div id="info-row" style="background:var(--bg);border-radius:10px;padding:16px;margin-bottom:16px;display:flex;gap:20px;flex-wrap:wrap;"></div>
-          <button class="btn btn-blue" id="btn-upscale" style="margin-bottom:20px;justify-content:center;">?? Upscale Now</button>
+          <button class="btn btn-blue" id="btn-upscale" style="margin-bottom:20px;justify-content:center;">🔍 Upscale Now</button>
           <div id="processing" style="display:none;" class="loader-wrap"><div class="loader"></div><p>Upscaling...</p></div>
           <div class="before-after" id="result-area" style="display:none;">
             <div><label>Original</label><canvas id="orig-canvas"></canvas></div>
@@ -185,9 +185,9 @@ async function handleFile(file) {
 function updateInfo() {
   if (!currentImg) return;
   document.getElementById('info-row').innerHTML = `
-    <div><span style="color:var(--text-light);font-size:0.82rem;">Original Size</span><br/><strong style="color:var(--dark);">${currentImg.naturalWidth} � ${currentImg.naturalHeight}px</strong></div>
-    <div style="font-size:1.2rem;padding-top:8px;">?</div>
-    <div><span style="color:var(--text-light);font-size:0.82rem;">Upscaled Size (${selectedScale}x)</span><br/><strong style="color:var(--success);">${currentImg.naturalWidth * selectedScale} � ${currentImg.naturalHeight * selectedScale}px</strong></div>
+    <div><span style="color:var(--text-light);font-size:0.82rem;">Original Size</span><br/><strong style="color:var(--dark);">${currentImg.naturalWidth} × ${currentImg.naturalHeight}px</strong></div>
+    <div style="font-size:1.2rem;padding-top:8px;">→</div>
+    <div><span style="color:var(--text-light);font-size:0.82rem;">Upscaled Size (${selectedScale}x)</span><br/><strong style="color:var(--success);">${currentImg.naturalWidth * selectedScale} × ${currentImg.naturalHeight * selectedScale}px</strong></div>
   `;
 }
 
@@ -217,7 +217,7 @@ async function upscale() {
   document.getElementById('processing').style.display = 'none';
   document.getElementById('result-area').style.display = 'grid';
   document.getElementById('btn-download').style.display = 'flex';
-  showToast(`Upscaled to ${resultCanvas.width}�${resultCanvas.height}px!`, 'success');
+  showToast(`Upscaled to ${resultCanvas.width}×${resultCanvas.height}px!`, 'success');
 }
 
 function applyLightSharpen(imgData, w, h) {
@@ -253,4 +253,3 @@ function resetTool() {
 </script>
 </body>
 </html>
-

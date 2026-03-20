@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -108,35 +108,35 @@
 
 <div id="toast-container" class="toast-container"></div>
 <nav class="navbar">
-  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">??</div> PixelCraft AI</a>
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
   <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
-  
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
 </nav>
 <div class="tool-page">
   <div class="tool-page-header">
-    <a href="../index.html" class="back-link">? Back to All Tools</a>
-    <div style="font-size:2.5rem;margin-bottom:12px;">??</div>
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">🌈</div>
     <h1>Photo Colorizer</h1>
     <p>Bring old black & white photos back to life. Choose a colorization style and see the transformation.</p>
   </div>
   <div class="tool-workspace">
     <div class="info-box">
-      <span>??</span>
+      <span>ℹ️</span>
       <span>This tool applies intelligent color mapping to black & white photos. For best results, upload clear black and white portrait or landscape photos.</span>
     </div>
     <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
       <input type="file" id="file-input" accept="image/*" style="display:none"/>
-      <div class="upload-icon">??</div>
+      <div class="upload-icon">🌈</div>
       <h3>Upload a black & white photo to colorize</h3>
       <p>PNG, JPG, WebP supported</p>
     </div>
     <div id="editor" style="display:none;">
       <div class="result-area show" style="margin-top:0;">
         <div class="result-header">
-          <span class="result-header-title">?? Colorization Result</span>
+          <span class="result-header-title">🌈 Colorization Result</span>
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="btn btn-gray" onclick="resetTool()">?? New Image</button>
-            <button class="btn btn-green" id="btn-download">?? Download</button>
+            <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+            <button class="btn btn-green" id="btn-download">⬇️ Download</button>
           </div>
         </div>
         <div class="result-body">
@@ -144,12 +144,12 @@
           <div style="margin-bottom:20px;">
             <div style="font-size:0.8rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Choose Colorization Style</div>
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;" id="style-grid">
-              <button class="style-btn active-style" data-style="natural">?? Natural</button>
-              <button class="style-btn" data-style="warm">?? Warm Vintage</button>
-              <button class="style-btn" data-style="cinematic">?? Cinematic</button>
-              <button class="style-btn" data-style="cool">?? Cool Tone</button>
-              <button class="style-btn" data-style="sepia">?? Sepia</button>
-              <button class="style-btn" data-style="vibrant">? Vibrant</button>
+              <button class="style-btn active-style" data-style="natural">🌿 Natural</button>
+              <button class="style-btn" data-style="warm">🌅 Warm Vintage</button>
+              <button class="style-btn" data-style="cinematic">🎬 Cinematic</button>
+              <button class="style-btn" data-style="cool">❄️ Cool Tone</button>
+              <button class="style-btn" data-style="sepia">📜 Sepia</button>
+              <button class="style-btn" data-style="vibrant">✨ Vibrant</button>
             </div>
           </div>
           <!-- Intensity slider -->
@@ -269,4 +269,3 @@ function resetTool() {
 </script>
 </body>
 </html>
-
