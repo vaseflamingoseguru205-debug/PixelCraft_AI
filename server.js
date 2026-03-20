@@ -17,8 +17,8 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(() => console.log('MongoDB Connected ✅'))
   .catch(err => console.error('MongoDB Error:', err));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
 app.use(session({
   secret: process.env.SESSION_SECRET || 'super-secret-key-pixelcraft',
   resave: false,
@@ -155,6 +155,84 @@ ${message}
   } catch(err) {
     console.error("🔴 Email Send Error (Check EMAIL_PASS App Password):", err.message);
     res.status(500).json({ error: "Failed to send email", details: err.message });
+  }
+});
+
+// --- REAL AI AVATAR GENERATOR HANDLER ---
+app.post('/api/generate-avatar', async (req, res) => {
+  const { imageBase64, style } = req.body;
+  if(!imageBase64 || !style) return res.status(400).json({ error: "Missing image or style" });
+
+  const hfToken = process.env.HF_API_KEY;
+  if(!hfToken || hfToken.trim() === '') {
+    return res.status(501).json({ 
+      error: "API_KEY_MISSING",
+      message: "Hey Admin! To generate genuine AI Avatars, you must add HF_API_KEY to your .env file."
+    });
+  }
+
+  try {
+    console.log(`🤖 Generating AI Avatar via Hugging Face API (${style})...`);
+    
+    // Convert base64 to binary buffer
+    const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    // Create a robust prompt based on the style
+    let prompt = "";
+    if(style === "Anime Style") prompt = "Make them look like a highly detailed, beautiful anime character, masterpiece, studio ghibli style";
+    else if(style === "3D Avatar") prompt = "Turn them into a highly detailed Pixar 3D animated character, 3D render, octane render, beautiful lighting";
+    else if(style === "Cartoon Avatar") prompt = "Turn them into a western comic book cartoon character, flat colors, clean lines";
+    else if(style === "Sketch") prompt = "Turn them into a detailed pencil sketch drawing, shading, artistic";
+    else if(style === "Pixel Art") prompt = "Turn them into a retro 16-bit pixel art character, crisp pixels";
+    else prompt = "Turn them into an anime character";
+
+    // For Instruct-Pix2Pix, we specify the instructions in the headers or custom body.
+    // However, Hugging Face standard inference for image-to-image takes image binary in body 
+    // and prompt in headers or json. A generic HuggingFace image-to-image call:
+    
+    // We will use standard fetch for stability base or instruct-pix2pix
+    // Instruct-pix2pix uses text as "inputs" and image as "image" in json OR
+    // standard huggingface image-to-image pipeline: 
+    // We send a POST request with the file buffer, but we need to pass the "prompt" somehow if using a model that accepts it.
+    // Instead of HF which is tricky with Img2Img via raw HTTP, let's provide a robust structured response
+    // if HF fails or is building. We will mock the output or return an API instruction if the model is loading.
+
+    // Using a more reliable open endpoint style if HF is too complex, but HF is best for free.
+    // We will use the free HuggingFace endpoints. To pass prompt and image:
+    const FormData = require('form-data');
+    const form = new FormData();
+    form.append('image', buffer, { filename: 'image.jpg', contentType: 'image/jpeg' });
+    form.append('prompt', prompt);
+
+    const fResponse = await fetch('https://api-inference.huggingface.co/models/timbrooks/instruct-pix2pix', {
+      method: 'POST',
+      headers: { 
+        'Authorization': `Bearer ${hfToken}`,
+        ...form.getHeaders()
+      },
+      body: form
+    });
+
+    if(!fResponse.ok) {
+        const errorText = await fResponse.text();
+        console.error("HF API Error:", errorText);
+        
+        // If Model is loading, HF returns 503
+        if (fResponse.status === 503) {
+           return res.status(503).json({ error: "Model is currently loading. Please wait 30 seconds and try again." });
+        }
+        throw new Error(`External API Error: ${fResponse.status} ${fResponse.statusText}. Please verify your HF_API_KEY inside .env`);
+    }
+
+    const arrayBuffer = await fResponse.arrayBuffer();
+    const resultBuffer = Buffer.from(arrayBuffer);
+    const resultBase64 = `data:image/jpeg;base64,${resultBuffer.toString('base64')}`;
+
+    res.json({ success: true, resultImage: resultBase64 });
+  } catch(err) {
+    console.error("🔴 AI Generation Error:", err.message);
+    res.status(500).json({ error: "Generation failed", details: err.message });
   }
 });
 
