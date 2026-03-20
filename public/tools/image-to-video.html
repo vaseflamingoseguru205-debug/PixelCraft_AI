@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -108,33 +108,33 @@
 
 <div id="toast-container" class="toast-container"></div>
 <nav class="navbar">
-  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">??</div> PixelCraft AI</a>
   <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
-  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+  
 </nav>
 <div class="tool-page">
   <div class="tool-page-header">
-    <a href="../index.html" class="back-link">← Back to All Tools</a>
-    <div style="font-size:2.5rem;margin-bottom:12px;">🎬</div>
+    <a href="../index.html" class="back-link">? Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">??</div>
     <h1>Image to Video Slideshow</h1>
     <p>Upload multiple photos and create a beautiful cinematic slideshow video. Download as WebM/MP4.</p>
   </div>
   <div class="tool-workspace">
     <div class="info-box">
-      <span>ℹ️</span>
-      <span>Upload 2–20 images. We'll create a video slideshow using your browser's MediaRecorder API. Works best in Chrome/Edge.</span>
+      <span>??</span>
+      <span>Upload 2�20 images. We'll create a video slideshow using your browser's MediaRecorder API. Works best in Chrome/Edge.</span>
     </div>
     <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
       <input type="file" id="file-input" accept="image/*" multiple style="display:none"/>
-      <div class="upload-icon">🎬</div>
-      <h3>Upload multiple photos (2–20 images)</h3>
+      <div class="upload-icon">??</div>
+      <h3>Upload multiple photos (2�20 images)</h3>
       <p>Hold Ctrl/Cmd to select multiple files</p>
     </div>
     <div id="editor" style="display:none;">
       <div class="result-area show" style="margin-top:0;margin-bottom:20px;">
         <div class="result-header">
-          <span class="result-header-title">⚙️ Slideshow Settings</span>
-          <button class="btn btn-gray" onclick="resetTool()">🔄 New Upload</button>
+          <span class="result-header-title">?? Slideshow Settings</span>
+          <button class="btn btn-gray" onclick="resetTool()">?? New Upload</button>
         </div>
         <div class="result-body">
           <div id="image-strip" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;"></div>
@@ -155,13 +155,13 @@
             <div class="control-group">
               <label>Resolution</label>
               <select id="resolution">
-                <option value="1280x720">720p (1280×720)</option>
-                <option value="854x480">480p (854×480)</option>
-                <option value="640x360">360p (640×360)</option>
+                <option value="1280x720">720p (1280�720)</option>
+                <option value="854x480">480p (854�480)</option>
+                <option value="640x360">360p (640�360)</option>
               </select>
             </div>
           </div>
-          <button class="btn btn-blue" id="btn-create" style="gap:10px;">🎬 Create Slideshow Video</button>
+          <button class="btn btn-blue" id="btn-create" style="gap:10px;">?? Create Slideshow Video</button>
         </div>
       </div>
       <div id="progress-section" style="display:none;">
@@ -175,10 +175,10 @@
       <div id="result-video" style="display:none;">
         <div class="result-area show" style="margin-top:0;">
           <div class="result-header">
-            <span class="result-header-title">✅ Slideshow Ready!</span>
+            <span class="result-header-title">? Slideshow Ready!</span>
             <div style="display:flex;gap:10px;">
-              <button class="btn btn-gray" onclick="resetTool()">🔄 New Slideshow</button>
-              <button class="btn btn-green" id="btn-download">⬇️ Download Video</button>
+              <button class="btn btn-gray" onclick="resetTool()">?? New Slideshow</button>
+              <button class="btn btn-green" id="btn-download">?? Download Video</button>
             </div>
           </div>
           <div class="result-body"><video id="preview-video" controls style="width:100%;border-radius:12px;background:#000;"></video></div>
@@ -304,7 +304,7 @@ async function createVideo() {
     await renderFrame(currentImg, currentFrame);
     const pct = Math.round((frameCount / totalFrames) * 100);
     document.getElementById('progress-bar').style.width = pct + '%';
-    document.getElementById('progress-detail').textContent = `Image ${currentImg + 1}/${uploadedImages.length} — Frame ${currentFrame + 1}/${frameDuration}`;
+    document.getElementById('progress-detail').textContent = `Image ${currentImg + 1}/${uploadedImages.length} � Frame ${currentFrame + 1}/${frameDuration}`;
     currentFrame++;
     frameCount++;
     if (currentFrame >= frameDuration) { currentFrame = 0; currentImg++; }
@@ -339,3 +339,4 @@ function resetTool() {
 </script>
 </body>
 </html>
+
