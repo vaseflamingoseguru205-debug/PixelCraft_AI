@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -108,21 +108,21 @@
 
 <div id="toast-container" class="toast-container"></div>
 <nav class="navbar">
-  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">??</div> PixelCraft AI</a>
   <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
-  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+  
 </nav>
 <div class="tool-page">
   <div class="tool-page-header">
-    <a href="../index.html" class="back-link">← Back to All Tools</a>
-    <div style="font-size:2.5rem;margin-bottom:12px;">🖼️</div>
+    <a href="../index.html" class="back-link">? Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">???</div>
     <h1>Photo Collage Maker</h1>
     <p>Choose a layout, upload your photos, and create a beautiful collage instantly.</p>
   </div>
   <div class="tool-workspace">
     <!-- Layout picker -->
     <div class="result-area show" style="margin-top:0;">
-      <div class="result-header"><span class="result-header-title">📐 Choose Layout</span></div>
+      <div class="result-header"><span class="result-header-title">?? Choose Layout</span></div>
       <div class="result-body">
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;" id="layout-grid">
           <!-- layouts rendered by JS -->
@@ -134,8 +134,8 @@
         <div class="result-header">
           <span class="result-header-title" id="upload-title">Upload Photos</span>
           <div style="display:flex;gap:10px;">
-            <button class="btn btn-gray" onclick="goBack()">← Change Layout</button>
-            <button class="btn btn-green" id="btn-create" disabled>🎨 Create Collage</button>
+            <button class="btn btn-gray" onclick="goBack()">? Change Layout</button>
+            <button class="btn btn-green" id="btn-create" disabled>?? Create Collage</button>
           </div>
         </div>
         <div class="result-body">
@@ -146,10 +146,10 @@
     <div id="result-section" style="display:none;margin-top:20px;">
       <div class="result-area show" style="margin-top:0;">
         <div class="result-header">
-          <span class="result-header-title">✅ Your Collage</span>
+          <span class="result-header-title">? Your Collage</span>
           <div style="display:flex;gap:10px;">
-            <button class="btn btn-gray" onclick="goBack()">← Edit</button>
-            <button class="btn btn-green" id="btn-download">⬇️ Download Collage</button>
+            <button class="btn btn-gray" onclick="goBack()">? Edit</button>
+            <button class="btn btn-green" id="btn-download">?? Download Collage</button>
           </div>
         </div>
         <div class="result-body">
@@ -162,7 +162,7 @@
               <label>Background Color</label>
               <input type="color" id="bg-color" value="#ffffff" style="height:44px;width:100%;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;"/>
             </div>
-            <div style="padding-top:20px;"><button class="btn btn-blue" id="btn-redraw">🔄 Update</button></div>
+            <div style="padding-top:20px;"><button class="btn btn-blue" id="btn-redraw">?? Update</button></div>
           </div>
           <canvas id="collage-canvas" style="width:100%;border-radius:12px;border:1.5px solid var(--border);"></canvas>
         </div>
@@ -173,14 +173,14 @@
 <script src="../js/utils.js"></script>
 <script>
 const LAYOUTS = [
-  { id:'2h', name:'2 Side by Side', count:2, icon:'⬜⬜', cols:2, rows:1 },
-  { id:'2v', name:'2 Stacked', count:2, icon:'🟨\n🟨', cols:1, rows:2 },
-  { id:'3h', name:'3 in a Row', count:3, icon:'⬜⬜⬜', cols:3, rows:1 },
-  { id:'3l', name:'1 + 2 Right', count:3, icon:'🔲', cols:null, rows:null, custom:'3l' },
-  { id:'4g', name:'4 Grid', count:4, icon:'⬜⬜\n⬜⬜', cols:2, rows:2 },
-  { id:'5g', name:'5 Mixed', count:5, icon:'🔲', cols:null, rows:null, custom:'5g' },
-  { id:'6g', name:'6 Grid', count:6, icon:'⬜⬜⬜\n⬜⬜⬜', cols:3, rows:2 },
-  { id:'9g', name:'9 Grid', count:9, icon:'⬜⬜⬜×3', cols:3, rows:3 },
+  { id:'2h', name:'2 Side by Side', count:2, icon:'??', cols:2, rows:1 },
+  { id:'2v', name:'2 Stacked', count:2, icon:'??\n??', cols:1, rows:2 },
+  { id:'3h', name:'3 in a Row', count:3, icon:'???', cols:3, rows:1 },
+  { id:'3l', name:'1 + 2 Right', count:3, icon:'??', cols:null, rows:null, custom:'3l' },
+  { id:'4g', name:'4 Grid', count:4, icon:'??\n??', cols:2, rows:2 },
+  { id:'5g', name:'5 Mixed', count:5, icon:'??', cols:null, rows:null, custom:'5g' },
+  { id:'6g', name:'6 Grid', count:6, icon:'???\n???', cols:3, rows:2 },
+  { id:'9g', name:'9 Grid', count:9, icon:'???�3', cols:3, rows:3 },
 ];
 
 let selectedLayout = null, uploadedImages = [];
@@ -215,8 +215,8 @@ function renderSlots() {
     const slot = document.createElement('div');
     slot.style.cssText = 'border:2px dashed var(--border);border-radius:12px;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;overflow:hidden;position:relative;background:var(--bg);';
     slot.innerHTML = uploadedImages[i]
-      ? `<img src="${uploadedImages[i].src}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"/><button onclick="clearSlot(${i}, event)" style="position:absolute;top:6px;right:6px;width:24px;height:24px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;color:white;cursor:pointer;font-size:0.8rem;">✕</button>`
-      : `<div style="font-size:1.8rem;margin-bottom:8px;">📷</div><div style="font-size:0.82rem;color:var(--text-light);font-weight:600;">Photo ${i+1}</div>`;
+      ? `<img src="${uploadedImages[i].src}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"/><button onclick="clearSlot(${i}, event)" style="position:absolute;top:6px;right:6px;width:24px;height:24px;background:rgba(0,0,0,0.6);border:none;border-radius:50%;color:white;cursor:pointer;font-size:0.8rem;">?</button>`
+      : `<div style="font-size:1.8rem;margin-bottom:8px;">??</div><div style="font-size:0.82rem;color:var(--text-light);font-weight:600;">Photo ${i+1}</div>`;
     slot.addEventListener('click', () => triggerUpload(i));
     slot.onmouseenter = () => { if(!uploadedImages[i]) { slot.style.borderColor='var(--primary)'; slot.style.background='var(--primary-light)'; }};
     slot.onmouseleave = () => { if(!uploadedImages[i]) { slot.style.borderColor='var(--border)'; slot.style.background='var(--bg)'; }};
@@ -298,3 +298,4 @@ function goBack() {
 </script>
 </body>
 </html>
+

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -108,31 +108,31 @@
 
 <div id="toast-container" class="toast-container"></div>
 <nav class="navbar">
-  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">??</div> PixelCraft AI</a>
   <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
-  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+  
 </nav>
 <div class="tool-page">
   <div class="tool-page-header">
-    <a href="../index.html" class="back-link">← Back to All Tools</a>
-    <div style="font-size:2.5rem;margin-bottom:12px;">📋</div>
+    <a href="../index.html" class="back-link">? Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">??</div>
     <h1>EXIF Data Viewer</h1>
     <p>View hidden metadata inside your photos: camera, date, GPS coordinates, exposure settings and more.</p>
   </div>
   <div class="tool-workspace">
     <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
       <input type="file" id="file-input" accept="image/jpeg,image/jpg,image/tiff" style="display:none"/>
-      <div class="upload-icon">📋</div>
+      <div class="upload-icon">??</div>
       <h3>Upload a JPEG photo to read metadata</h3>
-      <p>Best with JPEG/JPG files — PNG usually has no EXIF data</p>
+      <p>Best with JPEG/JPG files � PNG usually has no EXIF data</p>
     </div>
     <div id="editor" style="display:none;">
       <div class="result-area show" style="margin-top:0;">
         <div class="result-header">
-          <span class="result-header-title">📋 Image Metadata</span>
+          <span class="result-header-title">?? Image Metadata</span>
           <div style="display:flex;gap:10px;">
-            <button class="btn btn-blue" id="btn-copy-all">📋 Copy All Data</button>
-            <button class="btn btn-gray" onclick="resetTool()">🔄 New Image</button>
+            <button class="btn btn-blue" id="btn-copy-all">?? Copy All Data</button>
+            <button class="btn btn-gray" onclick="resetTool()">?? New Image</button>
           </div>
         </div>
         <div class="result-body">
@@ -175,14 +175,14 @@ async function handleFile(file) {
     const exif = await Exifr.parse(file, true);
     if (!exif || Object.keys(exif).length === 0) {
       document.getElementById('exif-grid').innerHTML = `
-        <div class="info-box">ℹ️ No EXIF data found in this image. Try a JPEG taken with a camera or smartphone.</div>
+        <div class="info-box">?? No EXIF data found in this image. Try a JPEG taken with a camera or smartphone.</div>
       `;
       return;
     }
     renderExif(exif);
     storeExifText(exif);
   } catch(e) {
-    document.getElementById('exif-grid').innerHTML = `<div class="info-box" style="color:var(--error)">❌ Could not read EXIF data from this file.</div>`;
+    document.getElementById('exif-grid').innerHTML = `<div class="info-box" style="color:var(--error)">? Could not read EXIF data from this file.</div>`;
   }
 }
 
@@ -190,12 +190,12 @@ let allExifText = '';
 
 function renderExif(exif) {
   const groups = {
-    '📷 Camera': ['Make','Model','LensModel','Software'],
-    '📸 Capture Settings': ['ExposureTime','FNumber','ISO','FocalLength','Flash','WhiteBalance','MeteringMode','ExposureMode'],
-    '📐 Image Info': ['ImageWidth','ImageHeight','Orientation','ColorSpace','BitsPerSample'],
-    '📅 Date & Time': ['DateTimeOriginal','CreateDate','ModifyDate'],
-    '🌍 GPS Location': ['latitude','longitude','altitude','GPSAltitude'],
-    '⚙️ Other': ['ApertureValue','ShutterSpeedValue','BrightnessValue','Copyright','Artist','XResolution','YResolution']
+    '?? Camera': ['Make','Model','LensModel','Software'],
+    '?? Capture Settings': ['ExposureTime','FNumber','ISO','FocalLength','Flash','WhiteBalance','MeteringMode','ExposureMode'],
+    '?? Image Info': ['ImageWidth','ImageHeight','Orientation','ColorSpace','BitsPerSample'],
+    '?? Date & Time': ['DateTimeOriginal','CreateDate','ModifyDate'],
+    '?? GPS Location': ['latitude','longitude','altitude','GPSAltitude'],
+    '?? Other': ['ApertureValue','ShutterSpeedValue','BrightnessValue','Copyright','Artist','XResolution','YResolution']
   };
 
   const container = document.getElementById('exif-grid');
@@ -213,7 +213,7 @@ function renderExif(exif) {
       if (k === 'FNumber') display = `f/${v}`;
       if (k === 'FocalLength') display = `${v}mm`;
       if (k === 'ISO') display = String(v);
-      if ((k === 'latitude' || k === 'longitude') && typeof v === 'number') display = v.toFixed(6) + '°';
+      if ((k === 'latitude' || k === 'longitude') && typeof v === 'number') display = v.toFixed(6) + '�';
       if (k === 'DateTimeOriginal' && v instanceof Date) display = v.toLocaleString();
       const row = document.createElement('div');
       row.style.cssText = 'display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.84rem;';
@@ -230,7 +230,7 @@ function renderExif(exif) {
     mapLink.target = '_blank';
     mapLink.className = 'btn btn-blue';
     mapLink.style.marginTop = '12px';
-    mapLink.textContent = '🗺️ View on Google Maps';
+    mapLink.textContent = '??? View on Google Maps';
     container.appendChild(mapLink);
   }
 }
@@ -250,3 +250,4 @@ window.resetTool = resetTool;
 </script>
 </body>
 </html>
+
