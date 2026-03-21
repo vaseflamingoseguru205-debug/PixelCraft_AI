@@ -322,7 +322,7 @@
     let qrCode = null;
     
     // PixelCraft Default Logo SVG (data uri string encoded safely)
-    const pcLogo = "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDAiIGhlaWdodD0iNTAwIiB2aWV3Qm94PSIwIDAgODAwIDUwMCI+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzAwIj7wn46oPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iODglIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgZm9udC1zaXplPSIxMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgbGV0dGVyLXNwYWNpbmc9IjIiPlBpeGVsQ3JhZnQgQUk8L3RleHQ+PC9zdmc+";
+    const pcLogo = "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PGNpcmNsZSBjeD0iMjAwIiBjeT0iMjAwIiByPSIxOTUiIGZpbGw9IiNmZmZmZmYiIC8+PHRleHQgeD0iNTAlIiB5PSI0MiUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTgwIj7wn46oPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iODIlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMGYxNzJhIiBmb250LXNpemU9IjU2IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGxldHRlci1zcGFjaW5nPSIxIj5QaXhlbENyYWZ0IEFJPC90ZXh0Pjwvc3ZnPg==";
     let logoUrl = "data:image/svg+xml;base64," + pcLogo;
 
     function renderQR() {
@@ -359,16 +359,16 @@
         type: "svg", 
         data: qrData.value || "https://pixelcraft-ai.onrender.com",
         image: logoUrl,
-        margin: 10,
+        margin: 0,
         qrOptions: {
           typeNumber: 0,
           mode: "Byte",
           errorCorrectionLevel: "H" 
         },
         imageOptions: {
-          hideBackgroundDots: true,
+          hideBackgroundDots: false,
           imageSize: 0.45,
-          margin: 10,
+          margin: 0,
           crossOrigin: "anonymous",
         },
         dotsOptions: dotsSetup,
