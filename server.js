@@ -1,4 +1,6 @@
 require('dotenv').config();
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -11,30 +13,39 @@ const app = express();
 app.set('trust proxy', 1); // Trust the Render proxy to fix HTTP/HTTPS mismatch
 const PORT = process.env.PORT || 8080;
 
-// Connect to MongoDB
+// Connect to MongoDB (Will log error locally if DNS blocked, but won't crash)
 mongoose.connect(process.env.MONGO_URI, {
-  // Use new URL parser (handled by default in latest mongoose, but safe to include)
+  serverSelectionTimeoutMS: 5000 // Don't hang forever
 }).then(() => console.log('MongoDB Connected ✅'))
-  .catch(err => console.error('MongoDB Error:', err));
+  .catch(err => console.error('MongoDB Connection warning (Safe to ignore locally):', err.message));
 
 const MongoStore = require('connect-mongo').default || require('connect-mongo').MongoStore;
 
-app.use(express.json({ limit: '20mb' }));
-app.use(express.urlencoded({ limit: '20mb', extended: true }));
-app.use(session({
+const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'super-secret-key-pixelcraft',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
-    collectionName: 'sessions' // Default is 'sessions'
-  }),
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 Years persistent login
     secure: process.env.NODE_ENV === 'production', // true for HTTPS in production
     httpOnly: true
   }
-}));
+};
+
+// Only use MongoDB for sessions if we are in production or explicitly asked to
+// This prevents 'querySrv ECONNREFUSED' crashes locally on restrictive ISPs.
+if (process.env.RENDER || process.env.NODE_ENV === 'production') {
+  sessionConfig.store = MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: 'sessions'
+  });
+} else {
+  console.log("Using Local Memory Session Store");
+}
+
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
+app.use(session(sessionConfig));
 
 // Initialize Passport
 app.use(passport.initialize());

@@ -1,0 +1,30 @@
+﻿af7303d | 2026-03-18 | Initial commit of PixelCraft AI Website
+e6aa75e | 2026-03-18 | Configure Backend and Render Blueprint
+aa67c30 | 2026-03-18 | Fix Google Auth HTTPS Proxy Issue
+3e312d5 | 2026-03-18 | Fix Google Auth crash with safeties
+b372aad | 2026-03-18 | Fix tensor dimensions error in BG remover by using pipeline api
+cc36e07 | 2026-03-18 | Add Google Analytics (G-886834VX21) to all 21 pages
+5b60616 | 2026-03-18 | Add professional SEO meta tags, sitemap.xml, robots.txt to all 21 pages
+7d96666 | 2026-03-18 | Add OG social share image
+13f2e46 | 2026-03-19 | Ultra-strong SEO domination
+67fa310 | 2026-03-19 | Mega UI/UX Overhaul, AI Generator, and Fixes
+8e5a1e5 | 2026-03-19 | Fix Render crash bug & force redeploy
+4b56ac7 | 2026-03-19 | Trigger deployment after migration
+e2c48f8 | 2026-03-19 | Add premium contact section with Nodemailer setup
+a6db2cd | 2026-03-19 | Fix: Toast notifications, Send button animation, AI Image Generator UI redesign, Email contact form fix (from field + replyTo)
+8cc1ea5 | 2026-03-19 | Add Google AdSense code
+3e9e7b8 | 2026-03-19 | Add AMP Auto Ads
+69cbf23 | 2026-03-20 | UI mobile fixes: hide hamburger, show sign-in button
+c09b213 | 2026-03-20 | UI tweak: make logo and sign in button better sized and avoid text-wrap on mobile
+49d5e1e | 2026-03-20 | feat: added AI Text Humanizer and Advanced Custom QR Generator tool pages
+7182f75 | 2026-03-20 | fix: updated AI Humanizer prompt logic to prevent prompt injection and strictly rewrite text
+a698ff4 | 2026-03-20 | fix(tools): restored corrupted tools and removed ai-image-generator
+d400bc2 | 2026-03-20 | feat: Add Avatar Generator tool with Cartoon, Anime, 3D, Sketch and Pixel Art styles
+2d57856 | 2026-03-20 | feat: integrate true professional AI backend for Avatar Generator
+483fc0c | 2026-03-20 | Add AI Resume Architect tool
+be71959 | 2026-03-20 | Update sitemap with missing tools for SEO
+b782bf9 | 2026-03-20 | SEO: Add internal linking to all tools and create first blog post
+0e279a1 | 2026-03-20 | UX: Redirect unauthenticated tool clicks directly to Google Auth and back
+e75c295 | 2026-03-20 | Cleanup: Removed Resume, Avatar, and Background Remover tools and all associated links/SEO tags
+15c70ec | 2026-03-21 | Auth: Persistent sessions setup (no auto logout on browser close)
+3d9b233 | 2026-03-21 | Auth: Extended session duration to 10 years

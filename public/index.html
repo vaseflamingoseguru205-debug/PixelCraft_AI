@@ -754,14 +754,60 @@
         </h2>
         <p
           style="
-            color: var(--text-light);
+            color: var(--text-muted);
             margin-bottom: 32px;
             font-size: 1.05rem;
           "
         >
           No account needed. No software to install. Just open and edit.
         </p>
-        
+        <a href="#tools" class="btn-primary" style="margin: 0 auto; display: inline-flex;">🚀 Open Tools</a>
+      </div>
+    </section>
+
+    <!-- DONATE SECTION -->
+    <section class="section" id="donate">
+      <div class="container">
+        <div class="donate-container">
+          <div class="donate-info">
+            <div class="section-label" style="border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.1); color: #10b981;">Support Us ❤️</div>
+            <h2 style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 16px; color: var(--text-main); font-family: 'Outfit';">Fuel Our Work</h2>
+            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 32px; max-width: 500px;">
+              PixelCraft AI is 100% free with no ads interfering with your workflow. 
+              If you found our tools helpful and want to support the server costs, consider buying us a coffee!
+            </p>
+            <div class="upi-box" onclick="copyUPI()">
+              <div class="upi-text">
+                <span style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">UPI ID</span>
+                <strong id="upi-id" style="font-size: 1.25rem; color: #10b981; letter-spacing: 0.5px; font-family: 'Inter';">9067693696@axl</strong>
+              </div>
+              <button class="btn-primary" style="padding: 10px 24px; font-size: 0.95rem; border-radius: 12px; background: linear-gradient(135deg, #10b981, #047857); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);" id="copyUpiBtn">
+                📋 Copy
+              </button>
+            </div>
+          </div>
+          <div class="donate-qr-wrapper">
+            <div class="donate-qr-box">
+              <img src="qr-code.png" alt="Donate via PhonePe" id="donate-qr-img" />
+              <div class="scan-text">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                Scan & Pay with PhonePe
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a href="index.html" class="nav-logo" style="margin-bottom: 20px; display: inline-flex;">
+              <div class="nav-logo-icon">🎨</div>
+              PixelCraft AI
+            </a>
             <p>
               Professional AI-powered image tools. Free, private, and no sign-up
               required. Edit images like a pro in your browser.
@@ -872,6 +918,29 @@
           fallbackCopy(phone);
         }
       }
+
+      function copyUPI() {
+        const upi = "9067693696@axl";
+        const btn = document.getElementById("copyUpiBtn");
+        const ogText = btn.innerHTML;
+        
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard
+            .writeText(upi)
+            .then(() => {
+              showToast("✨ UPI ID Copied Successfully!", "success");
+              btn.innerHTML = "✔ Copied!";
+              setTimeout(() => { btn.innerHTML = ogText; }, 2000);
+            })
+            .catch(() => fallbackCopy(upi));
+        } else {
+          fallbackCopy(upi);
+          showToast("✨ UPI ID Copied Successfully!", "success");
+          btn.innerHTML = "✔ Copied!";
+          setTimeout(() => { btn.innerHTML = ogText; }, 2000);
+        }
+      }
+
       function fallbackCopy(text) {
         const el = document.createElement("textarea");
         el.value = text;
