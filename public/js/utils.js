@@ -102,3 +102,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+// Copy Functions
+window.copyUPIAnimated = function() {
+  navigator.clipboard.writeText('9067693696@axl');
+  const btn = document.getElementById('copyUpiBtn');
+  btn.innerHTML = `
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="tick-anim">
+      <circle cx="12" cy="12" r="10" stroke="#10b981" stroke-width="2" fill="rgba(16,185,129,0.2)"/>
+      <path d="M8 12l3 3 5-6" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `;
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .tick-anim {
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    .tick-anim path {
+      stroke-dasharray: 20;
+      stroke-dashoffset: 20;
+      animation: drawTick 0.5s ease 0.2s forwards;
+    }
+    @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes drawTick { to { stroke-dashoffset: 0; } }
+  `;
+  document.head.appendChild(style);
+  setTimeout(() => {
+    btn.innerHTML = '<span>Copy</span>';
+    style.remove();
+  }, 2500);
+}
+
+window.copyPhoneAlert = function() {
+  navigator.clipboard.writeText('+91 9067693696');
+  showToast('Phone number copied!', 'success');
+}

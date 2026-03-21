@@ -174,30 +174,44 @@
           <div class="input-wrapper" id="controls">
             
             <div class="control-group" style="margin-bottom: 12px;">
-              <label>🔗 Enter URL or Text</label>
+              <label>Enter URL or Text</label>
               <input type="text" id="qr-data" class="prompt-input" value="https://pixelcraft-ai.onrender.com/" placeholder="https://example.com" />
             </div>
             
             <div class="options-row">
               <div class="control-group">
-                <label>🎨 Foreground (Dots)</label>
-                <div style="display:flex; align-items:center; gap:10px;">
-                  <input type="color" id="qr-color-fg" value="#0f172a" />
-                  <span id="fg-val" style="font-family:monospace; font-size:0.9rem; color:var(--text-muted)">#0f172a</span>
+                <label>Foreground Pattern</label>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <input type="color" id="qr-color-fg-1" value="#0f172a" />
+                    <span id="fg-val-1" style="font-family:monospace; font-size:0.9rem; color:var(--text-muted)">#0f172a</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <input type="color" id="qr-color-fg-2" value="#3b82f6" />
+                    <span id="fg-val-2" style="font-family:monospace; font-size:0.9rem; color:var(--text-muted)">#3b82f6</span>
+                  </div>
+                  <label style="font-size:0.8rem; margin:0;"><input type="checkbox" id="fg-gradient-toggle" checked style="margin-right:5px;"> Enable Gradient</label>
                 </div>
               </div>
               <div class="control-group">
-                <label>🖌️ Background</label>
-                <div style="display:flex; align-items:center; gap:10px;">
-                  <input type="color" id="qr-color-bg" value="#ffffff" />
-                  <span id="bg-val" style="font-family:monospace; font-size:0.9rem; color:var(--text-muted)">#ffffff</span>
+                <label>Background Space</label>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <input type="color" id="qr-color-bg-1" value="#ffffff" />
+                    <span id="bg-val-1" style="font-family:monospace; font-size:0.9rem; color:var(--text-muted)">#ffffff</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <input type="color" id="qr-color-bg-2" value="#f1f5f9" />
+                    <span id="bg-val-2" style="font-family:monospace; font-size:0.9rem; color:var(--text-muted)">#f1f5f9</span>
+                  </div>
+                  <label style="font-size:0.8rem; margin:0;"><input type="checkbox" id="bg-gradient-toggle" checked style="margin-right:5px;"> Enable Gradient</label>
                 </div>
               </div>
             </div>
 
             <div class="options-row" style="margin-top: 10px;">
               <div class="control-group" style="margin-bottom:0;">
-                <label>🌀 Dot Pattern</label>
+                <label>Dot Pattern</label>
                 <select id="qr-dots" class="prompt-input" style="padding:14px;">
                   <option value="square">Classic Square</option>
                   <option value="rounded" selected>Modern Rounded</option>
@@ -207,7 +221,7 @@
                 </select>
               </div>
               <div class="control-group" style="margin-bottom:0;">
-                <label>👁️ Corner Shape</label>
+                <label>Corner Shape</label>
                 <select id="qr-corners" class="prompt-input" style="padding:14px;">
                   <option value="square">Sharp Square</option>
                   <option value="extra-rounded" selected>Smooth Curved</option>
@@ -218,15 +232,15 @@
 
             <div class="img-upload-group" style="margin-top: 10px;">
               <div>
-                <label style="display:block; font-size:0.9rem; font-weight:600; color:var(--text-main); margin-bottom:4px;">🎯 Center Logo / Icon</label>
+                <label style="display:block; font-size:0.9rem; font-weight:600; color:var(--text-main); margin-bottom:4px;">Center Logo / Icon</label>
                 <span style="font-size:0.8rem; color:var(--text-muted);">Max 2MB image</span>
               </div>
               <input type="file" id="logo-upload" accept="image/png, image/jpeg, image/webp" style="display:none;" />
               <button class="upload-btn" onclick="document.getElementById('logo-upload').click()">
-                📁 Choose File
+                Choose File
               </button>
             </div>
-            <div id="logo-preview-text" style="font-size: 0.85rem; color:#A7F3D0; margin-top:-10px; display:none;">✅ Logo loaded</div>
+            <div id="logo-preview-text" style="font-size: 0.85rem; color:#A7F3D0; margin-top:-10px; display:none;">Logo loaded successfully</div>
 
           </div>
         </div>
@@ -237,8 +251,8 @@
           <div id="qr-preview"></div>
           
           <div class="toolbar">
-             <button class="btn btn-green" id="btn-dl-png" style="width:100%; justify-content:center;">⬇️ Download PNG</button>
-             <button class="btn btn-outline" id="btn-dl-svg" style="width:100%; justify-content:center;">⬇️ Vector SVG</button>
+             <button class="btn btn-green" id="btn-dl-png" style="width:100%; justify-content:center;">Download PNG</button>
+             <button class="btn btn-outline" id="btn-dl-svg" style="width:100%; justify-content:center;">Vector SVG</button>
           </div>
 
         </div>
@@ -275,7 +289,7 @@
               <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Bypass AI detectors with 100% human-like text.</span>
             </a>
             <a href="qr-generator.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
-              <div style="font-size: 1.5rem; margin-bottom: 8px;">🔲</div>
+              <div style="font-size: 1.5rem; margin-bottom: 8px;"></div>
               <strong style="display: block; margin-bottom: 4px;">Advanced QR Generator</strong>
               <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Create custom branded QR codes instantly.</span>
             </a>
@@ -287,73 +301,101 @@
   <script src="../js/utils.js"></script>
   <script>
     const qrData = document.getElementById('qr-data');
-    const colorFg = document.getElementById('qr-color-fg');
-    const colorBg = document.getElementById('qr-color-bg');
-    const fgVal = document.getElementById('fg-val');
-    const bgVal = document.getElementById('bg-val');
+    
+    const colorFg1 = document.getElementById('qr-color-fg-1');
+    const colorFg2 = document.getElementById('qr-color-fg-2');
+    const fgGradCheck = document.getElementById('fg-gradient-toggle');
+    const fgVal1 = document.getElementById('fg-val-1');
+    const fgVal2 = document.getElementById('fg-val-2');
+
+    const colorBg1 = document.getElementById('qr-color-bg-1');
+    const colorBg2 = document.getElementById('qr-color-bg-2');
+    const bgGradCheck = document.getElementById('bg-gradient-toggle');
+    const bgVal1 = document.getElementById('bg-val-1');
+    const bgVal2 = document.getElementById('bg-val-2');
+
     const dotType = document.getElementById('qr-dots');
     const cornerType = document.getElementById('qr-corners');
     const logoUpload = document.getElementById('logo-upload');
     const logoPreviewText = document.getElementById('logo-preview-text');
     
     let qrCode = null;
-    let logoUrl = null;
+    
+    // PixelCraft Default Logo SVG (Base64)
+    const pcLogo = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iIzI1NjNFQiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSI5MCIgZm9udC1mYW1pbHk9ImFyaWFsIj7wn4OoPC90ZXh0Pjwvc3ZnPg==";
+    let logoUrl = pcLogo;
 
     function renderQR() {
       // Clean previous
       document.getElementById('qr-preview').innerHTML = '';
 
+      // Prepare Foreground Setup
+      let dotsSetup = { type: dotType.value };
+      if(fgGradCheck.checked) {
+         dotsSetup.gradient = {
+            type: "linear",
+            rotation: 0.785, // 45 deg
+            colorStops: [{ offset: 0, color: colorFg1.value }, { offset: 1, color: colorFg2.value }]
+         };
+      } else {
+         dotsSetup.color = colorFg1.value;
+      }
+
+      // Prepare Background Setup
+      let bgSetup = {};
+      if(bgGradCheck.checked) {
+         bgSetup.gradient = {
+            type: "linear",
+            rotation: 0.785, // 45 deg
+            colorStops: [{ offset: 0, color: colorBg1.value }, { offset: 1, color: colorBg2.value }]
+         };
+      } else {
+         bgSetup.color = colorBg1.value;
+      }
+
       qrCode = new QRCodeStyling({
         width: 320,
         height: 320,
-        type: "svg", // Render as SVG for crisp preview
+        type: "svg", 
         data: qrData.value || "https://pixelcraft-ai.onrender.com",
         image: logoUrl,
         margin: 10,
         qrOptions: {
           typeNumber: 0,
           mode: "Byte",
-          errorCorrectionLevel: "H" // High error correction to fit logos nicely
+          errorCorrectionLevel: "H" 
         },
         imageOptions: {
           hideBackgroundDots: true,
-          imageSize: 0.4,
+          imageSize: 0.35,
           margin: 10,
           crossOrigin: "anonymous",
         },
-        dotsOptions: {
-          color: colorFg.value,
-          type: dotType.value
-        },
-        backgroundOptions: {
-          color: colorBg.value,
-        },
+        dotsOptions: dotsSetup,
+        backgroundOptions: bgSetup,
         cornersSquareOptions: {
-          color: colorFg.value, // Keep corners matched to FG
+          color: colorFg1.value, 
           type: cornerType.value
         },
         cornersDotOptions: {
-          color: colorFg.value,
-          type: "dot" // Default interior corner to dot looks modern
+          color: fgGradCheck.checked ? colorFg2.value : colorFg1.value,
+          type: "dot" 
         }
       });
 
       qrCode.append(document.getElementById("qr-preview"));
     }
 
-    // Attach immediate rendering updates to inputs
     qrData.addEventListener('input', renderQR);
     dotType.addEventListener('change', renderQR);
     cornerType.addEventListener('change', renderQR);
+    fgGradCheck.addEventListener('change', renderQR);
+    bgGradCheck.addEventListener('change', renderQR);
     
-    colorFg.addEventListener('input', (e) => {
-      fgVal.textContent = e.target.value;
-      renderQR();
-    });
-    colorBg.addEventListener('input', (e) => {
-      bgVal.textContent = e.target.value;
-      renderQR();
-    });
+    colorFg1.addEventListener('input', (e) => { fgVal1.textContent = e.target.value; renderQR(); });
+    colorFg2.addEventListener('input', (e) => { fgVal2.textContent = e.target.value; renderQR(); });
+    colorBg1.addEventListener('input', (e) => { bgVal1.textContent = e.target.value; renderQR(); });
+    colorBg2.addEventListener('input', (e) => { bgVal2.textContent = e.target.value; renderQR(); });
 
     // Handle Logo Loading using file-to-DataURL
     logoUpload.addEventListener('change', (e) => {
