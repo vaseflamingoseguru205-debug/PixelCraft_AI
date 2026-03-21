@@ -1,0 +1,2 @@
+const b64 = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="220">🎨</text><text x="50%" y="85%" text-anchor="middle" fill="#000000" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" font-size="52" font-family="Arial, sans-serif" font-weight="900" letter-spacing="1">PixelCraft AI</text></svg>').toString('base64');
+console.log('data:image/svg+xml;base64,' + b64);
