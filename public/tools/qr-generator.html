@@ -174,13 +174,13 @@
           <div class="input-wrapper" id="controls">
             
             <div class="control-group" style="margin-bottom: 12px;">
-              <label>Enter URL or Text</label>
+              <label>🔗 Enter URL or Text</label>
               <input type="text" id="qr-data" class="prompt-input" value="https://pixelcraft-ai.onrender.com/" placeholder="https://example.com" />
             </div>
             
             <div class="options-row">
               <div class="control-group">
-                <label>Foreground Pattern</label>
+                <label>🎨 Foreground (Dots)</label>
                 <div style="display:flex; flex-direction:column; gap:10px;">
                   <div style="display:flex; align-items:center; gap:10px;">
                     <input type="color" id="qr-color-fg-1" value="#0f172a" />
@@ -194,7 +194,7 @@
                 </div>
               </div>
               <div class="control-group">
-                <label>Background Space</label>
+                <label>🖌️ Background</label>
                 <div style="display:flex; flex-direction:column; gap:10px;">
                   <div style="display:flex; align-items:center; gap:10px;">
                     <input type="color" id="qr-color-bg-1" value="#ffffff" />
@@ -211,7 +211,7 @@
 
             <div class="options-row" style="margin-top: 10px;">
               <div class="control-group" style="margin-bottom:0;">
-                <label>Dot Pattern</label>
+                <label>🌀 Dot Pattern</label>
                 <select id="qr-dots" class="prompt-input" style="padding:14px;">
                   <option value="square">Classic Square</option>
                   <option value="rounded" selected>Modern Rounded</option>
@@ -221,7 +221,7 @@
                 </select>
               </div>
               <div class="control-group" style="margin-bottom:0;">
-                <label>Corner Shape</label>
+                <label>👁️ Corner Shape</label>
                 <select id="qr-corners" class="prompt-input" style="padding:14px;">
                   <option value="square">Sharp Square</option>
                   <option value="extra-rounded" selected>Smooth Curved</option>
@@ -232,15 +232,15 @@
 
             <div class="img-upload-group" style="margin-top: 10px;">
               <div>
-                <label style="display:block; font-size:0.9rem; font-weight:600; color:var(--text-main); margin-bottom:4px;">Center Logo / Icon</label>
+                <label style="display:block; font-size:0.9rem; font-weight:600; color:var(--text-main); margin-bottom:4px;">🎯 Center Logo / Icon</label>
                 <span style="font-size:0.8rem; color:var(--text-muted);">Max 2MB image</span>
               </div>
               <input type="file" id="logo-upload" accept="image/png, image/jpeg, image/webp" style="display:none;" />
               <button class="upload-btn" onclick="document.getElementById('logo-upload').click()">
-                Choose File
+                📁 Choose File
               </button>
             </div>
-            <div id="logo-preview-text" style="font-size: 0.85rem; color:#A7F3D0; margin-top:-10px; display:none;">Logo loaded successfully</div>
+            <div id="logo-preview-text" style="font-size: 0.85rem; color:#A7F3D0; margin-top:-10px; display:none;">✅ Logo loaded</div>
 
           </div>
         </div>
@@ -251,8 +251,8 @@
           <div id="qr-preview"></div>
           
           <div class="toolbar">
-             <button class="btn btn-green" id="btn-dl-png" style="width:100%; justify-content:center;">Download PNG</button>
-             <button class="btn btn-outline" id="btn-dl-svg" style="width:100%; justify-content:center;">Vector SVG</button>
+             <button class="btn btn-green" id="btn-dl-png" style="width:100%; justify-content:center;">⬇️ Download PNG</button>
+             <button class="btn btn-outline" id="btn-dl-svg" style="width:100%; justify-content:center;">⬇️ Vector SVG</button>
           </div>
 
         </div>
@@ -289,7 +289,7 @@
               <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Bypass AI detectors with 100% human-like text.</span>
             </a>
             <a href="qr-generator.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
-              <div style="font-size: 1.5rem; margin-bottom: 8px;"></div>
+              <div style="font-size: 1.5rem; margin-bottom: 8px;">🔲</div>
               <strong style="display: block; margin-bottom: 4px;">Advanced QR Generator</strong>
               <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Create custom branded QR codes instantly.</span>
             </a>
@@ -321,8 +321,8 @@
     
     let qrCode = null;
     
-    // PixelCraft Default Logo SVG (Base64)
-    const pcLogo = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iIzI1NjNFQiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSI5MCIgZm9udC1mYW1pbHk9ImFyaWFsIj7wn4OoPC90ZXh0Pjwvc3ZnPg==";
+    // PixelCraft Default Logo SVG (data uri string encoded safely)
+    const pcLogo = "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22400%22%20viewBox%3D%220%200%20400%20400%22%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2255%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20font-size%3D%22180%22%3E%F0%9F%8E%A8%3C%2Ftext%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2290%25%22%20text-anchor%3D%22middle%22%20fill%3D%22%23000000%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%226%22%20stroke-linejoin%3D%22round%22%20font-size%3D%2246%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-weight%3D%22900%22%20letter-spacing%3D%221%22%3EPixelCraft%20AI%3C%2Ftext%3E%3C%2Fsvg%3E";
     let logoUrl = pcLogo;
 
     function renderQR() {
