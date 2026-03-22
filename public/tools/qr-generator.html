@@ -346,23 +346,26 @@
         return (yiq >= 128) ? '#0f172a' : '#ffffff';
     }
 
-    function generatePcLogo(glowColor) {
-      const textColor = getContrast(glowColor);
-      const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600"><defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="30%" stop-color="${glowColor}" stop-opacity="1"/><stop offset="65%" stop-color="${glowColor}" stop-opacity="0.85"/><stop offset="100%" stop-color="${glowColor}" stop-opacity="0"/></radialGradient></defs><rect width="600" height="600" fill="url(#glow)" /><text x="50%" y="43%" dominant-baseline="middle" text-anchor="middle" font-size="220">🎨</text><text x="50%" y="82%" text-anchor="middle" fill="${textColor}" font-size="58" font-family="Arial, sans-serif" font-weight="900" letter-spacing="1">PixelCraft AI</text></svg>`;
+    function generatePcLogo(bgColor, highlightColor) {
+      if(!bgColor) bgColor = "#ffffff";
+      if(!highlightColor) highlightColor = "#3b82f6";
+      const textColor = getContrast(bgColor);
+      const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600"><defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="35%" stop-color="${bgColor}" stop-opacity="0.95"/><stop offset="70%" stop-color="${highlightColor}" stop-opacity="0.8"/><stop offset="100%" stop-color="${bgColor}" stop-opacity="0"/></radialGradient></defs><rect width="600" height="600" fill="url(#glow)" /><text x="50%" y="43%" dominant-baseline="middle" text-anchor="middle" font-size="220">🎨</text><text x="50%" y="82%" text-anchor="middle" fill="#0f172a" font-size="58" font-family="Arial, sans-serif" font-weight="900" letter-spacing="1">PixelCraft AI</text></svg>`;
       return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgStr)));
     }
     
-    let logoUrl = generatePcLogo("#ffffff");
+    let logoUrl = generatePcLogo("#ffffff", "#3b82f6");
 
     function renderQR() {
       // Clean previous
       document.getElementById('qr-preview').innerHTML = '';
 
-      let currentFgColor = colorFg1.value;
+      let currentBgColor = colorBg1.value;
+      let highlightColor = colorFg2.value; // The secondary foreground color (e.g., light blue)
       
       // Update glow dynamically if user hasn't uploaded a custom logo
       if (isDefaultLogo) {
-         logoUrl = generatePcLogo(currentFgColor);
+         logoUrl = generatePcLogo(currentBgColor, highlightColor);
       }
 
       // Prepare Foreground Setup
