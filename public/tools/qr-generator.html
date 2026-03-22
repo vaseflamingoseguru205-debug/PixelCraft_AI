@@ -123,7 +123,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    #qr-preview svg { max-width: 100%; height: auto; }
+    #qr-preview svg { max-width: 100%; height: auto; border-radius: 12px; }
 
     .toolbar {
       display: flex; gap: 12px; width: 100%; justify-content: center;
@@ -138,6 +138,8 @@
     }
     .upload-btn:hover { background: rgba(59,130,246,0.2); border-color: var(--primary); }
 
+    .ai-qr-glow { box-shadow: 0 0 20px rgba(59,130,246,0.5); border-color: var(--primary) !important; animation: pulseGlow 2s infinite alternate; }
+    @keyframes pulseGlow { from { box-shadow: 0 0 10px rgba(59,130,246,0.2); } to { box-shadow: 0 0 25px rgba(59,130,246,0.7); } }
   </style>
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-886834VX21"></script>
@@ -240,7 +242,18 @@
                 📁 Choose File
               </button>
             </div>
-            <div id="logo-preview-text" style="font-size: 0.85rem; color:#A7F3D0; margin-top:-10px; display:none;">✅ Logo loaded</div>
+            <div id="logo-preview-text" style="font-size: 0.85rem; color:#A7F3D0; margin-top:-10px; display:none; margin-bottom: 16px;">✅ Logo loaded</div>
+
+            <!-- 3D AI QR Add-on UI -->
+            <div class="img-upload-group ai-qr-glow" style="margin-top: 5px; background: rgba(59,130,246,0.05);">
+              <div>
+                <label style="display:block; font-size:0.9rem; font-weight:600; color:var(--text-main); margin-bottom:4px;">✨ 3D AI QR Code (Pro)</label>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Transform QR into stunning AI architectural art!</span>
+              </div>
+              <button class="upload-btn" onclick="showToast('AI 3D Model is currently calibrating! This amazing feature will be fully active in future updates.', 'success')" style="background: var(--primary); color: white; border: none; font-weight: 600;">
+                🌟 Try 3D QR
+              </button>
+            </div>
 
           </div>
         </div>
@@ -320,14 +333,37 @@
     const logoPreviewText = document.getElementById('logo-preview-text');
     
     let qrCode = null;
+    let isDefaultLogo = true;
     
-    // PixelCraft Default Logo SVG (data uri string encoded safely)
-    const pcLogo = "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiB2aWV3Qm94PSIwIDAgNjAwIDYwMCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiIHI9IjUwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMzUlIiBzdG9wLWNvbG9yPSIjZmZmZmZmIiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI2NSUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMC44Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0idXJsKCNnbG93KSIgLz4KICA8dGV4dCB4PSI1MCUiIHk9IjQzJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIyMjAiPvCfjqg8L3RleHQ+CiAgPHRleHQgeD0iNTAlIiB5PSI4MiUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwZjE3MmEiIGZvbnQtc2l6ZT0iNTgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgbGV0dGVyLXNwYWNpbmc9IjEiPlBpeGVsQ3JhZnQgQUk8L3RleHQ+Cjwvc3ZnPg==";
-    let logoUrl = "data:image/svg+xml;base64," + pcLogo;
+    // Dynamic PixelCraft Logo SVG Matcher
+    function getContrast(hexcolor){
+        if (hexcolor.slice(0, 1) === '#') { hexcolor = hexcolor.slice(1); }
+        if(hexcolor.length === 3) hexcolor = hexcolor.split('').map(c => c+c).join('');
+        var r = parseInt(hexcolor.substr(0,2),16);
+        var g = parseInt(hexcolor.substr(2,2),16);
+        var b = parseInt(hexcolor.substr(4,2),16);
+        var yiq = ((r*299)+(g*587)+(b*114))/1000;
+        return (yiq >= 128) ? '#0f172a' : '#ffffff';
+    }
+
+    function generatePcLogo(glowColor) {
+      const textColor = getContrast(glowColor);
+      const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600"><defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="30%" stop-color="${glowColor}" stop-opacity="1"/><stop offset="65%" stop-color="${glowColor}" stop-opacity="0.85"/><stop offset="100%" stop-color="${glowColor}" stop-opacity="0"/></radialGradient></defs><rect width="600" height="600" fill="url(#glow)" /><text x="50%" y="43%" dominant-baseline="middle" text-anchor="middle" font-size="220">🎨</text><text x="50%" y="82%" text-anchor="middle" fill="${textColor}" font-size="58" font-family="Arial, sans-serif" font-weight="900" letter-spacing="1">PixelCraft AI</text></svg>`;
+      return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgStr)));
+    }
+    
+    let logoUrl = generatePcLogo("#ffffff");
 
     function renderQR() {
       // Clean previous
       document.getElementById('qr-preview').innerHTML = '';
+
+      let currentBgColor = colorBg1.value;
+      
+      // Update glow dynamically if user hasn't uploaded a custom logo
+      if (isDefaultLogo) {
+         logoUrl = generatePcLogo(currentBgColor);
+      }
 
       // Prepare Foreground Setup
       let dotsSetup = { type: dotType.value };
@@ -353,13 +389,14 @@
          bgSetup.color = colorBg1.value;
       }
 
+      // Define thick margin and slightly rounded edges
       qrCode = new QRCodeStyling({
-        width: 320,
-        height: 320,
+        width: 340,
+        height: 340,
         type: "svg", 
         data: qrData.value || "https://pixelcraft-ai.onrender.com",
         image: logoUrl,
-        margin: 0,
+        margin: 20,
         qrOptions: {
           typeNumber: 0,
           mode: "Byte",
@@ -409,6 +446,7 @@
 
       const reader = new FileReader();
       reader.onload = (event) => {
+        isDefaultLogo = false;
         logoUrl = event.target.result;
         logoPreviewText.style.display = 'block';
         showToast('Logo added to QR code ✨', 'success');
