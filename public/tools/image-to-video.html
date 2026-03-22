@@ -341,7 +341,7 @@ async function createVideo() {
     await renderFrame(currentImg, currentFrame);
     const pct = Math.round((frameCount / totalFrames) * 100);
     document.getElementById('progress-bar').style.width = pct + '%';
-    document.getElementById('progress-detail').textContent = `Image ${currentImg + 1}/${uploadedImages.length} — Frame ${currentFrame + 1}/${frameDuration}`;
+    document.getElementById('progress-detail').textContent = `Image ${currentImg + 1}/${uploadedImages.length} - Frame ${currentFrame + 1}/${frameDuration}`;
     currentFrame++;
     frameCount++;
     if (currentFrame >= frameDuration) { currentFrame = 0; currentImg++; }

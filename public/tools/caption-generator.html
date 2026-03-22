@@ -284,7 +284,7 @@ const CAPTIONS = {
     linkedin: [
       "Proud to share this milestone in our journey. Grateful for the team that made it possible.",
       "Every challenge is an opportunity to innovate. That's how we grow.",
-      "Collaboration, dedication, and a commitment to excellence — that's our formula."
+      "Collaboration, dedication, and a commitment to excellence - that's our formula."
     ]
   },
   motivational: {
@@ -345,7 +345,7 @@ const CAPTIONS = {
       "Main character energy. Low effort. 😎",
       "No rush. Good energy. Peace. 🌿"
     ],
-    linkedin: ["Work hard, rest harder. Balance isn't a luxury — it's a strategy."]
+    linkedin: ["Work hard, rest harder. Balance isn't a luxury - it's a strategy."]
   }
 };
 
@@ -398,7 +398,7 @@ function generateCaptions() {
       <div style="font-size:0.8rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;">${p.icon} ${p.name}</div>
       ${p.captions.map((cap, i) => `
         <div style="background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;position:relative;">
-          <p style="font-size:0.9rem;color:var(--dark);line-height:1.5;margin-bottom:8px;">${cap}${desc ? ' — ' + desc : ''}</p>
+          <p style="font-size:0.9rem;color:var(--dark);line-height:1.5;margin-bottom:8px;">${cap}${desc ? ' - ' + desc : ''}</p>
           <p style="font-size:0.78rem;color:var(--primary)">${tags}</p>
           ${lang !== 'en' && hinglish[i] ? `<p style="font-size:0.85rem;color:var(--accent);margin-top:6px;">${hinglish[i]}</p>` : ''}
           <button onclick="copyCaption(this)" data-text="${(cap + ' ' + tags).replace(/"/g,'&quot;')}" style="position:absolute;top:10px;right:10px;background:var(--bg2);border:none;border-radius:8px;padding:5px 10px;font-size:0.75rem;font-weight:600;cursor:pointer;color:var(--text);">Copy</button>
