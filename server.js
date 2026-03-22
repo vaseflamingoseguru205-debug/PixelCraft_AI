@@ -142,6 +142,44 @@ app.get('/report', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'website-evolution-report.html'));
 });
 
+// AI Generation Route (Used for 3D AI QR and other tools)
+app.post('/api/generate-image', async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt) return res.status(400).json({ error: "Missing prompt" });
+  
+  if (!process.env.HF_API_KEY) {
+    return res.status(500).json({ error: "HF_API_KEY not configured" });
+  }
+
+  try {
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.HF_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({ inputs: prompt }),
+      }
+    );
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HF API Error: ${errorText}`);
+    }
+    
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64 = buffer.toString('base64');
+    
+    res.json({ image: `data:image/jpeg;base64,${base64}` });
+  } catch (err) {
+    console.error("AI Generation Error:", err.message);
+    res.status(500).json({ error: "Failed to generate AI image" });
+  }
+});
+
 // Middleware to Protect the /tools/ folder (Requires Sign-In to use tools)
 app.use('/tools', (req, res, next) => {
   if (req.isAuthenticated()) {

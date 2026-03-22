@@ -245,14 +245,22 @@
             <div id="logo-preview-text" style="font-size: 0.85rem; color:#A7F3D0; margin-top:-10px; display:none; margin-bottom: 16px;">✅ Logo loaded</div>
 
             <!-- 3D AI QR Add-on UI -->
-            <div class="img-upload-group ai-qr-glow" style="margin-top: 5px; background: rgba(59,130,246,0.05);">
-              <div>
-                <label style="display:block; font-size:0.9rem; font-weight:600; color:var(--text-main); margin-bottom:4px;">✨ 3D AI QR Code (Pro)</label>
-                <span style="font-size:0.8rem; color:var(--text-muted);">Transform QR into stunning AI architectural art!</span>
+            <div class="img-upload-group ai-qr-glow" style="margin-top: 15px; background: rgba(59,130,246,0.05); flex-direction: column; align-items: stretch; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div>
+                  <label style="display:block; font-size:0.9rem; font-weight:600; color:var(--text-main); margin-bottom:4px;">✨ 3D AI QR Code (Pro)</label>
+                  <span style="font-size:0.8rem; color:var(--text-muted);">Transform QR into stunning AI architectural art!</span>
+                </div>
+                <button class="upload-btn" id="toggle-ai-btn" style="background: var(--primary); color: white; border: none; font-weight: 600;">
+                  🌟 Try 3D QR
+                </button>
               </div>
-              <button class="upload-btn" onclick="showToast('AI 3D Model is currently calibrating! This amazing feature will be fully active in future updates.', 'success')" style="background: var(--primary); color: white; border: none; font-weight: 600;">
-                🌟 Try 3D QR
-              </button>
+              <div id="ai-qr-panel" style="display: none; flex-direction: column; gap: 10px; margin-top: 5px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                <label style="font-size: 0.85rem; color: var(--text-main); font-weight: 600;">🔮 Describe your 3D Scene</label>
+                <textarea id="ai-prompt" class="prompt-input" rows="2" placeholder="Ex: A futuristic cyberpunk city block, neon lights, 3D render"></textarea>
+                <button id="btn-generate-ai-qr" class="generate-btn" style="padding: 12px; font-size: 1rem;">🎨 Generate 3D AI Background</button>
+                <div id="ai-loading" style="display:none; color: var(--primary); font-size: 0.85rem; text-align: center; font-weight: bold; margin-top: 5px;">🤖 AI is generating your masterpiece... (~10-15s)</div>
+              </div>
             </div>
 
           </div>
@@ -382,14 +390,28 @@
 
       // Prepare Background Setup
       let bgSetup = {};
-      if(bgGradCheck.checked) {
-         bgSetup.gradient = {
-            type: "linear",
-            rotation: 0.785, // 45 deg
-            colorStops: [{ offset: 0, color: colorBg1.value }, { offset: 1, color: colorBg2.value }]
-         };
+      
+      if (typeof activeAiBackground !== 'undefined' && activeAiBackground) {
+         bgSetup.color = "rgba(255,255,255,0.0)"; // Transparent to show AI image
+         document.getElementById('qr-preview').style.backgroundImage = `url(${activeAiBackground})`;
+         document.getElementById('qr-preview').style.backgroundSize = "cover";
+         document.getElementById('qr-preview').style.backgroundPosition = "center";
+         document.getElementById('qr-preview').style.padding = "0"; // remove padding for full effect
       } else {
-         bgSetup.color = colorBg1.value;
+         document.getElementById('qr-preview').style.backgroundImage = "none";
+         document.getElementById('qr-preview').style.backgroundSize = "unset";
+         document.getElementById('qr-preview').style.backgroundPosition = "unset";
+         document.getElementById('qr-preview').style.padding = "20px";
+         
+         if(bgGradCheck.checked) {
+            bgSetup.gradient = {
+               type: "linear",
+               rotation: 0.785, // 45 deg
+               colorStops: [{ offset: 0, color: colorBg1.value }, { offset: 1, color: colorBg2.value }]
+            };
+         } else {
+            bgSetup.color = colorBg1.value;
+         }
       }
 
       // Define thick margin and slightly rounded edges
@@ -461,14 +483,118 @@
     // Handle Downloads
     document.getElementById('btn-dl-png').addEventListener('click', () => {
       if(!qrCode) return;
-      qrCode.download({ name: "PixelCraft-QR", extension: "png" });
-      showToast('Downloading PNG...', 'success');
+      
+      if (typeof activeAiBackground !== 'undefined' && activeAiBackground) {
+        showToast('Processing 3D AI QR Code for download...', 'success');
+        const aiImg = new Image();
+        aiImg.crossOrigin = "anonymous";
+        aiImg.src = activeAiBackground;
+        
+        aiImg.onload = async () => {
+          const previewDiv = document.getElementById('qr-preview');
+          const qrCanvas = previewDiv.querySelector('canvas');
+          if (!qrCanvas) {
+             qrCode.download({ name: "PixelCraft-AI-QR", extension: "png" });
+             return;
+          }
+          
+          const finalCanvas = document.createElement('canvas');
+          finalCanvas.width = qrCanvas.width;
+          finalCanvas.height = qrCanvas.height;
+          const ctx = finalCanvas.getContext('2d');
+          
+          // Draw AI image covering the entire background
+          ctx.drawImage(aiImg, 0, 0, finalCanvas.width, finalCanvas.height);
+          
+          // Add a subtle white wash so the QR code dots are more readable against complex backgrounds
+          ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+          ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+          
+          // Draw QR canvas on top
+          ctx.drawImage(qrCanvas, 0, 0);
+          
+          const link = document.createElement('a');
+          link.download = "PixelCraft-AI-3D-QR.png";
+          link.href = finalCanvas.toDataURL("image/png");
+          link.click();
+        };
+      } else {
+        qrCode.download({ name: "PixelCraft-QR", extension: "png" });
+        showToast('Downloading PNG...', 'success');
+      }
     });
 
     document.getElementById('btn-dl-svg').addEventListener('click', () => {
       if(!qrCode) return;
       qrCode.download({ name: "PixelCraft-QR-Vector", extension: "svg" });
       showToast('Downloading SVG...', 'success');
+    });
+
+    // Handle 3D AI QR Logic
+    let activeAiBackground = null;
+    const toggleAiBtn = document.getElementById('toggle-ai-btn');
+    const aiQrPanel = document.getElementById('ai-qr-panel');
+    const btnGenerateAiQr = document.getElementById('btn-generate-ai-qr');
+    const aiPrompt = document.getElementById('ai-prompt');
+    const aiLoading = document.getElementById('ai-loading');
+
+    toggleAiBtn.addEventListener('click', () => {
+      if (aiQrPanel.style.display === 'none') {
+        aiQrPanel.style.display = 'flex';
+        toggleAiBtn.innerText = '➖ Hide 3D AI';
+      } else {
+        aiQrPanel.style.display = 'none';
+        toggleAiBtn.innerText = '🌟 Try 3D QR';
+        activeAiBackground = null;
+        renderQR();
+      }
+    });
+
+    btnGenerateAiQr.addEventListener('click', async () => {
+      const prompt = aiPrompt.value.trim();
+      if (!prompt) {
+        showToast('Please enter a description for the AI.', 'error');
+        return;
+      }
+
+      aiLoading.style.display = 'block';
+      btnGenerateAiQr.disabled = true;
+      btnGenerateAiQr.innerText = '⏳ Generating...';
+
+      try {
+        const enhancedPrompt = prompt + ", isometric 3D architectural render, highly detailed, beautifully lit, 8k resolution, unreal engine 5";
+        const response = await fetch('/api/generate-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: enhancedPrompt })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate image from server API.');
+        }
+
+        const data = await response.json();
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        activeAiBackground = data.image; // base64 string
+        showToast('AI Background generated! ✨', 'success');
+        
+        // Ensure white overlay by forcing black qr dots or keeping current
+        colorFg1.value = "#000000";
+        fgGradCheck.checked = false;
+        renderQR();
+        
+      } catch (err) {
+        console.error(err);
+        showToast('Model is warming up! Try again in 10s.', 'error');
+      } finally {
+        aiLoading.style.display = 'none';
+        btnGenerateAiQr.disabled = false;
+        btnGenerateAiQr.innerText = '🎨 Generate 3D AI Background';
+      }
     });
 
     // Initial render
