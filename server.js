@@ -1,4 +1,9 @@
 require('dotenv').config();
+require('dotenv').config();
+require('dotenv').config();
+require('dotenv').config();
+require('dotenv').config();
+require('dotenv').config();
 const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
 const express = require('express');
@@ -64,11 +69,11 @@ passport.deserializeUser(async (id, done) => {
 
 // Configure Google OAuth Strategy
 passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID || 'dummy-client-id-to-prevent-crash',
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy-client-secret',
-    callbackURL: "/auth/google/callback",
-    proxy: true // Necessary for HTTPS on Render
-  },
+  clientID: process.env.GOOGLE_CLIENT_ID || 'dummy-client-id-to-prevent-crash',
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy-client-secret',
+  callbackURL: "/auth/google/callback",
+  proxy: true // Necessary for HTTPS on Render
+},
   async (accessToken, refreshToken, profile, done) => {
     try {
       // Find or create user
@@ -111,7 +116,7 @@ app.get('/auth/google',
 );
 
 // Callback after Google Authorization
-app.get('/auth/google/callback', 
+app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/?error=login_failed' }),
   (req, res) => {
     // Successful authentication, redirect back to intended tool OR home page.
@@ -153,11 +158,11 @@ const nodemailer = require('nodemailer');
 
 app.post('/api/contact', async (req, res) => {
   const { name, email, message } = req.body;
-  if(!name || !email || !message) return res.status(400).json({ error: "Missing fields" });
+  if (!name || !email || !message) return res.status(400).json({ error: "Missing fields" });
 
   try {
     console.log(`📩 Preparing to send email from contact form (Name: ${name}, Email: ${email})`);
-    
+
     // Explicitly configure Gmail SMTP
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -186,7 +191,7 @@ ${message}
     // Attempt to send email
     await transporter.sendMail(mailOptions);
     res.json({ success: true, message: 'Email sent successfully!' });
-  } catch(err) {
+  } catch (err) {
     console.error("🔴 Email Send Error (Check EMAIL_PASS App Password):", err.message);
     res.status(500).json({ error: "Failed to send email", details: err.message });
   }
