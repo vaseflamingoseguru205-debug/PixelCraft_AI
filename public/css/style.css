@@ -507,7 +507,25 @@ body::after {
   transform: translateX(0);
 }
 
+
+.tool-card.upcoming {
+  cursor: default;
+  opacity: 0.8;
+  filter: grayscale(0.5);
+  pointer-events: none;
+}
+.tool-card.upcoming:hover {
+  transform: none;
+  border-color: var(--glass-border);
+  box-shadow: none;
+}
+.tool-card.upcoming .tool-arrow {
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
 /* Icons specific */
+
 .icon-blue {
   background: rgba(59, 130, 246, 0.15);
   color: #60a5fa;
@@ -542,6 +560,11 @@ body::after {
   background: rgba(234, 179, 8, 0.15);
   color: #facc15;
   border: 1px solid rgba(234, 179, 8, 0.2);
+}
+.icon-indigo {
+  background: rgba(79, 70, 229, 0.15);
+  color: #818cf8;
+  border: 1px solid rgba(79, 70, 229, 0.2);
 }
 
 /* ===== HOW IT WORKS ===== */

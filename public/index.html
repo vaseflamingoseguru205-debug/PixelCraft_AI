@@ -105,30 +105,26 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-886834VX21"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
+    function gtag() { dataLayer.push(arguments); }
+    // Consent Mode v2 — defaults DENIED until user accepts
+    gtag('consent', 'default', {
+      analytics_storage: 'denied',
+      ad_storage: 'denied',
+      wait_for_update: 500
+    });
     gtag("js", new Date());
-    gtag("config", "G-886834VX21");
+    gtag("config", "G-886834VX21", { anonymize_ip: true });
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/cookie-consent.css" />
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563EB'/><text y='24' x='6' font-size='20'>🎨</text></svg>" />
 
-  <!-- Google Analytics Tracking (Industry Standard Professional Tracking) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PROTRACKER"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
-    gtag("config", "G-PROTRACKER");
-  </script>
+  <!-- Google Analytics Tracking (Managed via Consent) -->
 
   <!-- AMP Auto Ads Head -->
   <script async custom-element="amp-auto-ads" src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js"></script>
@@ -248,6 +244,17 @@
             highly natural.
           </p>
           <div class="tool-arrow">Open Tool →</div>
+        </a>
+
+        <a href="javascript:void(0)" class="tool-card upcoming" data-cat="ai">
+          <div class="tool-badge" style="background: #f59e0b; color: #fff;">⏳ Upcoming</div>
+          <div class="tool-icon icon-indigo">🧊</div>
+          <h3>3D AI QR Art</h3>
+          <p>
+            Generate breathtaking 3D artistic QR codes that actually scan. 
+            The future of brand branding is here.
+          </p>
+          <div class="tool-arrow">Coming Soon...</div>
         </a>
 
 
@@ -724,6 +731,7 @@
             <li><a href="tools/ai-content-detector.html">Deep AI Detector</a></li>
             <li><a href="tools/ai-prompt-humanizer.html">AI Text Humanizer</a></li>
             <li><a href="tools/object-remover.html">Object Remover</a></li>
+            <li><a href="#" style="opacity:0.5; cursor:default;">3D AI QR Art (Soon)</a></li>
           </ul>
         </div>
         <div class="footer-col">
@@ -749,8 +757,22 @@
             <li><a href="tools/smart-resize.html">Smart Social Resize</a></li>
           </ul>
         </div>
+        </div>
       </div>
-      <div class="footer-bottom">
+      <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; border-top: 1px solid var(--glass-border); padding-top: 30px;">
+        <a href="privacy-policy.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Privacy Policy</a>
+        <span style="color: var(--glass-border);">|</span>
+        <a href="terms-conditions.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Terms & Conditions</a>
+        <span style="color: var(--glass-border);">|</span>
+        <a href="disclaimer.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Disclaimer</a>
+        <span style="color: var(--glass-border);">|</span>
+        <a href="about-us.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">About Us</a>
+        <span style="color: var(--glass-border);">|</span>
+        <a href="contact-us.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Contact Us</a>
+        <span style="color: var(--glass-border);">|</span>
+        <a href="cookies-policy.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Cookies Policy</a>
+      </div>
+      <div class="footer-bottom" style="border-top: none; padding-top: 0;">
         <span>© 2026 PixelCraft AI - All tools are free forever</span>
         <span>Made by 💗 Biradar Swapnil</span>
       </div>
@@ -758,6 +780,7 @@
   </footer>
 
   <script src="js/utils.js"></script>
+  <script src="js/cookie-consent.js"></script>
   <script>
     // Filter tools
     document.querySelectorAll(".filter-btn").forEach((btn) => {

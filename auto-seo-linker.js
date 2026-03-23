@@ -34,8 +34,32 @@ const relatedToolsHTML = `
       <!-- END RELATED TOOLS -->
 `;
 
+const footerHTML = `
+  <!-- GLOBAL FOOTER -->
+  <footer class="footer" style="border-top: 1px solid var(--glass-border); padding: 60px 24px 30px; position: relative; background: rgba(0, 0, 0, 0.3); margin-top: 80px;">
+    <div class="container" style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 2;">
+      <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; border-top: 1px solid var(--glass-border); padding-top: 30px;">
+        <a href="../privacy-policy.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Privacy Policy</a>
+        <span style="color: var(--glass-border);">|</span>
+        <a href="../terms-conditions.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Terms & Conditions</a>
+        <span style="color: var(--glass-border);">|</span>
+        <a href="../disclaimer.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Disclaimer</a>
+        <span style="color: var(--glass-border);">|</span>
+        <a href="../about-us.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">About Us</a>
+        <span style="color: var(--glass-border);">|</span>
+        <a href="../contact-us.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Contact Us</a>
+      </div>
+      <div class="footer-bottom" style="border-top: none; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-size: 0.9rem; color: var(--text-muted);">
+        <span>© 2026 PixelCraft AI - All tools are free forever</span>
+        <span>Made by 💗 Biradar Swapnil</span>
+      </div>
+    </div>
+  </footer>
+`;
+
 files.forEach(file => {
-  let content = fs.readFileSync(path.join(toolsDir, file), 'utf8');
+  const filePath = path.join(toolsDir, file);
+  let content = fs.readFileSync(filePath, 'utf8');
 
   // 1. Extract Title and Description
   let titleMatch = content.match(/<title>(.*?)<\/title>/i);
@@ -72,18 +96,15 @@ files.forEach(file => {
   // 3. Inject missing SEO tags (if Open Graph isnt there)
   if (!content.includes('og:title')) {
     content = content.replace(/(<meta\s+name=["']description["'][^>]+>)/i, `$1\n${seoBlock}`);
-  } else {
-    // Or just boldly replace <head> inner content partially?
-    // Let's just update the canonical if needed
   }
 
-  // FORCE INJECT CANONICAL if missing and we didnt inject whole block
+  // FORCE INJECT CANONICAL
   if (!content.includes('rel="canonical"')) {
      content = content.replace(/(<title>.*?<\/title>)/i, `$1\n  <link rel="canonical" href="${canonicalUrl}"/>`);
   }
 
-  // 4. Force Inject Google Tag if completely missing
-  if (!content.includes('G-886834 VX21') && !content.includes('G-886834VX21')) {
+  // 4. Force Inject Google Tag
+  if (!content.includes('G-886834VX21')) {
     const gtag = `
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-886834VX21"></script>
   <script>
@@ -95,19 +116,21 @@ files.forEach(file => {
     content = content.replace('</head>', `${gtag}\n</head>`);
   }
 
-  // 5. Replace "RELATED TOOLS" section.
-  // First, strip old related tools sections to prevent duplicates
+  // 5. Clean & Inject Related Tools + Footer
   content = content.replace(/<!-- RELATED TOOLS.*?-->[\s\S]*?<!-- END RELATED TOOLS -->/g, '');
   content = content.replace(/<!-- RELATED TOOLS FOR SEO INTERNAL LINKING -->[\s\S]*?<!-- END RELATED TOOLS -->/g, '');
-  
-  // Insert the fresh Related Tools block right before closing </div> associated with tool workspace, or before <script src="../js/utils.js">
+  content = content.replace(/<!-- GLOBAL FOOTER -->[\s\S]*?<\/footer>/g, '');
+  content = content.replace(/<footer[\s\S]*?<\/footer>/g, '');
+
+  const combinedInjection = `\n${relatedToolsHTML}\n${footerHTML}\n`;
+
   if (content.includes('<script src="../js/utils.js">')) {
-      content = content.replace('<script src="../js/utils.js">', `${relatedToolsHTML}\n  <script src="../js/utils.js">`);
+      content = content.replace('<script src="../js/utils.js">', `${combinedInjection}<script src="../js/utils.js">`);
   } else if (content.includes('</body>')) {
-      content = content.replace('</body>', `${relatedToolsHTML}\n</body>`);
+      content = content.replace('</body>', `${combinedInjection}</body>`);
   }
 
-  fs.writeFileSync(path.join(toolsDir, file), content, 'utf8');
+  fs.writeFileSync(filePath, content, 'utf8');
 });
 
-console.log('✅ Automated SEO Tags and Internal Linking fixed for all HTML tools.');
+console.log('✅ Automated SEO, Related Tools, and Legal Footers fixed for all tool pages.');

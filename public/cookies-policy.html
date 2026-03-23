@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cookies Policy — PixelCraft AI</title>
+  <meta name="description" content="PixelCraft AI Cookies Policy — Learn what cookies we use, why we use them, and how you can control them." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://pixelcraft-ai.onrender.com/cookies-policy.html" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563EB'/><text y='24' x='6' font-size='20'>🎨</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/cookie-consent.css" />
+
+  <style>
+    .policy-hero {
+      padding: 140px 24px 60px;
+      text-align: center;
+    }
+    .policy-hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+    .policy-hero p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+    .policy-body {
+      padding: 0 24px 100px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .policy-section {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 36px 40px;
+      margin-bottom: 24px;
+      transition: var(--transition-smooth);
+    }
+    .policy-section:hover {
+      border-color: var(--glass-border-hover);
+      background: var(--glass-hover);
+    }
+    .policy-section h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-main);
+    }
+    .policy-section h2 .ps-icon {
+      width: 36px; height: 36px;
+      background: rgba(26,86,219,0.12);
+      border: 1px solid rgba(26,86,219,0.2);
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .policy-section p,
+    .policy-section li {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      margin-bottom: 10px;
+    }
+    .policy-section ul {
+      padding-left: 0;
+      list-style: none;
+    }
+    .policy-section ul li {
+      padding: 8px 0 8px 22px;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .policy-section ul li:last-child { border-bottom: none; }
+    .policy-section ul li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .cookie-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 0.87rem;
+    }
+    .cookie-table th {
+      background: rgba(26,86,219,0.1);
+      color: #60a5fa;
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 600;
+      font-family: "Outfit", sans-serif;
+      border-bottom: 1px solid rgba(26,86,219,0.2);
+    }
+    .cookie-table th:first-child { border-radius: 10px 0 0 0; }
+    .cookie-table th:last-child  { border-radius: 0 10px 0 0; }
+    .cookie-table td {
+      padding: 11px 16px;
+      color: var(--text-muted);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: top;
+      line-height: 1.6;
+    }
+    .cookie-table tr:last-child td { border-bottom: none; }
+    .cookie-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .badge-essential {
+      background: rgba(16,185,129,0.15);
+      color: #34d399;
+      border: 1px solid rgba(16,185,129,0.25);
+      border-radius: 100px;
+      padding: 2px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-analytics {
+      background: rgba(59,130,246,0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 100px;
+      padding: 2px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-ads {
+      background: rgba(245,158,11,0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245,158,11,0.25);
+      border-radius: 100px;
+      padding: 2px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .policy-updated {
+      text-align: center;
+      color: rgba(100,116,139,0.7);
+      font-size: 0.82rem;
+      margin-top: 40px;
+    }
+    .manage-consent-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg,var(--primary),var(--accent));
+      color: #fff;
+      border: none;
+      border-radius: 100px;
+      padding: 14px 28px;
+      font-family: "Outfit",sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 24px var(--glow-primary);
+      transition: all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+      text-decoration: none;
+      margin-top: 16px;
+    }
+    .manage-consent-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 32px var(--glow-primary);
+    }
+    @media (max-width: 600px) {
+      .policy-section { padding: 24px 20px; }
+      .cookie-table th, .cookie-table td { padding: 10px 12px; font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">🎨</div>
+      PixelCraft AI
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#tools">Tools</a></li>
+      <li><a href="privacy-policy.html">Privacy</a></li>
+      <li><a href="terms-conditions.html">Terms</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="policy-hero">
+    <div class="section-label">Legal</div>
+    <h1>🍪 Cookies Policy</h1>
+    <p>Last updated: March 23, 2026 &nbsp;·&nbsp; Effective immediately</p>
+  </section>
+
+  <!-- Body -->
+  <div class="policy-body">
+
+    <div class="policy-section">
+      <h2><span class="ps-icon">📋</span> What Are Cookies?</h2>
+      <p>Cookies are small text files stored on your device when you visit a website. They help websites remember your preferences, understand how you interact with pages, and provide a better user experience. Cookies themselves cannot run programs or deliver viruses — they are just data files.</p>
+      <p>PixelCraft AI uses cookies strictly to improve your experience and to ensure our services function correctly. We never use cookies to collect sensitive personal information.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2><span class="ps-icon">🔐</span> Essential Cookies (Always Active)</h2>
+      <p>These cookies are strictly necessary for the website to operate. Without them, core features like navigation, security, and session management would not work. They cannot be disabled.</p>
+      <table class="cookie-table">
+        <thead>
+          <tr>
+            <th>Cookie Name</th>
+            <th>Purpose</th>
+            <th>Duration</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>pc_consent_v1</code></td>
+            <td>Stores your cookie consent preferences so you are not asked repeatedly.</td>
+            <td>1 year</td>
+            <td><span class="badge-essential">Essential</span></td>
+          </tr>
+          <tr>
+            <td><code>pc_consent_prefs_v1</code></td>
+            <td>Stores your granular cookie preferences (analytics, ads, social).</td>
+            <td>1 year</td>
+            <td><span class="badge-essential">Essential</span></td>
+          </tr>
+          <tr>
+            <td><code>connect.sid</code></td>
+            <td>Session cookie for authentication when signed in with Google.</td>
+            <td>Session</td>
+            <td><span class="badge-essential">Essential</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="policy-section">
+      <h2><span class="ps-icon">📊</span> Analytics Cookies (Optional)</h2>
+      <p>These cookies help us understand how visitors use PixelCraft AI — which tools are popular, how long people stay, and where they come from. All data is anonymized and aggregated. You can opt out at any time.</p>
+      <table class="cookie-table">
+        <thead>
+          <tr>
+            <th>Cookie Name</th>
+            <th>Provider</th>
+            <th>Purpose</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>_ga</code></td>
+            <td>Google Analytics</td>
+            <td>Registers a unique ID to generate statistical data on how you use the website.</td>
+            <td>2 years</td>
+          </tr>
+          <tr>
+            <td><code>_ga_*</code></td>
+            <td>Google Analytics</td>
+            <td>Used to persist session state between page requests.</td>
+            <td>2 years</td>
+          </tr>
+          <tr>
+            <td><code>_gid</code></td>
+            <td>Google Analytics</td>
+            <td>Registers a unique ID that is used to generate statistical data.</td>
+            <td>24 hours</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin-top:14px; font-size:0.85rem;">Provider privacy policy: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" style="color:#60a5fa;">Google Privacy Policy ↗</a></p>
+    </div>
+
+    <div class="policy-section">
+      <h2><span class="ps-icon">📢</span> Advertising Cookies (Optional)</h2>
+      <p>When you have consented to ads, Google AdSense may set cookies to display personalized advertisements. These help keep PixelCraft AI free to use.</p>
+      <table class="cookie-table">
+        <thead>
+          <tr>
+            <th>Cookie Name</th>
+            <th>Provider</th>
+            <th>Purpose</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>__gads</code>, <code>__gpi</code></td>
+            <td>Google AdSense</td>
+            <td>Registers user data for targeted advertising purposes.</td>
+            <td>1 year</td>
+          </tr>
+          <tr>
+            <td><code>IDE</code></td>
+            <td>Google DoubleClick</td>
+            <td>Used to register and report actions after viewing or clicking an ad.</td>
+            <td>1 year</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin-top:14px; font-size:0.85rem;">You can opt out of personalized advertising: <a href="https://adssettings.google.com" target="_blank" rel="noopener" style="color:#60a5fa;">Google Ad Settings ↗</a></p>
+    </div>
+
+    <div class="policy-section">
+      <h2><span class="ps-icon">🌐</span> Third-Party Services</h2>
+      <p>PixelCraft AI integrates with the following third-party services which may set their own cookies:</p>
+      <ul>
+        <li><strong>Google Fonts</strong> — For loading web fonts. No personal data is collected.</li>
+        <li><strong>Google Analytics</strong> — For anonymous usage analytics (opt-in).</li>
+        <li><strong>Google AdSense</strong> — For serving advertisements (opt-in).</li>
+        <li><strong>Hugging Face API</strong> — For AI model inference. No cookies are set by this service.</li>
+        <li><strong>Render.com</strong> — Our hosting provider may set infrastructure-level cookies.</li>
+      </ul>
+    </div>
+
+    <div class="policy-section">
+      <h2><span class="ps-icon">⚙️</span> How to Manage Cookies</h2>
+      <p>You are in full control of your cookie preferences. Here are your options:</p>
+      <ul>
+        <li><strong>Our consent tool</strong> — Click the "Cookie Preferences" badge in the corner of any page to update your choices instantly.</li>
+        <li><strong>Browser settings</strong> — You can block or delete cookies through your browser settings. Note that disabling essential cookies may break some features.</li>
+        <li><strong>Opt-out tools</strong> — Use the <a href="https://optout.networkadvertising.org" target="_blank" rel="noopener" style="color:#60a5fa;">NAI opt-out tool ↗</a> or <a href="https://www.aboutads.info/choices" target="_blank" rel="noopener" style="color:#60a5fa;">DAA opt-out tool ↗</a> to control advertising cookies.</li>
+      </ul>
+      <div style="text-align:center; margin-top:20px;">
+        <button class="manage-consent-btn" onclick="window.dispatchEvent(new CustomEvent('pcOpenConsent'));">
+          ⚙️ &nbsp;Manage My Cookie Preferences
+        </button>
+      </div>
+    </div>
+
+    <div class="policy-section">
+      <h2><span class="ps-icon">📧</span> Contact & Updates</h2>
+      <p>If you have questions about our use of cookies, please contact us:</p>
+      <ul>
+        <li>Email: <a href="mailto:swapnil.biradar.cse@gmail.com" style="color:#60a5fa;">swapnil.biradar.cse@gmail.com</a></li>
+        <li>Contact page: <a href="contact-us.html" style="color:#60a5fa;">Contact Us</a></li>
+      </ul>
+      <p style="margin-top:10px;">We may update this Cookies Policy periodically. Significant changes will be communicated via the consent banner. Continued use of our site after changes constitutes acceptance of the updated policy.</p>
+    </div>
+
+    <p class="policy-updated">© 2026 PixelCraft AI — Cookies Policy v1.0 &nbsp;·&nbsp; Last updated March 23, 2026</p>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap; margin-bottom:24px;">
+        <a href="privacy-policy.html" style="color:var(--text-muted);text-decoration:none;font-size:0.9rem;transition:0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Privacy Policy</a>
+        <span style="color:var(--glass-border);">|</span>
+        <a href="terms-conditions.html" style="color:var(--text-muted);text-decoration:none;font-size:0.9rem;transition:0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Terms &amp; Conditions</a>
+        <span style="color:var(--glass-border);">|</span>
+        <a href="cookies-policy.html" style="color:var(--primary);text-decoration:none;font-size:0.9rem;">Cookies Policy</a>
+        <span style="color:var(--glass-border);">|</span>
+        <a href="disclaimer.html" style="color:var(--text-muted);text-decoration:none;font-size:0.9rem;transition:0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Disclaimer</a>
+      </div>
+      <div class="footer-bottom" style="border-top:none;padding-top:0;">
+        <span>© 2026 PixelCraft AI — All tools are free forever</span>
+        <span>Made with 💗 by Biradar Swapnil</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/utils.js"></script>
+  <script src="js/cookie-consent.js"></script>
+
+  <!-- Open consent modal if "Manage Preferences" button clicked on this page -->
+  <script>
+    window.addEventListener('pcOpenConsent', () => {
+      // Remove existing badge and re-open
+      const badge = document.getElementById('cc-floating-badge');
+      if (badge) badge.click();
+    });
+  </script>
+</body>
+</html>
