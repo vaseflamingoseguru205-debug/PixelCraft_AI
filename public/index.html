@@ -221,6 +221,9 @@
         <button class="btn btn-outline filter-btn" data-filter="convert">
           🔄 Convert
         </button>
+        <button class="btn btn-outline filter-btn" data-filter="upcoming">
+          ⏳ Upcoming
+        </button>
       </div>
 
       <div class="tools-grid" id="tools-grid">
@@ -245,7 +248,7 @@
           <div class="tool-arrow">Open Tool →</div>
         </a>
 
-        <a href="javascript:void(0)" class="tool-card upcoming" data-cat="ai">
+        <a href="javascript:void(0)" class="tool-card upcoming" data-cat="upcoming" style="display:none;">
           <div class="tool-badge" style="background: #f59e0b; color: #fff;">⏳ Upcoming</div>
           <div class="tool-icon icon-indigo">🧊</div>
           <h3>3D AI QR Art</h3>
@@ -789,8 +792,14 @@
         btn.className = "btn btn-blue filter-btn active";
         const filter = btn.dataset.filter;
         document.querySelectorAll(".tool-card").forEach((card) => {
-          const show = filter === "all" || card.dataset.cat === filter;
-          card.style.display = show ? "block" : "none";
+          if (filter === "all") {
+            // Hide upcoming tools in the "All" view
+            const isUpcoming = card.dataset.cat === "upcoming";
+            card.style.display = isUpcoming ? "none" : "block";
+          } else {
+            // Show only matches for the selected category
+            card.style.display = card.dataset.cat === filter ? "block" : "none";
+          }
         });
       });
     });
