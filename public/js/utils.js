@@ -144,6 +144,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const currentUrl = window.location.href.toLowerCase();
   const isExcluded = excludedPages.some(page => currentUrl.includes(page));
 
+  // Clear consent when logout is clicked
+  document.addEventListener("click", (e) => {
+    if (e.target.closest('a[href="/logout"]')) {
+      localStorage.removeItem("pc_cookie_consent_min");
+      sessionStorage.removeItem("pc_cookie_consent_session");
+    }
+  });
+
   if (!isExcluded) {
     let currentUserEmail = null;
     try {
@@ -156,26 +164,29 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     } catch (e) {}
 
+    // Check both localStorage and sessionStorage
+    // sessionStorage is for the "reload" / "fresh session" behavior the user requested
     let consentData = null;
     try {
-      // For backwards compatibility: if it was stored as simple text "true", we parse it as string then fallback
       const lsRaw = localStorage.getItem("pc_cookie_consent_min");
-      if (lsRaw === "true") {
-        consentData = { accepted: true, timestamp: Date.now(), email: currentUserEmail };
+      const ssRaw = sessionStorage.getItem("pc_cookie_consent_session");
+      
+      // If the user wants it on reload, we prioritize checking a flag that resets on reload
+      // But they also want "Do not show again after acceptance" in the SAME session.
+      // So we use sessionStorage to track acceptance in the current window session.
+      if (ssRaw) {
+        consentData = JSON.parse(ssRaw);
       } else if (lsRaw) {
+        // Fallback to localStorage if no session data yet
         consentData = JSON.parse(lsRaw);
       }
     } catch(e) {}
 
-    const thirtyDays = 30 * 24 * 60 * 60 * 1000;
     let needsConsent = true;
-
     if (consentData && consentData.accepted) {
-      const age = Date.now() - (consentData.timestamp || 0);
       // Email must match whatever is currently logged in, or both null
       const emailMatches = consentData.email === currentUserEmail;
-      
-      if (age < thirtyDays && emailMatches) {
+      if (emailMatches) {
         needsConsent = false;
       }
     }
@@ -310,15 +321,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       requestAnimationFrame(() => {
         setTimeout(() => {
           cc.classList.add("cc-show");
-        }, 500);
+        }, 800);
       });
 
       document.getElementById("cc-accept-all").addEventListener("click", () => {
-        localStorage.setItem("pc_cookie_consent_min", JSON.stringify({
+        const data = JSON.stringify({
           accepted: true,
           timestamp: Date.now(),
           email: currentUserEmail
-        }));
+        });
+        localStorage.setItem("pc_cookie_consent_min", data);
+        sessionStorage.setItem("pc_cookie_consent_session", data);
         cc.classList.remove("cc-show");
         setTimeout(() => cc.remove(), 600);
       });
