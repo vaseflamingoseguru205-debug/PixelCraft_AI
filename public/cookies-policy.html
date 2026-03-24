@@ -10,7 +10,6 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563EB'/><text y='24' x='6' font-size='20'>🎨</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/cookie-consent.css" />
 
   <style>
     .policy-hero {
@@ -332,11 +331,6 @@
         <li><strong>Browser settings</strong> — You can block or delete cookies through your browser settings. Note that disabling essential cookies may break some features.</li>
         <li><strong>Opt-out tools</strong> — Use the <a href="https://optout.networkadvertising.org" target="_blank" rel="noopener" style="color:#60a5fa;">NAI opt-out tool ↗</a> or <a href="https://www.aboutads.info/choices" target="_blank" rel="noopener" style="color:#60a5fa;">DAA opt-out tool ↗</a> to control advertising cookies.</li>
       </ul>
-      <div style="text-align:center; margin-top:20px;">
-        <button class="manage-consent-btn" onclick="window.dispatchEvent(new CustomEvent('pcOpenConsent'));">
-          ⚙️ &nbsp;Manage My Cookie Preferences
-        </button>
-      </div>
     </div>
 
     <div class="policy-section">
@@ -372,15 +366,5 @@
   </footer>
 
   <script src="js/utils.js"></script>
-  <script src="js/cookie-consent.js"></script>
-
-  <!-- Open consent modal if "Manage Preferences" button clicked on this page -->
-  <script>
-    window.addEventListener('pcOpenConsent', () => {
-      // Remove existing badge and re-open
-      const badge = document.getElementById('cc-floating-badge');
-      if (badge) badge.click();
-    });
-  </script>
 </body>
 </html>

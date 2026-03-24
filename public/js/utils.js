@@ -137,3 +137,142 @@ window.copyPhoneAlert = function() {
   navigator.clipboard.writeText('+91 9067693696');
   showToast('Phone number copied!', 'success');
 }
+
+// ===== Light Cookie Consent =====
+document.addEventListener("DOMContentLoaded", () => {
+  const excludedPages = ["privacy-policy", "terms-conditions", "disclaimer", "about-us", "contact-us", "cookies-policy"];
+  const currentUrl = window.location.href.toLowerCase();
+  const isExcluded = excludedPages.some(page => currentUrl.includes(page));
+
+  if (!isExcluded && !localStorage.getItem("pc_cookie_consent_min")) {
+    const cc = document.createElement("div");
+    cc.id = "minimal-cookie-consent";
+    cc.innerHTML = `
+      <style>
+        #minimal-cookie-consent {
+          position: fixed;
+          bottom: 24px;
+          left: 24px;
+          width: calc(100% - 48px);
+          max-width: 360px;
+          background: rgba(15, 23, 42, 0.7);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 16px;
+          padding: 24px;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+          z-index: 99999;
+          transform: translateY(40px);
+          opacity: 0;
+          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+          color: #f8fafc;
+          font-family: inherit;
+        }
+        #minimal-cookie-consent.cc-show {
+          transform: translateY(0);
+          opacity: 1;
+        }
+        .cc-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 12px;
+        }
+        .cc-icon {
+          font-size: 1.3rem;
+        }
+        .cc-title {
+          font-weight: 700;
+          font-size: 1.05rem;
+          color: #fff;
+        }
+        .cc-text {
+          font-size: 0.9rem;
+          line-height: 1.6;
+          margin-bottom: 20px;
+          color: #cbd5e1;
+        }
+        .cc-actions {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+        }
+        .cc-accept-btn {
+          flex: 1;
+          background: #2563eb;
+          color: #fff;
+          border: none;
+          padding: 12px 16px;
+          border-radius: 12px;
+          font-size: 0.95rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.3s, transform 0.2s;
+          text-align: center;
+        }
+        .cc-accept-btn:hover {
+          background: #1d4ed8;
+          transform: translateY(-2px);
+        }
+        .cc-manage-btn {
+          font-size: 0.9rem;
+          color: #94a3b8;
+          text-decoration: none;
+          background: none;
+          border: none;
+          cursor: pointer;
+          transition: color 0.3s;
+          padding: 8px;
+        }
+        .cc-manage-btn:hover {
+          color: #e2e8f0;
+          text-decoration: underline;
+        }
+        @media (max-width: 480px) {
+          #minimal-cookie-consent {
+            left: 16px;
+            bottom: 16px;
+            width: calc(100% - 32px);
+          }
+          .cc-actions {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          .cc-manage-btn {
+            margin-top: 4px;
+          }
+        }
+      </style>
+      <div class="cc-header">
+        <span class="cc-icon">🍪</span>
+        <span class="cc-title">Privacy & Cookies</span>
+      </div>
+      <div class="cc-text">
+        We use cookies to ensure you get the best experience and to personalize content.
+      </div>
+      <div class="cc-actions">
+        <button class="cc-accept-btn" id="cc-accept-all">Accept All</button>
+        <button class="cc-manage-btn" id="cc-manage-prefs">Manage Preferences</button>
+      </div>
+    `;
+    document.body.appendChild(cc);
+
+    const manageBtn = document.getElementById("cc-manage-prefs");
+    const prefix = currentUrl.includes("/tools/") || currentUrl.includes("\\tools\\") ? "../" : "./";
+    manageBtn.onclick = () => { window.location.href = prefix + "cookies-policy.html"; };
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        cc.classList.add("cc-show");
+      }, 500);
+    });
+
+    document.getElementById("cc-accept-all").addEventListener("click", () => {
+      localStorage.setItem("pc_cookie_consent_min", "true");
+      cc.classList.remove("cc-show");
+      setTimeout(() => cc.remove(), 400);
+    });
+  }
+});
