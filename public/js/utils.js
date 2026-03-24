@@ -201,7 +201,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             position: fixed;
             bottom: 24px;
             left: 24px;
-            width: calc(100% - 48px);
+            right: 24px;
+            width: auto;
             max-width: 440px;
             background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(24px);
@@ -220,6 +221,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           #minimal-cookie-consent.cc-show {
             transform: translateY(0);
             opacity: 1;
+          }
+          /* Lock tools until accepted */
+          .tools-grid, .tool-workspace, .tool-card {
+            pointer-events: none !important;
+            filter: blur(3px) grayscale(0.5);
+            transition: filter 0.5s ease;
+            user-select: none;
           }
           .cc-header {
             display: flex;
@@ -300,11 +308,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
         </style>
         <div class="cc-header">
-          <span class="cc-icon">🍪</span>
-          <span class="cc-title">Privacy & Cookies</span>
+          <span class="cc-icon">🔒</span>
+          <span class="cc-title">Tool Access Locked</span>
         </div>
         <div class="cc-text">
-          We respect your privacy! We use cookies and similar technologies to give you the best experience, secure your session, and analyze our traffic. Please review our policies to learn more.
+          Please accept our privacy & cookie policy to unlock and use PixelCraft AI's professional tools. We respect your data and privacy.
         </div>
         <div class="cc-links-grid">
           <a href="${prefix}privacy-policy.html" class="cc-link-item">Privacy Policy</a> <span class="cc-link-sep">|</span>
@@ -314,7 +322,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           <a href="${prefix}contact-us.html" class="cc-link-item">Contact Us</a> <span class="cc-link-sep">|</span>
           <a href="${prefix}cookies-policy.html" class="cc-link-item">Cookies Policy</a>
         </div>
-        <button class="cc-accept-btn" id="cc-accept-all">Accept All &amp; Continue</button>
+        <button class="cc-accept-btn" id="cc-accept-all">Accept &amp; Unlock Tools</button>
       `;
       document.body.appendChild(cc);
 
@@ -332,6 +340,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         localStorage.setItem("pc_cookie_consent_min", data);
         sessionStorage.setItem("pc_cookie_consent_session", data);
+        
+        // Unlock tools
+        const style = document.createElement('style');
+        style.innerHTML = `
+          .tools-grid, .tool-workspace, .tool-card {
+            pointer-events: auto !important;
+            filter: none !important;
+            user-select: auto !important;
+          }
+        `;
+        document.head.appendChild(style);
+        
         cc.classList.remove("cc-show");
         setTimeout(() => cc.remove(), 600);
       });
