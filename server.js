@@ -181,6 +181,7 @@ app.post('/api/generate-image', async (req, res) => {
 });
 
 // Middleware to Protect the /tools/ folder (Requires Sign-In to use tools)
+/*
 app.use('/tools', (req, res, next) => {
   if (req.isAuthenticated()) {
     // Allow tool access
@@ -191,6 +192,7 @@ app.use('/tools', (req, res, next) => {
   req.session.returnTo = req.originalUrl;
   res.redirect('/auth/google');
 });
+*/
 
 const nodemailer = require('nodemailer');
 
