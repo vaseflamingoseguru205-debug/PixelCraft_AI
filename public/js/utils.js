@@ -141,7 +141,7 @@ window.copyPhoneAlert = function() {
 // ===== Light Cookie Consent =====
 /*
 document.addEventListener("DOMContentLoaded", async () => {
-... (already handled by block replacement)
+...
 ...
 });
 */
