@@ -138,10 +138,101 @@ window.copyPhoneAlert = function() {
   showToast('Phone number copied!', 'success');
 }
 
-// ===== Light Cookie Consent =====
-/*
-document.addEventListener("DOMContentLoaded", async () => {
-...
-...
+// ===== PWA CONFIGURATION =====
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('PWA: Service Worker registered'))
+      .catch(err => console.error('PWA: Service Worker error', err));
+  });
+}
+
+// Global PWA Install Handling
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showPWAInstallBanner();
 });
-*/
+
+function showPWAInstallBanner() {
+  if (document.getElementById('pwa-install-banner')) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'pwa-install-banner';
+  banner.className = 'pwa-install-banner';
+  banner.innerHTML = `
+    <div class="pwa-content">
+      <div class="pwa-icon-mini">🎨</div>
+      <div class="pwa-text">
+        <strong>Install PixelCraft AI</strong>
+        <span>Add to home screen for 1-click access</span>
+      </div>
+      <button class="pwa-install-btn" id="pwa-install-trigger">Install 🚀</button>
+      <button class="pwa-close-btn">&times;</button>
+    </div>
+  `;
+
+  // Add styles dynamically if not present
+  if (!document.getElementById('pwa-styles')) {
+    const style = document.createElement('style');
+    style.id = 'pwa-styles';
+    style.innerHTML = `
+      .pwa-install-banner {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 99999;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 10px 16px;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        width: max-content;
+        max-width: 95vw;
+        animation: pwaSlideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .pwa-content { display: flex; align-items: center; gap: 12px; }
+      .pwa-icon-mini { font-size: 1.5rem; }
+      .pwa-text { display: flex; flex-direction: column; color: white; }
+      .pwa-text strong { font-size: 0.9rem; font-family: 'Outfit', sans-serif; }
+      .pwa-text span { font-size: 0.75rem; opacity: 0.7; }
+      .pwa-install-btn { 
+        background: #2563EB; color: white; border: none; padding: 8px 16px; 
+        border-radius: 12px; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+        transition: 0.2s;
+      }
+      .pwa-install-btn:hover { background: #1d4ed8; transform: scale(1.05); }
+      .pwa-close-btn { 
+        background: none; border: none; color: rgba(255,255,255,0.4); 
+        cursor: pointer; font-size: 1.4rem; padding: 0 4px;
+      }
+      @keyframes pwaSlideUp { from { transform: translate(-50%, 100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+    `;
+    document.head.appendChild(style);
+  }
+
+  document.body.appendChild(banner);
+
+  banner.querySelector('#pwa-install-trigger').addEventListener('click', () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') banner.remove();
+      deferredPrompt = null;
+    });
+  });
+
+  banner.querySelector('.pwa-close-btn').addEventListener('click', () => {
+    banner.style.display = 'none';
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  const banner = document.getElementById('pwa-install-banner');
+  if (banner) banner.remove();
+  console.log('PWA installed');
+});
