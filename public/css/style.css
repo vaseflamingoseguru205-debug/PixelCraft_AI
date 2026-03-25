@@ -1310,7 +1310,7 @@ body::after {
   }
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments & Deep Mobile Overhaul */
 @media (max-width: 1024px) {
   .footer-grid {
     grid-template-columns: 1fr 1fr;
@@ -1320,6 +1320,7 @@ body::after {
     font-size: 3.5rem;
   }
 }
+
 @media (max-width: 768px) {
   .desktop-only { display: none; }
   .nav-logo { font-size: 1.15rem; white-space: nowrap; }
@@ -1361,4 +1362,172 @@ body::after {
   .steps-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Structural fallbacks for tablet */
+  .contact-wrapper, .contact-grid, .donate-container {
+    grid-template-columns: 1fr !important;
+  }
+  .controls-row {
+    flex-wrap: wrap;
+  }
+}
+
+/* ULTRA MOBILE OPTIMIZATION (350px - 500px) */
+/* Addresses user complaints of compressed layouts and oversized elements */
+@media (max-width: 600px) {
+  /* 1. Global Space Resizing & Inline Anti-Compression */
+  /* Targets hardcoded inline styles (like padding: 50px) that crush mobile viewports */
+  div[style*="padding: 30px"],
+  div[style*="padding: 40px"],
+  div[style*="padding: 50px"],
+  div[style*="padding: 60px"],
+  div[style*="padding: 80px"],
+  div[style*="padding: 100px"] {
+    padding: 24px 16px !important;
+    border-radius: 16px !important;
+  }
+
+  .section {
+    padding: 60px 16px !important;
+  }
+
+  .container {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+
+  /* 2. Typography Scaling */
+  h1 { font-size: clamp(1.8rem, 8vw, 2.2rem) !important; line-height: 1.2 !important; }
+  h2 { font-size: clamp(1.4rem, 6vw, 1.8rem) !important; }
+  h3 { font-size: 1.25rem !important; }
+  p, li, .subtitle { font-size: 0.95rem !important; line-height: 1.6 !important; }
+  .section-header h2 { font-size: 1.8rem !important; margin-bottom: 12px !important; }
+  .section-header p { font-size: 0.95rem !important; }
+
+  /* 3. Button Optimization (Avoiding them looking too big/thick) */
+  .btn, .btn-primary, .btn-secondary {
+    padding: 12px 20px !important;
+    font-size: 0.95rem !important;
+    width: 100% !important; /* Spreading button width on mobile looks standard */
+    justify-content: center !important;
+    border-radius: 12px !important;
+  }
+
+  /* 4. Form Components */
+  .contact-form {
+    padding: 24px 16px !important;
+    border-radius: 16px !important;
+  }
+  .form-group label {
+    font-size: 0.9rem !important;
+  }
+  /* Prevents iOS from zooming in by keeping form inputs at 16px (1rem) minimum */
+  .form-group input, 
+  .form-group textarea, 
+  .control-group input, 
+  .control-group select {
+    padding: 12px 14px !important;
+    font-size: 1rem !important; 
+    border-radius: 10px !important;
+  }
+  
+  /* 5. Tool Specific Layouts */
+  .tool-page { padding-top: 80px !important; }
+  .tool-page-header { padding: 40px 15px 30px !important; }
+  .tool-workspace { padding: 20px 10px !important; }
+
+  .upload-area {
+    padding: 40px 20px !important;
+    border-radius: 16px !important;
+  }
+  .upload-icon {
+    font-size: 3rem !important;
+    margin-bottom: 12px !important;
+  }
+  .upload-area h3 {
+    font-size: 1.2rem !important;
+  }
+  .upload-area p {
+    font-size: 0.9rem !important;
+  }
+
+  .result-area { border-radius: 16px !important; }
+  .result-header {
+    padding: 16px !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    text-align: center;
+  }
+  .result-body { padding: 20px 15px !important; }
+
+  .controls-row {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .control-group { width: 100% !important; }
+
+  /* Before/After display logic for mobile */
+  .before-after {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+  .before-after div { width: 100% !important; }
+  .before-after div img, 
+  .before-after div canvas {
+    max-height: 250px !important;
+    width: 100% !important;
+    object-fit: contain;
+    border-radius: 8px !important;
+  }
+
+  /* Detector Tool & Tab Systems */
+  .tabs { flex-direction: row !important; }
+  .tab { 
+    padding: 12px 5px !important; 
+    font-size: 0.95rem !important; 
+  }
+  .tab-content { padding: 20px 15px !important; }
+  .textarea-box { 
+    height: 180px !important; 
+    font-size: 0.95rem !important; 
+    padding: 15px !important; 
+  }
+  
+  /* Cyber Forensics specific */
+  .score-container { 
+    width: 100px !important; 
+    height: 100px !important; 
+    margin: 0 auto 20px !important;
+  }
+  .score-circle { font-size: 2rem !important; }
+  .forensic-grid { 
+    grid-template-columns: 1fr !important; 
+    gap: 15px !important; 
+    margin-top: 20px !important;
+  }
+  .forensic-card { padding: 15px !important; }
+  .visual-analysis-container { 
+    grid-template-columns: 1fr !important; 
+  }
+
+  /* 6. Contact & Direct Components */
+  .direct-contact { gap: 15px !important; }
+  .direct-card { 
+    padding: 16px !important; 
+    flex-direction: column !important; 
+    text-align: center; 
+    gap: 12px !important; 
+  }
+  .direct-icon { margin: 0 auto; }
+
+  /* Legal Pages Adjustments */
+  .legal-page-section { padding-top: 100px !important; }
+  .legal-content h2 { margin-top: 28px !important; font-size: 1.3rem !important; }
+
+  /* Footer fixes */
+  .footer { padding: 40px 15px 20px !important; }
+  .footer-legal-links { flex-wrap: wrap !important; gap: 8px !important; }
+  .footer-legal-links a { font-size: 0.85rem !important; padding: 6px 12px !important; }
+  .footer-bottom { flex-direction: column; text-align: center; gap: 10px; }
 }
