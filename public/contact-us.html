@@ -1,36 +1,44 @@
 <!doctype html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-V78ZLHJLR8"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V78ZLHJLR8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V78ZLHJLR8');
+  </script>
 
-  gtag('config', 'G-V78ZLHJLR8');
-</script>
   <title>Contact Us | PixelCraft AI</title>
   <meta name="description" content="Get in touch with the PixelCraft AI team. Submit questions, business inquiries, or general support requests." />
   <meta name="robots" content="index, follow" />
-  
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563EB'/><text y='24' x='6' font-size='20'>🎨</text></svg>" />
+  <link rel="manifest" href="../manifest.json" />
+
+  <!-- Google AdSense -->
+  <meta name="google-adsense-account" content="ca-pub-3788374704176398">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3788374704176398"
+     crossorigin="anonymous"></script>
+
+  <!-- Google reCAPTCHA v2 -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
   <style>
     .legal-content h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 24px; text-align: center; }
     .legal-content p.subtitle { font-size: 1.1rem; color: var(--text-muted); line-height: 1.8; text-align: center; max-width: 600px; margin: 0 auto 40px; }
-    
+
     .contact-wrapper {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 40px;
     }
-    
+
     .contact-form {
       background: rgba(255, 255, 255, 0.03);
       padding: 30px;
@@ -39,7 +47,7 @@
       display: grid;
       gap: 20px;
     }
-    
+
     .direct-contact {
       display: flex;
       flex-direction: column;
@@ -83,13 +91,6 @@
       }
     }
   </style>
-
-    <link rel="manifest" href="../manifest.json" />
-
-  <!-- Google AdSense -->
-  <meta name="google-adsense-account" content="ca-pub-3788374704176398">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3788374704176398"
-     crossorigin="anonymous"></script>
 </head>
 <body>
   <div id="toast-container" class="toast-container"></div>
@@ -123,24 +124,33 @@
             <div class="form-group" style="grid-column: 1 / -1;">
               <h3 style="font-size: 1.5rem; color: var(--text-main); font-family: 'Outfit';">Send a Message</h3>
             </div>
-            
+
             <div class="form-group" style="grid-column: 1 / -1;">
               <label>Your Name <span style="color:var(--primary)">*</span></label>
               <input type="text" id="contactName" required placeholder="John Doe" style="width: 100%; border: 1px solid var(--glass-border); background: var(--bg-dark); color: #fff; padding: 14px; border-radius: 12px;" />
             </div>
-            
+
             <div class="form-group" style="grid-column: 1 / -1;">
               <label>Your Email <span style="color:var(--primary)">*</span></label>
               <input type="email" id="contactEmail" required placeholder="john@example.com" style="width: 100%; border: 1px solid var(--glass-border); background: var(--bg-dark); color: #fff; padding: 14px; border-radius: 12px;"/>
             </div>
-            
+
             <div class="form-group" style="grid-column: 1 / -1">
               <label>Message <span style="color:var(--primary)">*</span></label>
               <textarea id="contactMessage" required rows="5" placeholder="How can we assist you today?" style="width: 100%; border: 1px solid var(--glass-border); background: var(--bg-dark); color: #fff; padding: 14px; border-radius: 12px; font-family: 'Inter', sans-serif; resize: vertical;"></textarea>
             </div>
-            
+
             <div class="form-group" style="grid-column: 1 / -1; margin-top: 10px">
-              <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; border-radius: 12px;" id="contactSubmitBtn">
+              <!-- reCAPTCHA v2 Checkbox Widget -->
+              <div style="display: flex; justify-content: flex-start; margin-bottom: 16px;">
+                <div class="g-recaptcha"
+                     data-sitekey="6LcT17ssAAAAAGAb3biEomq3kr8PK3l7LQodhMmf"
+                     data-theme="dark"
+                     data-callback="onRecaptchaSuccess"
+                     data-expired-callback="onRecaptchaExpired">
+                </div>
+              </div>
+              <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; border-radius: 12px; opacity: 0.5; cursor: not-allowed;" id="contactSubmitBtn" disabled>
                 Send Message 🚀
               </button>
             </div>
@@ -155,7 +165,7 @@
                 <p style="color: var(--text-muted); font-size: 0.95rem;">swapnil.biradar.cse@gmail.com</p>
               </div>
             </a>
-            
+
             <a href="javascript:void(0)" class="direct-card" onclick="navigator.clipboard.writeText('+91 9067693696'); showToast('Phone number copied!', 'success');">
               <div class="direct-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">📞</div>
               <div>
@@ -215,7 +225,7 @@
       <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; border-top: 1px solid var(--glass-border); padding-top: 30px;">
         <a href="privacy-policy.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Privacy Policy</a>
         <span style="color: var(--glass-border);">|</span>
-        <a href="terms-conditions.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Terms & Conditions</a>
+        <a href="terms-conditions.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Terms &amp; Conditions</a>
         <span style="color: var(--glass-border);">|</span>
         <a href="disclaimer.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Disclaimer</a>
         <span style="color: var(--glass-border);">|</span>
@@ -231,20 +241,39 @@
 
   <script src="js/utils.js"></script>
   <script>
-    // Handle form submission via existing backend logic
     const form = document.getElementById('contactForm');
     const submitBtn = document.getElementById('contactSubmitBtn');
+
+    // reCAPTCHA Callbacks
+    function onRecaptchaSuccess(token) {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
+      submitBtn.style.cursor = 'pointer';
+    }
+
+    function onRecaptchaExpired() {
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '0.5';
+      submitBtn.style.cursor = 'not-allowed';
+      showToast('reCAPTCHA expired. Please verify again.', 'error');
+    }
 
     if (form) {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        const name = document.getElementById('contactName').value;
-        const email = document.getElementById('contactEmail').value;
-        const message = document.getElementById('contactMessage').value;
+
+        const name = document.getElementById('contactName').value.trim();
+        const email = document.getElementById('contactEmail').value.trim();
+        const message = document.getElementById('contactMessage').value.trim();
 
         if (!name || !email || !message) {
           showToast('Please fill all required fields.', 'error');
+          return;
+        }
+
+        const recaptchaToken = grecaptcha.getResponse();
+        if (!recaptchaToken) {
+          showToast('Please complete the reCAPTCHA verification.', 'error');
           return;
         }
 
@@ -256,21 +285,32 @@
           const res = await fetch('/api/contact', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, message })
+            body: JSON.stringify({ name, email, message, recaptchaToken })
           });
-          
+
           const data = await res.json();
           if (res.ok && data.success) {
-            showToast('Message sent successfully! We will get back to you soon.', 'success');
+            showToast('Message sent successfully! We will get back to you soon. 🎉', 'success');
             form.reset();
+            grecaptcha.reset();
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
           } else {
             showToast('Error: ' + (data.error || 'Failed to send'), 'error');
+            grecaptcha.reset();
+            submitBtn.innerHTML = btnOriginalText;
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
           }
         } catch (err) {
           showToast('Network error while sending message', 'error');
-        } finally {
+          grecaptcha.reset();
           submitBtn.innerHTML = btnOriginalText;
-          submitBtn.disabled = false;
+          submitBtn.disabled = true;
+          submitBtn.style.opacity = '0.5';
+          submitBtn.style.cursor = 'not-allowed';
         }
       });
     }
