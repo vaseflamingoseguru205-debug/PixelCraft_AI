@@ -1,9 +1,4 @@
 require('dotenv').config();
-require('dotenv').config();
-require('dotenv').config();
-require('dotenv').config();
-require('dotenv').config();
-require('dotenv').config();
 const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
 const express = require('express');
@@ -197,8 +192,29 @@ app.use('/tools', (req, res, next) => {
 const nodemailer = require('nodemailer');
 
 app.post('/api/contact', async (req, res) => {
-  const { name, email, message } = req.body;
+  const { name, email, message, recaptchaToken } = req.body;
   if (!name || !email || !message) return res.status(400).json({ error: "Missing fields" });
+
+  // ✅ Verify reCAPTCHA token with Google
+  if (!recaptchaToken) {
+    return res.status(400).json({ error: "reCAPTCHA verification required. Please complete the checkbox." });
+  }
+  try {
+    const verifyRes = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`
+    });
+    const verifyData = await verifyRes.json();
+    if (!verifyData.success) {
+      console.warn("❌ reCAPTCHA verification failed:", verifyData['error-codes']);
+      return res.status(400).json({ error: "reCAPTCHA failed. Please try again." });
+    }
+    console.log("✅ reCAPTCHA verified successfully");
+  } catch (captchaErr) {
+    console.error("🔴 reCAPTCHA check error:", captchaErr.message);
+    return res.status(500).json({ error: "Failed to verify reCAPTCHA. Try again later." });
+  }
 
   try {
     console.log(`📩 Preparing to send email from contact form (Name: ${name}, Email: ${email})`);
