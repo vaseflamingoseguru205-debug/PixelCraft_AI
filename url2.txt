@@ -1,0 +1,1 @@
+https://accounts.google.com/o/oauth2/v2/auth?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8081%2Fauth%2Fgoogle%2Fcallback&scope=profile&client_id=3120738326-s94gakq0ld67ndj3rhjsujovetpdb4bq.apps.googleusercontent.com

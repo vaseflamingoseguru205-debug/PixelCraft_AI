@@ -3,8 +3,8 @@ const path = require('path');
 
 const adsenseCode = `
   <!-- Google AdSense -->
-  <meta name="google-adsense-account" content="ca-pub-3788374704176398">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3788374704176398"
+  <meta name="google-adsense-account" content="ca-pub-6696712816082259">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6696712816082259"
      crossorigin="anonymous"></script>
 `;
 
@@ -48,7 +48,7 @@ for (const file of htmlFiles) {
 }
 
 // Overwrite the ads.txt file
-const adsTxtContent = 'google.com, pub-3788374704176398, DIRECT, f08c47fec0942fa0\n';
+const adsTxtContent = 'google.com, pub-6696712816082259, DIRECT, f08c47fec0942fa0\n';
 fs.writeFileSync('d:/AI tools Website/public/ads.txt', adsTxtContent, 'utf8');
 // Check root ads.txt as well
 if (fs.existsSync('d:/AI tools Website/ads.txt')) {

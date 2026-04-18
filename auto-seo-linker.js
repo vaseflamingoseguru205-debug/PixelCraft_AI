@@ -69,7 +69,7 @@ files.forEach(file => {
   let desc = descMatch ? descMatch[1] : `Use this free tool on PixelCraft AI without any watermark. 100% Free.`;
 
   let slug = file;
-  let canonicalUrl = `https://pixelcraft-ai.onrender.com/tools/${slug}`;
+  let canonicalUrl = `https://pixelcraft-ai-94y5.onrender.com/tools/${slug}`;
 
   // 2. Prepare Standard SEO Block
   const seoBlock = `
@@ -84,13 +84,13 @@ files.forEach(file => {
   <meta property="og:url" content="${canonicalUrl}"/>
   <meta property="og:title" content="${title}"/>
   <meta property="og:description" content="${desc}"/>
-  <meta property="og:image" content="https://pixelcraft-ai.onrender.com/og-image.png"/>
+  <meta property="og:image" content="https://pixelcraft-ai-94y5.onrender.com/og-image.png"/>
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image"/>
   <meta name="twitter:title" content="${title}"/>
   <meta name="twitter:description" content="${desc}"/>
-  <meta name="twitter:image" content="https://pixelcraft-ai.onrender.com/og-image.png"/>
+  <meta name="twitter:image" content="https://pixelcraft-ai-94y5.onrender.com/og-image.png"/>
 `;
 
   // 3. Inject missing SEO tags (if Open Graph isnt there)
