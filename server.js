@@ -189,6 +189,94 @@ app.use('/tools', (req, res, next) => {
 });
 */
 
+// AI Audio/SFX Generation Route (Using Hugging Face AudioLDM2)
+app.post('/api/generate-sfx', async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt) return res.status(400).json({ error: "Missing prompt" });
+  
+  if (!process.env.HF_API_KEY) {
+    return res.status(500).json({ error: "HF_API_KEY not configured" });
+  }
+
+  try {
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/cvssp/audioldm2",
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.HF_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({ inputs: prompt }),
+      }
+    );
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      // Handle model loading error gracefully
+      if (response.status === 503) {
+        return res.status(503).json({ error: "Model is currently loading on Hugging Face. Please try again in 30 seconds." });
+      }
+      throw new Error(`HF API Error: ${errorText}`);
+    }
+    
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64 = buffer.toString('base64');
+    
+    res.json({ audio: `data:audio/wav;base64,${base64}` });
+  } catch (err) {
+    console.error("AI SFX Generation Error:", err.message);
+    res.status(500).json({ error: "Failed to generate AI sound effect" });
+  }
+});
+
+// AI Text Generation for Fan Engage Manager
+app.post('/api/generate-comment', async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt) return res.status(400).json({ error: "Missing prompt" });
+  
+  if (!process.env.HF_API_KEY) {
+    return res.status(500).json({ error: "HF_API_KEY not configured" });
+  }
+
+  try {
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta",
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.HF_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({ 
+          inputs: prompt,
+          parameters: {
+            max_new_tokens: 150,
+            temperature: 0.7,
+            top_p: 0.9,
+            return_full_text: false
+          }
+        }),
+      }
+    );
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HF API Error: ${errorText}`);
+    }
+    
+    const data = await response.json();
+    let generatedText = data[0]?.generated_text || "Could not generate response.";
+    
+    res.json({ text: generatedText });
+  } catch (err) {
+    console.error("AI Comment Generation Error:", err.message);
+    res.status(500).json({ error: "Failed to generate AI comment" });
+  }
+});
+
+
 const nodemailer = require('nodemailer');
 
 app.post('/api/contact', async (req, res) => {
