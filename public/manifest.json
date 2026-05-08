@@ -25,12 +25,5 @@
       "short_name": "Compress",
       "url": "/tools/image-compressor.html",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Object Remover",
-      "short_name": "Remover",
-      "url": "/tools/object-remover.html",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
-    }
   ]
 }
