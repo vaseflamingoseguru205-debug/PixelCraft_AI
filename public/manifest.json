@@ -1,29 +1,22 @@
 {
-  "name": "PixelCraft AI - Free AI Tools",
-  "short_name": "PixelCraft AI",
-  "description": "20+ Professional AI image tools - Compress, Watermark, Convert, Colorize and more.",
-  "start_url": "/?pwa=1",
+  "name": "PixelCraft AI",
+  "short_name": "PixelCraft",
+  "description": "Free AI Image Editing Tools Online | Background Remover, Compressor & More",
+  "start_url": "/?source=pwa",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#2563EB",
   "theme_color": "#2563EB",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "/icon-512.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "sizes": "512x512"
+      "purpose": "any maskable"
     }
-  ],
-  "categories": ["productivity", "photo", "utilities"],
-  "shortcuts": [
-    {
-      "name": "Image Compressor",
-      "short_name": "Compress",
-      "url": "/tools/image-compressor.html",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
   ]
 }

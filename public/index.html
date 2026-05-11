@@ -968,5 +968,70 @@
         qrCode.append(document.getElementById("donate-qr-canvas"));
       });
     </script>
+<!-- PWA Install Banner -->
+<div id="pwa-install-banner" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; background:var(--card-bg, #fff); border-radius:16px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.15); z-index:9999; border:1px solid var(--border, #eee); display:none; align-items:center; gap:16px; justify-content:space-between; animation: slideUp 0.5s ease forwards;">
+  <div style="display:flex; align-items:center; gap:12px;">
+    <div style="width:48px; height:48px; background:#2563EB; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:24px;">🎨</div>
+    <div>
+      <h4 style="margin:0; font-size:16px; color:var(--dark, #111);">Install PixelCraft</h4>
+      <p style="margin:2px 0 0; font-size:12px; color:var(--text-light, #666);">Fast, Free, No Ads app</p>
+    </div>
+  </div>
+  <button id="pwa-install-btn" class="btn-primary" style="padding:8px 16px; font-size:14px; border-radius:8px;">Install</button>
+  <button id="pwa-close-btn" style="position:absolute; top:-10px; right:-10px; width:24px; height:24px; border-radius:12px; border:none; background:#eee; cursor:pointer; font-weight:bold; color:#666;">&times;</button>
+</div>
+
+<style>
+@keyframes slideUp {
+  from { bottom: -100px; opacity: 0; }
+  to { bottom: 20px; opacity: 1; }
+}
+</style>
+
+<script>
+  // Service Worker Registration
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then(registration => {
+        console.log('SW registered: ', registration);
+      }).catch(registrationError => {
+        console.log('SW registration failed: ', registrationError);
+      });
+    });
+  }
+
+  // PWA Install Prompt Logic
+  let deferredPrompt;
+  const pwaInstallBanner = document.getElementById('pwa-install-banner');
+  const pwaInstallBtn = document.getElementById('pwa-install-btn');
+  const pwaCloseBtn = document.getElementById('pwa-close-btn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the mini-infobar from appearing on mobile
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    // Update UI notify the user they can install the PWA
+    pwaInstallBanner.style.display = 'flex';
+  });
+
+  pwaInstallBtn.addEventListener('click', async () => {
+    // Hide the app provided install promotion
+    pwaInstallBanner.style.display = 'none';
+    // Show the install prompt
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      // Wait for the user to respond to the prompt
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response to the install prompt: ${outcome}`);
+      // We've used the prompt, and can't use it again, throw it away
+      deferredPrompt = null;
+    }
+  });
+
+  pwaCloseBtn.addEventListener('click', () => {
+    pwaInstallBanner.style.display = 'none';
+  });
+</script>
   </body>
 </html>
