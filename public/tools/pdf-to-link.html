@@ -321,7 +321,7 @@
           <div style="text-align: center;">
             <div class="success-icon">✅</div>
             <h3 style="color: #fff; margin-bottom: 5px;">Your PDF is Ready to Share!</h3>
-            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">This secure link is active for 60 minutes.</p>
+            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">This secure link is active permanently.</p>
           </div>
 
           <div class="link-display">
@@ -494,28 +494,22 @@
     const formData = new FormData();
     formData.append('file', file);
 
-    fetch('https://tmpfiles.org/api/v1/upload', {
+    fetch('/api/upload-pdf', {
       method: 'POST',
       body: formData
     })
     .then(res => res.json())
     .then(data => {
       clearInterval(progressInterval);
-      if(data.status === 'success') {
+      if(data.success) {
         progressBar.style.width = '100%';
         statusText.textContent = 'Success! Generating link...';
         
         setTimeout(() => {
-          // Convert the uploaded URL into a direct download URL
-          // tmpfiles.org returns: https://tmpfiles.org/12345/file.pdf
-          // The direct download link is: https://tmpfiles.org/dl/12345/file.pdf
-          const originalUrl = data.data.url;
-          const directUrl = originalUrl.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
-          
-          showResult(directUrl, file.name);
+          showResult(data.url, file.name);
         }, 500);
       } else {
-        throw new Error('Upload failed');
+        throw new Error(data.error || 'Upload failed');
       }
     })
     .catch(err => {

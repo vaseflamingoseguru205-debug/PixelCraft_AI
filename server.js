@@ -8,6 +8,8 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const path = require('path');
 const User = require('./models/User');
+const multer = require('multer');
+const FormData = require('form-data');
 
 const app = express();
 app.set('trust proxy', 1); // Trust the Render proxy to fix HTTP/HTTPS mismatch
@@ -338,6 +340,30 @@ ${message}
   } catch (err) {
     console.error("🔴 Email Send Error (Check EMAIL_PASS App Password):", err.message);
     res.status(500).json({ error: "Failed to send email", details: err.message });
+  }
+});
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
+
+app.post('/api/upload-pdf', upload.single('file'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+  try {
+    const formData = new globalThis.FormData();
+    formData.append('reqtype', 'fileupload');
+    formData.append('fileToUpload', new Blob([req.file.buffer], { type: req.file.mimetype }), req.file.originalname);
+
+    const response = await fetch('https://catbox.moe/user/api.php', {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (!response.ok) throw new Error("Catbox upload failed");
+    const url = await response.text();
+    
+    res.json({ success: true, url: url.trim() });
+  } catch (err) {
+    console.error("PDF Upload Error:", err.message);
+    res.status(500).json({ error: "Failed to upload file to catbox" });
   }
 });
 
