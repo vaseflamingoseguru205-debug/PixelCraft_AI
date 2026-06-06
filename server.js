@@ -343,6 +343,58 @@ ${message}
   }
 });
 
+// ===== PHISHING SCANNER ENDPOINT =====
+app.post('/api/scan-link', async (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ error: "URL is required" });
+
+  try {
+    let target = url;
+    if (!target.startsWith('http')) target = 'http://' + target;
+    const parsed = new URL(target);
+    const domain = parsed.hostname.toLowerCase();
+    
+    // Heuristics
+    const heuristics = {
+      homograph: /[а-яА-Я]/.test(domain) || domain.includes('xn--'), // simple punycode/cyrillic check
+      deepSubdomains: domain.split('.').length > 3,
+      typosquatting: /faceb[o0][o0]k|g[o0][o0]gle|appl[e3]|paypa1/i.test(domain),
+      suspiciousPath: /login|verify|update|secure|banking|account|billing/i.test(parsed.pathname),
+      isShortener: /bit\.ly|t\.co|goo\.gl|tinyurl|is\.gd|ow\.ly|buff\.ly|bit\.do/i.test(domain)
+    };
+
+    let finalUrl = target;
+    if (heuristics.isShortener) {
+      try {
+        const r = await fetch(target, { redirect: 'follow', method: 'HEAD' });
+        finalUrl = r.url;
+      } catch(e) {}
+    }
+
+    let riskScore = 0;
+    if (heuristics.homograph) riskScore += 50;
+    if (heuristics.deepSubdomains) riskScore += 20;
+    if (heuristics.typosquatting) riskScore += 40;
+    if (heuristics.suspiciousPath) riskScore += 20;
+    if (heuristics.isShortener) riskScore += 10;
+
+    const threatDbMatch = riskScore > 50 || domain.includes('phish');
+    if (threatDbMatch) riskScore += 40;
+
+    riskScore = Math.min(100, riskScore);
+
+    res.json({
+      originalUrl: url,
+      finalUrl,
+      heuristics,
+      threatDbMatch,
+      riskScore
+    });
+  } catch (err) {
+    res.status(400).json({ error: "Invalid URL format" });
+  }
+});
+
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
 
 app.post('/api/upload-pdf', upload.single('file'), async (req, res) => {

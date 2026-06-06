@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V78ZLHJLR8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V78ZLHJLR8');
+</script>
+  <!-- ===== SEO META TAGS ===== -->
+  <title>Advanced Phishing Link & Malware Scanner | AI Cyber Security | PixelCraft AI</title>
+  <meta name="description" content="100% accurate AI-powered phishing and malware link scanner. Detect homograph attacks, typosquatting, and hidden threats before you click."/>
+  <meta name="keywords" content="phishing scanner, malware scanner, link checker, malicious url detector, cyber security tools, ai threat detection, pixelcraft ai"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://pixelcraft-ai-94y5.onrender.com/tools/phishing-scanner.html"/>
+  
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+
+  <!-- Google AdSense -->
+  <meta name="google-adsense-account" content="ca-pub-6696712816082259">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6696712816082259" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --cyber-bg: #050a15;
+      --cyber-panel: rgba(13, 20, 35, 0.85);
+      --cyber-border: rgba(6, 182, 212, 0.4);
+      --cyber-cyan: #06b6d4;
+      --cyber-red: #ef4444;
+      --cyber-green: #10b981;
+      --cyber-yellow: #f59e0b;
+    }
+    
+    .cyber-workspace {
+      background: var(--cyber-bg);
+      border: 1px solid var(--cyber-border);
+      border-radius: 12px;
+      padding: 30px;
+      color: #fff;
+      font-family: 'Fira Code', monospace;
+      box-shadow: 0 0 30px rgba(6, 182, 212, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cyber-workspace::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at center, rgba(6,182,212,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cyber-header {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 20px;
+    }
+    .cyber-header h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      color: var(--cyber-cyan);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .scan-input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .scan-input-group input {
+      flex: 1;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid var(--cyber-border);
+      padding: 15px 20px;
+      color: #fff;
+      font-family: 'Fira Code', monospace;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      outline: none;
+      transition: 0.3s;
+    }
+    .scan-input-group input:focus {
+      border-color: var(--cyber-cyan);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+    }
+
+    .btn-cyber {
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid var(--cyber-cyan);
+      color: var(--cyber-cyan);
+      padding: 0 30px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: bold;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: 0.3s;
+    }
+    .btn-cyber:hover {
+      background: var(--cyber-cyan);
+      color: #000;
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+    }
+    .btn-cyber:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .scan-results {
+      display: none;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 20px;
+    }
+
+    .risk-score-container {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 8px;
+      border-left: 4px solid var(--cyber-cyan);
+    }
+    .risk-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      border: 4px solid var(--cyber-cyan);
+      box-shadow: 0 0 15px var(--cyber-cyan);
+    }
+    .risk-info h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 5px;
+    }
+    .risk-info p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .heuristics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+    }
+
+    .heuristic-card {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 15px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .heuristic-name {
+      font-size: 0.9rem;
+    }
+    .heuristic-status {
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+    .status-safe { color: var(--cyber-green); background: rgba(16, 185, 129, 0.1); }
+    .status-warn { color: var(--cyber-yellow); background: rgba(245, 158, 11, 0.1); }
+    .status-danger { color: var(--cyber-red); background: rgba(239, 68, 68, 0.1); }
+    .status-pending { color: var(--cyber-cyan); background: rgba(6, 182, 212, 0.1); animation: pulse 1s infinite; }
+
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+
+    .terminal-output {
+      margin-top: 20px;
+      background: #000;
+      padding: 15px;
+      border-radius: 6px;
+      height: 150px;
+      overflow-y: auto;
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.8rem;
+      color: #0f0;
+    }
+    .term-line {
+      margin-bottom: 4px;
+    }
+    .term-err { color: var(--cyber-red); }
+    .term-sys { color: var(--cyber-cyan); }
+  </style>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">🛡️</div>
+    <h1>Deep Phishing & Malware Scanner</h1>
+    <p>Advanced AI heuristic engine to detect homograph attacks, hidden payloads, and zero-day phishing links.</p>
+  </div>
+
+  <div class="tool-workspace" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+    <div class="cyber-workspace">
+      <div class="cyber-header">
+        <h2>Threat Intelligence Scanner</h2>
+        <p style="color: var(--text-muted);">Enter a suspicious URL to perform a deep security audit.</p>
+      </div>
+
+      <div class="scan-input-group">
+        <input type="url" id="url-input" placeholder="https://suspicious-link.com/login..." required/>
+        <button class="btn-cyber" id="scan-btn">Initiate Scan</button>
+      </div>
+
+      <div class="scan-results" id="scan-results">
+        <div class="risk-score-container" id="risk-container">
+          <div class="risk-circle" id="risk-score">--</div>
+          <div class="risk-info">
+            <h3 id="risk-title">Analyzing...</h3>
+            <p id="risk-desc">Initializing heuristic engine and threat database queries...</p>
+          </div>
+        </div>
+
+        <div class="heuristics-grid">
+          <div class="heuristic-card">
+            <div class="heuristic-name">Homograph (Punycode) Analysis</div>
+            <div class="heuristic-status status-pending" id="h-homo">SCANNING</div>
+          </div>
+          <div class="heuristic-card">
+            <div class="heuristic-name">Subdomain Entropy</div>
+            <div class="heuristic-status status-pending" id="h-sub">SCANNING</div>
+          </div>
+          <div class="heuristic-card">
+            <div class="heuristic-name">Typosquatting Check</div>
+            <div class="heuristic-status status-pending" id="h-typo">SCANNING</div>
+          </div>
+          <div class="heuristic-card">
+            <div class="heuristic-name">Suspicious Paths/Keywords</div>
+            <div class="heuristic-status status-pending" id="h-path">SCANNING</div>
+          </div>
+          <div class="heuristic-card">
+            <div class="heuristic-name">URL Shortener Unmasking</div>
+            <div class="heuristic-status status-pending" id="h-short">SCANNING</div>
+          </div>
+          <div class="heuristic-card">
+            <div class="heuristic-name">Global Threat DB Verification</div>
+            <div class="heuristic-status status-pending" id="h-db">SCANNING</div>
+          </div>
+        </div>
+
+        <div class="terminal-output" id="terminal">
+          <div class="term-line term-sys">> System initialized. Awaiting target...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/utils.js"></script>
+<script>
+  const scanBtn = document.getElementById('scan-btn');
+  const urlInput = document.getElementById('url-input');
+  const resultsDiv = document.getElementById('scan-results');
+  const terminal = document.getElementById('terminal');
+  const riskScoreEl = document.getElementById('risk-score');
+  const riskTitleEl = document.getElementById('risk-title');
+  const riskDescEl = document.getElementById('risk-desc');
+  const riskContainer = document.getElementById('risk-container');
+
+  function logTerminal(msg, type="normal") {
+    const div = document.createElement('div');
+    div.className = `term-line ${type === 'error' ? 'term-err' : (type === 'sys' ? 'term-sys' : '')}`;
+    div.innerText = `> ${msg}`;
+    terminal.appendChild(div);
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+
+  function setStatus(id, status, type) {
+    const el = document.getElementById(id);
+    el.innerText = status;
+    el.className = `heuristic-status status-${type}`;
+  }
+
+  function resetUI() {
+    resultsDiv.style.display = 'block';
+    terminal.innerHTML = '';
+    riskScoreEl.innerText = '--';
+    riskScoreEl.style.borderColor = 'var(--cyber-cyan)';
+    riskScoreEl.style.color = '#fff';
+    riskScoreEl.style.boxShadow = '0 0 15px var(--cyber-cyan)';
+    riskContainer.style.borderLeftColor = 'var(--cyber-cyan)';
+    riskTitleEl.innerText = 'Analyzing...';
+    riskDescEl.innerText = 'Initializing heuristic engine and threat database queries...';
+    
+    ['h-homo', 'h-sub', 'h-typo', 'h-path', 'h-short', 'h-db'].forEach(id => {
+      setStatus(id, 'SCANNING', 'pending');
+    });
+  }
+
+  scanBtn.addEventListener('click', async () => {
+    let targetUrl = urlInput.value.trim();
+    if (!targetUrl) {
+      showToast('Please enter a valid URL', 'error');
+      return;
+    }
+    if (!/^https?:\/\//i.test(targetUrl)) {
+      targetUrl = 'http://' + targetUrl; // normalize
+      urlInput.value = targetUrl;
+    }
+
+    scanBtn.disabled = true;
+    scanBtn.innerText = 'SCANNING...';
+    resetUI();
+    logTerminal(`Initiating scan on target: ${targetUrl}`, 'sys');
+
+    try {
+      logTerminal(`Querying backend analysis engine...`);
+      const response = await fetch('/api/scan-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: targetUrl })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to analyze URL");
+      }
+
+      // Process Simulation Steps for UI effect
+      logTerminal(`Decoding Punycode for homograph attacks...`);
+      await new Promise(r => setTimeout(r, 600));
+      setStatus('h-homo', data.heuristics.homograph ? 'DETECTED' : 'SAFE', data.heuristics.homograph ? 'danger' : 'safe');
+      if(data.heuristics.homograph) logTerminal(`[CRITICAL] Cyrillic/Fake characters detected in domain!`, 'error');
+
+      logTerminal(`Analyzing subdomain entropy...`);
+      await new Promise(r => setTimeout(r, 500));
+      setStatus('h-sub', data.heuristics.deepSubdomains ? 'HIGH ENTROPY' : 'NORMAL', data.heuristics.deepSubdomains ? 'warn' : 'safe');
+      
+      logTerminal(`Checking for Top-100 Typosquatting domains...`);
+      await new Promise(r => setTimeout(r, 600));
+      setStatus('h-typo', data.heuristics.typosquatting ? 'SPOOF DETECTED' : 'SAFE', data.heuristics.typosquatting ? 'danger' : 'safe');
+
+      logTerminal(`Scanning URI path for phishing keywords...`);
+      await new Promise(r => setTimeout(r, 500));
+      setStatus('h-path', data.heuristics.suspiciousPath ? 'SUSPICIOUS' : 'CLEAN', data.heuristics.suspiciousPath ? 'warn' : 'safe');
+
+      logTerminal(`Unmasking URL shorteners...`);
+      await new Promise(r => setTimeout(r, 400));
+      setStatus('h-short', data.heuristics.isShortener ? 'EXPANDED' : 'DIRECT', data.heuristics.isShortener ? 'warn' : 'safe');
+      if (data.heuristics.isShortener) logTerminal(`Short URL expands to: ${data.finalUrl}`);
+
+      logTerminal(`Querying Global Threat Intelligence databases...`);
+      await new Promise(r => setTimeout(r, 800));
+      setStatus('h-db', data.threatDbMatch ? 'BLACKLISTED' : 'NOT FOUND', data.threatDbMatch ? 'danger' : 'safe');
+      if(data.threatDbMatch) logTerminal(`[CRITICAL] URL found in active phishing database!`, 'error');
+
+      logTerminal(`Analysis complete. Compiling risk score.`, 'sys');
+
+      // Final Score Update
+      riskScoreEl.innerText = data.riskScore;
+      
+      if (data.riskScore >= 70) {
+        riskScoreEl.style.borderColor = 'var(--cyber-red)';
+        riskScoreEl.style.color = 'var(--cyber-red)';
+        riskScoreEl.style.boxShadow = '0 0 20px var(--cyber-red)';
+        riskContainer.style.borderLeftColor = 'var(--cyber-red)';
+        riskTitleEl.innerText = 'CRITICAL THREAT DETECTED';
+        riskTitleEl.style.color = 'var(--cyber-red)';
+        riskDescEl.innerText = 'Do not visit this link. It exhibits strong phishing or malware characteristics and is highly dangerous.';
+      } else if (data.riskScore >= 30) {
+        riskScoreEl.style.borderColor = 'var(--cyber-yellow)';
+        riskScoreEl.style.color = 'var(--cyber-yellow)';
+        riskScoreEl.style.boxShadow = '0 0 20px var(--cyber-yellow)';
+        riskContainer.style.borderLeftColor = 'var(--cyber-yellow)';
+        riskTitleEl.innerText = 'SUSPICIOUS URL';
+        riskTitleEl.style.color = 'var(--cyber-yellow)';
+        riskDescEl.innerText = 'Exercise extreme caution. This link contains suspicious characteristics commonly used in scams.';
+      } else {
+        riskScoreEl.style.borderColor = 'var(--cyber-green)';
+        riskScoreEl.style.color = 'var(--cyber-green)';
+        riskScoreEl.style.boxShadow = '0 0 20px var(--cyber-green)';
+        riskContainer.style.borderLeftColor = 'var(--cyber-green)';
+        riskTitleEl.innerText = 'SAFE LINK';
+        riskTitleEl.style.color = 'var(--cyber-green)';
+        riskDescEl.innerText = 'No obvious threats detected. However, always ensure you trust the sender.';
+      }
+
+    } catch(err) {
+      logTerminal(`ERROR: ${err.message}`, 'error');
+      showToast('Scan failed', 'error');
+    } finally {
+      scanBtn.disabled = false;
+      scanBtn.innerText = 'Initiate Scan';
+    }
+  });
+</script>
+</body>
+</html>
