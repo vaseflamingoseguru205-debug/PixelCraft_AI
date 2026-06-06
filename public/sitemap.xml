@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://pixelcraft-ai-94y5.onrender.com/tools/images-to-pdf.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-06-06</lastmod>
+  </url>
+  <url>
     <loc>https://pixelcraft-ai-94y5.onrender.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>

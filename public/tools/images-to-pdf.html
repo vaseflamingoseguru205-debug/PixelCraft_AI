@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V78ZLHJLR8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V78ZLHJLR8');
+</script>
+
+  <!-- ===== SEO META TAGS ===== -->
+  <title>Advanced Images to PDF Converter | Free High-Quality PDF Maker | PixelCraft AI</title>
+  <meta name="description" content="Convert multiple JPG, PNG, and WebP images to a single PDF document. Drag to reorder, add password protection, set page sizes. 100% free and secure browser-based tool."/>
+  <meta name="keywords" content="images to pdf, jpg to pdf, convert image to pdf, free pdf maker, secure pdf converter, password protect pdf, browser pdf tool, pixelcraft ai"/>
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"/>
+  <meta name="author" content="PixelCraft AI"/>
+  <meta name="publisher" content="PixelCraft AI"/>
+  <meta name="distribution" content="Global"/>
+  <meta name="revisit-after" content="1 days"/>
+  <meta name="rating" content="Safe For Kids"/>
+  <meta name="language" content="English"/>
+  <link rel="canonical" href="https://pixelcraft-ai-94y5.onrender.com/tools/images-to-pdf.html"/>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="PixelCraft AI"/>
+  <meta property="og:url" content="https://pixelcraft-ai-94y5.onrender.com/tools/images-to-pdf.html"/>
+  <meta property="og:title" content="Advanced Images to PDF Converter | Free High-Quality PDF Maker"/>
+  <meta property="og:description" content="Convert multiple JPG, PNG, and WebP images to a single PDF document. Drag to reorder, add password protection, set page sizes. 100% free and secure browser-based tool."/>
+  <meta property="og:image" content="https://pixelcraft-ai-94y5.onrender.com/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="en_US"/>
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@PixelCraftAI"/>
+  <meta name="twitter:title" content="Advanced Images to PDF Converter | Free High-Quality PDF Maker"/>
+  <meta name="twitter:description" content="Convert multiple JPG, PNG, and WebP images to a single PDF document. Drag to reorder, add password protection, set page sizes. 100% free and secure browser-based tool."/>
+  <meta name="twitter:image" content="https://pixelcraft-ai-94y5.onrender.com/og-image.png"/>
+
+  <!-- Extra Technical SEO -->
+  <meta name="theme-color" content="#2563EB"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="PixelCraft AI"/>
+  <meta name="application-name" content="PixelCraft AI"/>
+
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <link rel="stylesheet" href="../css/style.css"/>
+
+  <link rel="manifest" href="../manifest.json" />
+
+  <!-- Google AdSense -->
+  <meta name="google-adsense-account" content="ca-pub-6696712816082259">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6696712816082259" crossorigin="anonymous"></script>
+
+  <!-- Libraries for Advanced Images to PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
+  <style>
+    .pdf-workspace {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+      align-items: start;
+    }
+    @media(max-width: 900px) {
+      .pdf-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+      min-height: 200px;
+      padding: 16px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 12px;
+      border: 1px dashed var(--glass-border);
+    }
+    .image-item {
+      position: relative;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      overflow: hidden;
+      aspect-ratio: 1;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .image-item:active {
+      cursor: grabbing;
+    }
+    .image-item img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .image-item .remove-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(220, 38, 38, 0.8);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: 0.2s;
+    }
+    .image-item:hover .remove-btn {
+      opacity: 1;
+    }
+    .image-item .order-badge {
+      position: absolute;
+      bottom: 6px;
+      left: 6px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    
+    .settings-panel {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 20px;
+      position: sticky;
+      top: 100px;
+    }
+    .settings-panel h3 {
+      margin-bottom: 16px;
+      font-size: 1.2rem;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 10px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+    .form-group select, .form-group input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--glass-border);
+      color: var(--text);
+      font-family: inherit;
+    }
+    .form-group select:focus, .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .add-more-btn {
+      background: rgba(255,255,255,0.1);
+      border: 2px dashed var(--glass-border);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 8px;
+      aspect-ratio: 1;
+      transition: 0.2s;
+    }
+    .add-more-btn:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">📄</div>
+    <h1>Advanced Images to PDF</h1>
+    <p>Convert multiple images into a secure, high-quality PDF. Drag to reorder, set page sizes, and add password protection.</p>
+  </div>
+  
+  <div class="tool-workspace" id="initial-upload">
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" multiple style="display:none"/>
+      <div class="upload-icon">📸</div>
+      <h3>Drop images here or click to upload</h3>
+      <p>Select multiple JPG, PNG, WebP files</p>
+    </div>
+  </div>
+
+  <div class="tool-workspace" id="editor-workspace" style="display: none; padding: 0; background: transparent; border: none; box-shadow: none;">
+    <div class="pdf-workspace">
+      <!-- Main Area: Image Grid -->
+      <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <h2 style="font-size: 1.2rem;">Arrangement <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">(Drag to reorder)</span></h2>
+          <button class="btn btn-gray" style="padding: 6px 12px; font-size: 0.85rem;" onclick="document.getElementById('add-more-input').click()">+ Add More</button>
+          <input type="file" id="add-more-input" accept="image/*" multiple style="display:none"/>
+        </div>
+        
+        <div class="image-grid" id="image-grid">
+          <!-- Images will be injected here -->
+        </div>
+      </div>
+
+      <!-- Settings Sidebar -->
+      <div class="settings-panel">
+        <h3>PDF Settings</h3>
+        
+        <div class="form-group">
+          <label>Page Size</label>
+          <select id="page-size">
+            <option value="a4">A4 (Standard)</option>
+            <option value="letter">US Letter</option>
+            <option value="auto">Auto (Match Image Size)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Orientation</label>
+          <select id="orientation">
+            <option value="p">Portrait</option>
+            <option value="l">Landscape</option>
+            <option value="auto">Auto (Detect per image)</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Margin</label>
+          <select id="margin">
+            <option value="0">No Margin</option>
+            <option value="10">Small (10px)</option>
+            <option value="20">Large (20px)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Password Protection (Optional)</label>
+          <input type="password" id="pdf-password" placeholder="Leave blank for no password"/>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px;" id="generate-btn">
+          <span>📄</span> Generate PDF
+        </button>
+        <div id="loading-indicator" style="display: none; text-align: center; margin-top: 10px; color: var(--text-light); font-size: 0.9rem;">
+          Generating PDF... Please wait.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GLOBAL FOOTER -->
+<footer class="footer" style="border-top: 1px solid var(--glass-border); padding: 60px 24px 30px; position: relative; background: rgba(0, 0, 0, 0.3); margin-top: 80px;">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 2;">
+    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px; border-top: 1px solid var(--glass-border); padding-top: 30px;">
+      <a href="../privacy-policy.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Privacy Policy</a>
+      <span style="color: var(--glass-border);">|</span>
+      <a href="../terms-conditions.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Terms & Conditions</a>
+      <span style="color: var(--glass-border);">|</span>
+      <a href="../disclaimer.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Disclaimer</a>
+      <span style="color: var(--glass-border);">|</span>
+      <a href="../about-us.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">About Us</a>
+      <span style="color: var(--glass-border);">|</span>
+      <a href="../contact-us.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.95rem; transition: 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Contact Us</a>
+    </div>
+    <div class="footer-bottom" style="border-top: none; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-size: 0.9rem; color: var(--text-muted);">
+      <span>© 2026 PixelCraft AI - All tools are free forever</span>
+      <span>Made by 💗 Biradar Swapnil</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/utils.js"></script>
+<script>
+  let imageFiles = [];
+  const uploadArea = document.getElementById('upload-area');
+  const fileInput = document.getElementById('file-input');
+  const addMoreInput = document.getElementById('add-more-input');
+  const initialUpload = document.getElementById('initial-upload');
+  const editorWorkspace = document.getElementById('editor-workspace');
+  const imageGrid = document.getElementById('image-grid');
+  const generateBtn = document.getElementById('generate-btn');
+
+  // Initialize Sortable
+  let sortableInstance = new Sortable(imageGrid, {
+    animation: 150,
+    ghostClass: 'sortable-ghost',
+    onEnd: function (evt) {
+      // Reorder imageFiles array
+      const itemEl = imageFiles.splice(evt.oldIndex, 1)[0];
+      imageFiles.splice(evt.newIndex, 0, itemEl);
+      updateBadges();
+    },
+  });
+
+  setupDragDrop(uploadArea, (file) => {
+    // If single file dropped by utils setupDragDrop, handle it.
+    // However, for multiple we need to handle drag events directly.
+  });
+
+  // Override multiple drag & drop
+  uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFiles(Array.from(e.dataTransfer.files));
+    }
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    if(e.target.files.length > 0) handleFiles(Array.from(e.target.files));
+  });
+
+  addMoreInput.addEventListener('change', (e) => {
+    if(e.target.files.length > 0) handleFiles(Array.from(e.target.files));
+  });
+
+  async function handleFiles(files) {
+    const validFiles = files.filter(f => f.type.startsWith('image/'));
+    if(validFiles.length === 0) {
+      showToast('Please upload valid image files.', 'error');
+      return;
+    }
+
+    if(imageFiles.length === 0) {
+      initialUpload.style.display = 'none';
+      editorWorkspace.style.display = 'block';
+    }
+
+    for (let file of validFiles) {
+      const url = URL.createObjectURL(file);
+      const imgObj = { file, url, id: Date.now() + Math.random() };
+      imageFiles.push(imgObj);
+      renderImageItem(imgObj);
+    }
+    updateBadges();
+  }
+
+  function renderImageItem(imgObj) {
+    const div = document.createElement('div');
+    div.className = 'image-item';
+    div.dataset.id = imgObj.id;
+
+    const img = document.createElement('img');
+    img.src = imgObj.url;
+
+    const btn = document.createElement('button');
+    btn.className = 'remove-btn';
+    btn.innerHTML = '✕';
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const idx = imageFiles.findIndex(f => f.id === imgObj.id);
+      if(idx > -1) {
+        imageFiles.splice(idx, 1);
+        div.remove();
+        updateBadges();
+        if(imageFiles.length === 0) {
+          initialUpload.style.display = 'block';
+          editorWorkspace.style.display = 'none';
+        }
+      }
+    };
+
+    const badge = document.createElement('div');
+    badge.className = 'order-badge';
+    
+    div.appendChild(img);
+    div.appendChild(badge);
+    div.appendChild(btn);
+    imageGrid.appendChild(div);
+  }
+
+  function updateBadges() {
+    const items = imageGrid.querySelectorAll('.image-item');
+    items.forEach((item, index) => {
+      const badge = item.querySelector('.order-badge');
+      if(badge) badge.innerText = index + 1;
+    });
+  }
+
+  // PDF Generation logic
+  generateBtn.addEventListener('click', async () => {
+    if (imageFiles.length === 0) return;
+    generateBtn.disabled = true;
+    document.getElementById('loading-indicator').style.display = 'block';
+
+    const pageSizeOpt = document.getElementById('page-size').value;
+    const orientOpt = document.getElementById('orientation').value;
+    const margin = parseInt(document.getElementById('margin').value);
+    const password = document.getElementById('pdf-password').value;
+
+    try {
+      const { jsPDF } = window.jspdf;
+      
+      // We will create doc dynamically if 'auto' is selected for first page
+      let doc = null;
+
+      for (let i = 0; i < imageFiles.length; i++) {
+        const imgData = await getImgData(imageFiles[i].url);
+        
+        let pWidth, pHeight;
+        let cOrient = orientOpt;
+        
+        // Auto orientation detection
+        if (cOrient === 'auto') {
+          cOrient = imgData.width > imgData.height ? 'l' : 'p';
+        }
+
+        // Calculate page format
+        let format = pageSizeOpt;
+        if (pageSizeOpt === 'auto') {
+          // jsPDF expects dimensions in pt or mm, we can pass arrays [w, h] in px
+          format = [imgData.width, imgData.height];
+        }
+
+        if (i === 0) {
+          // Initialize doc
+          const docOpts = {
+            orientation: cOrient,
+            unit: 'px',
+            format: format,
+            putOnlyUsedFonts: true
+          };
+
+          if (password) {
+            docOpts.encryption = {
+              userPassword: password,
+              ownerPassword: password,
+              userPermissions: ["print", "modify"]
+            };
+          }
+
+          doc = new jsPDF(docOpts);
+        } else {
+          doc.addPage(format, cOrient);
+        }
+
+        // Calculate Image placement
+        const docW = doc.internal.pageSize.getWidth();
+        const docH = doc.internal.pageSize.getHeight();
+        
+        const usableW = docW - (margin * 2);
+        const usableH = docH - (margin * 2);
+
+        // Fit image into usable area
+        const ratio = Math.min(usableW / imgData.width, usableH / imgData.height);
+        
+        let finalW = imgData.width * ratio;
+        let finalH = imgData.height * ratio;
+        
+        if (pageSizeOpt === 'auto') {
+           finalW = docW;
+           finalH = docH;
+           // override margin for auto
+           doc.addImage(imgData.dataUrl, imgData.type, 0, 0, finalW, finalH);
+        } else {
+          // Center the image
+          const x = margin + (usableW - finalW) / 2;
+          const y = margin + (usableH - finalH) / 2;
+          doc.addImage(imgData.dataUrl, imgData.type, x, y, finalW, finalH);
+        }
+      }
+
+      doc.save("pixelcraft-converted.pdf");
+      showToast('PDF Generated successfully!', 'success');
+    } catch (e) {
+      console.error(e);
+      showToast('Error generating PDF. Please try again.', 'error');
+    } finally {
+      generateBtn.disabled = false;
+      document.getElementById('loading-indicator').style.display = 'none';
+    }
+  });
+
+  function getImgData(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        
+        // Detect type from url if possible, default to JPEG
+        let type = 'JPEG';
+        if(url.toLowerCase().includes('png')) type = 'PNG';
+        if(url.toLowerCase().includes('webp')) type = 'WEBP';
+        
+        const dataUrl = canvas.toDataURL(`image/${type.toLowerCase()}`, 1.0);
+        resolve({ dataUrl, width: img.width, height: img.height, type });
+      };
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+</script>
+</body>
+</html>
