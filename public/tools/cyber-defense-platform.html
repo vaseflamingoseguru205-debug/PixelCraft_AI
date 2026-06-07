@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <!-- Google tag (gtag.js) -->
@@ -312,14 +312,14 @@
 
   <!-- Sidebar -->
   <div class="soc-sidebar">
-    <div class="soc-brand">🛡️ Sentinel<span>AI</span></div>
-    <div class="nav-item active">👁️ Threat Dashboard</div>
-    <div class="nav-item">📊 Incident Analytics</div>
-    <div class="nav-item">🧠 AI Anomaly Engine</div>
-    <div class="nav-item">🌐 Network Topology</div>
-    <div class="nav-item">👤 UBA Profiles</div>
-    <div class="nav-item" style="margin-top: auto;">⚙️ System Config</div>
-    <a href="../index.html" class="nav-item" style="color: var(--text-muted); text-decoration: none;">🔙 Back to PixelCraft</a>
+    <div class="soc-brand">Sentinel<span>AI</span></div>
+    <div class="nav-item active">Threat Dashboard</div>
+    <div class="nav-item">Incident Analytics</div>
+    <div class="nav-item">AI Anomaly Engine</div>
+    <div class="nav-item">Network Topology</div>
+    <div class="nav-item">UBA Profiles</div>
+    <div class="nav-item" style="margin-top: auto;">System Config</div>
+    <a href="../index.html" class="nav-item" style="color: var(--text-muted); text-decoration: none;">Back to PixelCraft</a>
   </div>
 
   <!-- Main Workspace -->
@@ -395,7 +395,7 @@
 
     // --- TRAFFIC CHART (Chart.js) ---
     const ctx = document.getElementById('trafficChart').getContext('2d');
-    const initData = Array(20).fill(0).map(() => rand(10, 30));
+    const initData = Array(20).fill(0).map(() =>rand(10, 30));
     
     const trafficChart = new Chart(ctx, {
       type: 'line',
@@ -440,9 +440,9 @@
       const line = document.createElement('div');
       line.className = 'term-line';
       let msgClass = type === "error" || type==="attack" ? "t-err" : "t-msg";
-      line.innerHTML = `<span class="t-time">[${getTime()}]</span> <span class="t-ip">${ip}</span> <span class="${msgClass}">${msg}</span>`;
+      line.innerHTML = `<span class="t-time">[${getTime()}]</span><span class="t-ip">${ip}</span><span class="${msgClass}">${msg}</span>`;
       termWindow.appendChild(line);
-      if(termWindow.childElementCount > 50) termWindow.removeChild(termWindow.firstChild);
+      if(termWindow.childElementCount >50) termWindow.removeChild(termWindow.firstChild);
       termWindow.scrollTop = termWindow.scrollHeight;
     }
 
@@ -509,7 +509,7 @@
       }
 
       // Draw Nodes
-      nodes.forEach(n => {
+      nodes.forEach(n =>{
         netCtx.beginPath();
         netCtx.arc(n.x, n.y, n.radius, 0, Math.PI*2);
         netCtx.fillStyle = n.color;
@@ -554,17 +554,17 @@
     drawNetwork();
 
     // --- SYSTEM LOOP (Simulation) ---
-    setInterval(() => {
+    setInterval(() =>{
       // 1. Terminal Logs
       if(!isUnderAttack) {
-          if(Math.random() > 0.5) {
+          if(Math.random() >0.5) {
              const acts = ["GET /api/v1/status 200", "AUTH_SUCCESS user=admin", "DB_QUERY latency=12ms", "CRON_SYNC complete"];
              addLog(randIP(), acts[rand(0, acts.length-1)]);
           }
       } else {
           // Under attack
           addLog(randIP(), "POST /api/v1/auth 401 Unauthorized", "attack");
-          if(Math.random() > 0.7) addLog(randIP(), "SQL_INJECTION_DETECTED drop table users--", "error");
+          if(Math.random() >0.7) addLog(randIP(), "SQL_INJECTION_DETECTED drop table users--", "error");
       }
 
       // 2. Traffic Chart
@@ -581,7 +581,7 @@
       trafficChart.update();
 
       // 3. Network Traffic Simulation
-      if(Math.random() > (isUnderAttack ? 0.2 : 0.6)) {
+      if(Math.random() >(isUnderAttack ? 0.2 : 0.6)) {
           let sNode = nodes[rand(1, nodes.length-1)];
           projectiles.push({
               startX: isUnderAttack ? rand(0, netCanvas.width) : sNode.x,
@@ -594,13 +594,13 @@
 
       // 4. Update Risk Score
       if(isUnderAttack && globalRisk < 95) globalRisk += rand(2, 5);
-      if(!isUnderAttack && globalRisk > 12) globalRisk -= rand(1, 3);
+      if(!isUnderAttack && globalRisk >12) globalRisk -= rand(1, 3);
       
       let dial = document.getElementById('riskDial');
       dial.innerText = globalRisk;
       
       // Update UI Colors
-      if(globalRisk > 70) {
+      if(globalRisk >70) {
           dial.setAttribute('data-level', 'high');
           document.getElementById('sysStatusText').innerText = "CRITICAL BREACH DETECTED";
           document.getElementById('sysStatusText').style.color = "var(--alert-red)";
@@ -608,7 +608,7 @@
           document.getElementById('threatLevelTxt').innerText = "SEVERE";
           document.getElementById('threatLevelTxt').style.color = "var(--alert-red)";
           nodes[0].color = "#ef4444"; // core turns red
-      } else if(globalRisk > 40) {
+      } else if(globalRisk >40) {
           dial.setAttribute('data-level', 'medium');
           document.getElementById('sysStatusText').innerText = "ANOMALIES DETECTED";
           document.getElementById('sysStatusText').style.color = "var(--warn-yellow)";
@@ -634,16 +634,16 @@
         isUnderAttack = true;
         addAlert("AI Anomaly Detected", "Sudden 400% traffic ingress spike originating from multiple unknown geography IPs. Likely DDoS or Brute Force attempt.", "critical");
         
-        setTimeout(() => {
+        setTimeout(() =>{
             addAlert("UBA Triggered", "User 'admin' attempted 50 logins within 2 seconds. Account lock protocol engaged.", "warn");
         }, 3000);
 
-        setTimeout(() => {
+        setTimeout(() =>{
             addAlert("Intrusion Prevention", "AI engine blocked secondary payloads targeting SQL backend.", "info");
         }, 6000);
 
         // Auto cool-off
-        setTimeout(() => {
+        setTimeout(() =>{
             isUnderAttack = false;
             addAlert("Threat Mitigated", "IP bans enacted. Traffic returning to baseline parameters.", "info");
         }, 12000);
@@ -652,7 +652,7 @@
     function triggerSimulatedScan() {
         addLog("SYSTEM", "Initiating Deep Vulnerability Scan across 8 attached nodes...", "normal");
         addAlert("Manual Scan Initiated", "Performing heuristic baseline checks on all internal servers.", "info");
-        setTimeout(() => {
+        setTimeout(() =>{
             addAlert("Scan Complete", "No configuration drifts found. SSL certs valid. Zero CVEs detected.", "info");
             addLog("SYSTEM", "Deep scan complete. Network intact.", "normal");
         }, 4000);
@@ -666,20 +666,20 @@
       <!-- RELATED TOOLS FOR SEO INTERNAL LINKING -->
       <div style="max-width: 1000px; margin: 60px auto 40px; padding: 0 20px;">
         <div style="padding: 30px; background: rgba(0,0,0,0.2); border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
-          <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 20px; font-family: 'Outfit', sans-serif;">🔗 Explore More Premium Free Tools</h3>
+          <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 20px; font-family: 'Outfit', sans-serif;">Explore More Premium Free Tools</h3>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
             <a href="ai-content-detector.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
-              <div style="font-size: 1.5rem; margin-bottom: 8px;">🕵️‍♂️</div>
+              <div style="font-size: 1.5rem; margin-bottom: 8px;">‍</div>
               <strong style="display: block; margin-bottom: 4px;">Deep AI Content Detector</strong>
               <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Identify ChatGPT text & deepfake images instantly.</span>
             </a>
             <a href="ai-prompt-humanizer.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
-              <div style="font-size: 1.5rem; margin-bottom: 8px;">✍️</div>
+              <div style="font-size: 1.5rem; margin-bottom: 8px;"></div>
               <strong style="display: block; margin-bottom: 4px;">AI Text Humanizer</strong>
               <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Bypass AI detectors with 100% human-like text.</span>
             </a>
             <a href="qr-generator.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
-              <div style="font-size: 1.5rem; margin-bottom: 8px;">🔲</div>
+              <div style="font-size: 1.5rem; margin-bottom: 8px;"></div>
               <strong style="display: block; margin-bottom: 4px;">Advanced QR Generator</strong>
               <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Create custom branded QR codes instantly.</span>
             </a>
@@ -705,7 +705,7 @@
       </div>
       <div class="footer-bottom" style="border-top: none; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-size: 0.9rem; color: var(--text-muted);">
         <span>© 2026 PixelCraft AI - All tools are free forever</span>
-        <span>Made by 💗 Biradar Swapnil</span>
+        <span>Made by Biradar Swapnil</span>
       </div>
     </div>
   </footer>

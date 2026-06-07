@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <!-- Google tag (gtag.js) -->
@@ -339,7 +339,7 @@
 
   <nav class="navbar">
     <a href="../index.html" class="nav-logo">
-      <div class="nav-logo-icon">🎨</div> PixelCraft AI
+      <div class="nav-logo-icon"></div>PixelCraft AI
     </a>
     <ul class="nav-links">
       <li><a href="../index.html#tools">All Tools</a></li>
@@ -356,8 +356,8 @@
       <div class="detector-container">
         
         <div class="tabs">
-          <div class="tab" onclick="switchTab('text')">📝 Lexical Text Analysis</div>
-          <div class="tab active" onclick="switchTab('image')">👁️ Advanced Vision Forensics</div>
+          <div class="tab" onclick="switchTab('text')">Lexical Text Analysis</div>
+          <div class="tab active" onclick="switchTab('image')">Advanced Vision Forensics</div>
         </div>
 
         <!-- TEXT TAB -->
@@ -381,15 +381,15 @@
             
             <div class="forensic-grid">
               <div class="forensic-card">
-                <h4>🧠 Lexical Pattern Match</h4>
-                <div class="data-row"><span class="data-lbl">Predictable Tokens:</span> <span class="data-val" id="txtLexHits">0</span></div>
-                <div class="data-row"><span class="data-lbl">Trigger Sentences:</span> <span class="data-val" id="txtLexTriggers">None</span></div>
+                <h4>Lexical Pattern Match</h4>
+                <div class="data-row"><span class="data-lbl">Predictable Tokens:</span><span class="data-val" id="txtLexHits">0</span></div>
+                <div class="data-row"><span class="data-lbl">Trigger Sentences:</span><span class="data-val" id="txtLexTriggers">None</span></div>
                 <p id="txtLexical" style="margin-top:10px; font-size: 0.9rem; color:#94a3b8;">Analyzing repetitive tokens and AI-specific trigger words.</p>
               </div>
               <div class="forensic-card">
-                <h4>📊 Structural Perplexity</h4>
-                <div class="data-row"><span class="data-lbl">Burstiness (Variance):</span> <span class="data-val" id="txtBurst">Normal</span></div>
-                <div class="data-row"><span class="data-lbl">Sentence Length Avg:</span> <span class="data-val" id="txtSentAvg">0</span></div>
+                <h4>Structural Perplexity</h4>
+                <div class="data-row"><span class="data-lbl">Burstiness (Variance):</span><span class="data-val" id="txtBurst">Normal</span></div>
+                <div class="data-row"><span class="data-lbl">Sentence Length Avg:</span><span class="data-val" id="txtSentAvg">0</span></div>
                 <p id="txtStructure" style="margin-top:10px; font-size: 0.9rem; color:#94a3b8;">Measuring sentence length variation and predictability.</p>
               </div>
             </div>
@@ -402,7 +402,7 @@
           <div class="drop-zone" id="imgDropZone">
             <div class="scanner-line"></div>
             <div id="dropText">
-              <div style="font-size: 3rem; margin-bottom: 15px; text-shadow: 0 0 20px rgba(59,130,246,0.5);">📡</div>
+              <div style="font-size: 3rem; margin-bottom: 15px; text-shadow: 0 0 20px rgba(59,130,246,0.5);"></div>
               <h3 style="color: #fff; margin-bottom: 10px; font-family: 'Fira Code', monospace;">UPLOAD TARGET MEDIA FOR FORENSIC SCAN</h3>
               <p style="color: var(--text-muted);">Drag & Drop or Click to select (JPEG, PNG, WebP)</p>
             </div>
@@ -417,7 +417,7 @@
 
           <!-- Technical Terminal Log -->
           <div class="terminal" id="imgLog">
-            <div class="term-line">> SYS_READY: Awaiting media payload for forensic extraction...</div>
+            <div class="term-line">>SYS_READY: Awaiting media payload for forensic extraction...</div>
           </div>
 
           <!-- Visual Analysis Cnavases -->
@@ -447,22 +447,22 @@
 
             <div class="forensic-grid">
               <div class="forensic-card">
-                <h4>📄 EXIF / Metadata Integrity</h4>
-                <div class="data-row"><span class="data-lbl">Signature Match:</span> <span class="data-val" id="metaSig">None</span></div>
-                <div class="data-row"><span class="data-lbl">Metadata State:</span> <span class="data-val" id="metaState">Checking...</span></div>
-                <div class="data-row"><span class="data-lbl">Software Tag:</span> <span class="data-val" id="metaSoftware">N/A</span></div>
+                <h4>EXIF / Metadata Integrity</h4>
+                <div class="data-row"><span class="data-lbl">Signature Match:</span><span class="data-val" id="metaSig">None</span></div>
+                <div class="data-row"><span class="data-lbl">Metadata State:</span><span class="data-val" id="metaState">Checking...</span></div>
+                <div class="data-row"><span class="data-lbl">Software Tag:</span><span class="data-val" id="metaSoftware">N/A</span></div>
               </div>
               <div class="forensic-card">
-                <h4>🔍 Error Level Analysis (ELA)</h4>
-                <div class="data-row"><span class="data-lbl">Compression Variance:</span> <span class="data-val" id="elaVariance">0.0%</span></div>
-                <div class="data-row"><span class="data-lbl">Artifact Uniformity:</span> <span class="data-val" id="elaUniformity">Checking...</span></div>
-                <div class="data-row"><span class="data-lbl">Status:</span> <span class="data-val" id="elaStatus">N/A</span></div>
+                <h4>Error Level Analysis (ELA)</h4>
+                <div class="data-row"><span class="data-lbl">Compression Variance:</span><span class="data-val" id="elaVariance">0.0%</span></div>
+                <div class="data-row"><span class="data-lbl">Artifact Uniformity:</span><span class="data-val" id="elaUniformity">Checking...</span></div>
+                <div class="data-row"><span class="data-lbl">Status:</span><span class="data-val" id="elaStatus">N/A</span></div>
               </div>
               <div class="forensic-card">
-                <h4>📷 Spatial Noise / PRNU</h4>
-                <div class="data-row"><span class="data-lbl">Sensor Noise:</span> <span class="data-val" id="noiseLevel">0.0%</span></div>
-                <div class="data-row"><span class="data-lbl">Frequency Density:</span> <span class="data-val" id="noiseDensity">Checking...</span></div>
-                <div class="data-row"><span class="data-lbl">Status:</span> <span class="data-val" id="noiseStatus">N/A</span></div>
+                <h4>Spatial Noise / PRNU</h4>
+                <div class="data-row"><span class="data-lbl">Sensor Noise:</span><span class="data-val" id="noiseLevel">0.0%</span></div>
+                <div class="data-row"><span class="data-lbl">Frequency Density:</span><span class="data-val" id="noiseDensity">Checking...</span></div>
+                <div class="data-row"><span class="data-lbl">Status:</span><span class="data-val" id="noiseStatus">N/A</span></div>
               </div>
             </div>
           </div>
@@ -475,15 +475,15 @@
 
   <div style="max-width: 1200px; margin: 60px auto 40px; padding: 0 20px;">
     <div style="padding: 30px; background: rgba(0,0,0,0.4); border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
-      <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 20px; font-family: 'Outfit', sans-serif;">🔗 Access Other Cybersecurity Modules</h3>
+      <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 20px; font-family: 'Outfit', sans-serif;">Access Other Cybersecurity Modules</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
         <a href="ai-prompt-humanizer.html" style="text-decoration: none; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s; display: block;" onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.background='rgba(255,255,255,0.05)'">
-          <div style="font-size: 1.5rem; margin-bottom: 8px;">🎭</div>
+          <div style="font-size: 1.5rem; margin-bottom: 8px;"></div>
           <strong style="display: block; margin-bottom: 4px; font-family: 'Fira Code', monospace;">NLP TEXT OBFUSCATOR</strong>
           <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Evade AI detection models by restructuring language perplexity to human baselines.</span>
         </a>
         <a href="qr-generator.html" style="text-decoration: none; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s; display: block;" onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.background='rgba(255,255,255,0.05)'">
-          <div style="font-size: 1.5rem; margin-bottom: 8px;">🔳</div>
+          <div style="font-size: 1.5rem; margin-bottom: 8px;"></div>
           <strong style="display: block; margin-bottom: 4px; font-family: 'Fira Code', monospace;">SECURE QR PAYLOAD</strong>
           <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Generate traceable data matrices with custom embedded branding protocols.</span>
         </a>
@@ -495,8 +495,8 @@
   <script>
     // --- UI Tabs Logic ---
     function switchTab(tab) {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t =>t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c =>c.classList.remove('active'));
       event.target.classList.add('active');
       document.getElementById(`tab-${tab}`).classList.add('active');
     }
@@ -506,7 +506,7 @@
     const geminiPhrases = ["absolutely", "here is a", "happy to help", "certainly", "right away", "that's a great question", "let's dive in", "furthermore", "in summary"];
     const claudePhrases = ["i apologize", "to be precise", "upon reflection", "it's worth considering", "specifically"];
 
-    document.getElementById('analyzeTextBtn').addEventListener('click', () => {
+    document.getElementById('analyzeTextBtn').addEventListener('click', () =>{
       const text = document.getElementById('textInput').value.trim();
       if(text.split(' ').length < 15) {
         alert("System requires a minimum string length of 15 words for statistical accuracy.");
@@ -516,7 +516,7 @@
       btn.innerHTML = '[ PROCESSING VECTOR DATA... ]';
       btn.disabled = true;
 
-      setTimeout(() => {
+      setTimeout(() =>{
         analyzeTextContext(text.toLowerCase());
         btn.innerHTML = '[ EXECUTE NLP SCAN ]';
         btn.disabled = false;
@@ -529,27 +529,27 @@
       let suspectedModel = "UNIDENTIFIED LOGIC";
       
       let gptHits = 0, geminiHits = 0, claudeHits = 0;
-      chatGptPhrases.forEach(p => { if(text.includes(p)) gptHits++; });
-      geminiPhrases.forEach(p => { if(text.includes(p)) geminiHits++; });
-      claudePhrases.forEach(p => { if(text.includes(p)) claudeHits++; });
+      chatGptPhrases.forEach(p =>{ if(text.includes(p)) gptHits++; });
+      geminiPhrases.forEach(p =>{ if(text.includes(p)) geminiHits++; });
+      claudePhrases.forEach(p =>{ if(text.includes(p)) claudeHits++; });
 
       const totalHits = gptHits + geminiHits + claudeHits;
-      if (totalHits > 0) aiScore += Math.min((totalHits * 18) + 20, 75);
+      if (totalHits >0) aiScore += Math.min((totalHits * 18) + 20, 75);
 
-      if (gptHits > geminiHits && gptHits > claudeHits) suspectedModel = "OPENAI_GPT_V4";
-      else if (geminiHits > gptHits && geminiHits > claudeHits) suspectedModel = "GOOGLE_GEMINI_PRO";
-      else if (claudeHits > gptHits && claudeHits > geminiHits) suspectedModel = "ANTHROPIC_CLAUDE_3";
-      else if (totalHits > 0) suspectedModel = "LLM_GENERIC";
+      if (gptHits >geminiHits && gptHits >claudeHits) suspectedModel = "OPENAI_GPT_V4";
+      else if (geminiHits >gptHits && geminiHits >claudeHits) suspectedModel = "GOOGLE_GEMINI_PRO";
+      else if (claudeHits >gptHits && claudeHits >geminiHits) suspectedModel = "ANTHROPIC_CLAUDE_3";
+      else if (totalHits >0) suspectedModel = "LLM_GENERIC";
       else suspectedModel = "HUMAN_ORGANIC";
 
       const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
-      const lengths = sentences.map(s => s.trim().split(' ').length).filter(l => l > 0);
+      const lengths = sentences.map(s =>s.trim().split(' ').length).filter(l =>l >0);
       
       let varianceStr = "High Natural Variance";
       let avg = 0;
-      if(lengths.length > 2) {
-        avg = lengths.reduce((a, b) => a + b, 0) / lengths.length;
-        const variance = lengths.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / lengths.length;
+      if(lengths.length >2) {
+        avg = lengths.reduce((a, b) =>a + b, 0) / lengths.length;
+        const variance = lengths.reduce((a, b) =>a + Math.pow(b - avg, 2), 0) / lengths.length;
         const stdDev = Math.sqrt(variance);
         const varianceRatio = stdDev / avg;
         if(varianceRatio < 0.35) {
@@ -573,9 +573,9 @@
       // Updates
       renderScore(aiScore, 'txt');
       document.getElementById('txtLexHits').innerText = totalHits;
-      document.getElementById('txtLexHits').style.color = totalHits > 0 ? '#f43f5e' : '#10b981';
-      document.getElementById('txtLexTriggers').innerText = totalHits > 0 ? "DETECTED" : "CLEAN";
-      document.getElementById('txtLexTriggers').style.color = totalHits > 0 ? '#f43f5e' : '#10b981';
+      document.getElementById('txtLexHits').style.color = totalHits >0 ? '#f43f5e' : '#10b981';
+      document.getElementById('txtLexTriggers').innerText = totalHits >0 ? "DETECTED" : "CLEAN";
+      document.getElementById('txtLexTriggers').style.color = totalHits >0 ? '#f43f5e' : '#10b981';
       
       document.getElementById('txtBurst').innerText = varianceStr;
       document.getElementById('txtSentAvg').innerText = avg.toFixed(1) + " words";
@@ -593,16 +593,16 @@
     const logBox = document.getElementById('imgLog');
 
     // Drag & Drop
-    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-    dropZone.addEventListener('dragleave', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); });
-    dropZone.addEventListener('drop', e => {
+    dropZone.addEventListener('dragover', e =>{ e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', e =>{ e.preventDefault(); dropZone.classList.remove('drag-over'); });
+    dropZone.addEventListener('drop', e =>{
       e.preventDefault(); dropZone.classList.remove('drag-over');
       if(e.dataTransfer.files[0]) handleImageFile(e.dataTransfer.files[0]);
     });
-    dropZone.addEventListener('click', () => { if(!currentImageFile) imgInput.click(); });
-    imgInput.addEventListener('change', e => { if(e.target.files[0]) handleImageFile(e.target.files[0]); });
+    dropZone.addEventListener('click', () =>{ if(!currentImageFile) imgInput.click(); });
+    imgInput.addEventListener('change', e =>{ if(e.target.files[0]) handleImageFile(e.target.files[0]); });
 
-    document.getElementById('resetImgBtn').addEventListener('click', () => {
+    document.getElementById('resetImgBtn').addEventListener('click', () =>{
         document.getElementById('imgResult').style.display = 'none';
         document.getElementById('analyzeImgWrap').style.display = 'none';
         logBox.style.display = 'none';
@@ -619,10 +619,10 @@
       const line = document.createElement('div');
       line.className = 'term-line ' + type;
       const time = new Date().toISOString().split('T')[1].substring(0,8);
-      line.innerHTML = `[${time}] > ${msg}`;
+      line.innerHTML = `[${time}] >${msg}`;
       logBox.appendChild(line);
       logBox.scrollTop = logBox.scrollHeight;
-      return new Promise(r => setTimeout(r, 100)); // slight delay for visual effect
+      return new Promise(r =>setTimeout(r, 100)); // slight delay for visual effect
     }
 
     async function handleImageFile(file) {
@@ -642,14 +642,14 @@
       // Load image obj for canvas processing
       originalImageObj = new Image();
       originalImageObj.src = url;
-      await new Promise(r => originalImageObj.onload = r);
+      await new Promise(r =>originalImageObj.onload = r);
       await termLog(`RESOLUTION CONFIRMED: ${originalImageObj.width}x${originalImageObj.height} px`);
       
       document.getElementById('imgResult').style.display = 'none';
       document.getElementById('visualsContainer').style.display = 'none';
     }
 
-    document.getElementById('analyzeImgBtn').addEventListener('click', async () => {
+    document.getElementById('analyzeImgBtn').addEventListener('click', async () =>{
       const btn = document.getElementById('analyzeImgBtn');
       btn.innerHTML = '[ SCAN IN PROGRESS... ]';
       btn.disabled = true;
@@ -709,11 +709,11 @@
           else if(strData.includes('stable diffusion') || strData.includes('automatic1111') || strData.includes('sdxl')) { metaScore = 99; modelStrs.push("Stable Diffusion"); }
           else if(strData.includes('firefly') || strData.includes('adobe generative')) { metaScore = 99; modelStrs.push("Adobe Firefly"); }
           
-          if(metaScore > 0 && modelStrs.length === 1) { // Only log if not already logged by filename
+          if(metaScore >0 && modelStrs.length === 1) { // Only log if not already logged by filename
              await termLog(`CRITICAL: EMBEDDED AI WATERMARK DETECTED: [${modelStrs[modelStrs.length-1]}]`, "term-err");
           }
           
-          if(metaScore > 0){
+          if(metaScore >0){
              document.getElementById('metaSig').innerText = modelStrs[modelStrs.length-1];
              document.getElementById('metaSig').style.color = "#f43f5e";
           } else {
@@ -736,7 +736,7 @@
             document.getElementById('elaStatus').innerText = "HIGH PROBABILITY SYNTHETIC";
             document.getElementById('elaStatus').style.color = "#f43f5e";
             document.getElementById('elaUniformity').innerText = "Unnatural (Perfect)";
-        } else if (elaData.variance > 8.0) {
+        } else if (elaData.variance >8.0) {
             await termLog("ANOMALY: High variance/noise in ELA mapping. Image heavily compressed or multi-saved.", "term-warn");
             document.getElementById('elaStatus').innerText = "HEAVILY MODIFIED";
             document.getElementById('elaStatus').style.color = "#f59e0b";
@@ -772,7 +772,7 @@
         /* ==== ALGORITHMIC DECISION ENGINE ==== */
         await termLog("== FUSION SYNTHESIS & SCORING ==", "term-highlight");
         
-        if (metaScore > 0) {
+        if (metaScore >0) {
             finalScore = metaScore; // Metadata trumps visual if it proves AI
             // Ensure visual indicators reflect the AI reality if caught by metadata/filename
             document.getElementById('elaStatus').innerText = "AI COMPRESSION MATCH";
@@ -787,7 +787,7 @@
         await termLog(`CALCULATION COMPLETE. SYNTHETIC PROBABILITY: ${finalScore}%`);
 
         let finalModel = "UNKNOWN / HUMAN";
-        if (modelStrs.length > 0) {
+        if (modelStrs.length >0) {
             finalModel = modelStrs[0];
         } else if (finalScore >= 75) {
             finalModel = "LATENT_DIFFUSION_DEEPFAKE";
@@ -796,7 +796,7 @@
         }
 
         // Output Display
-        setTimeout(() => {
+        setTimeout(() =>{
           btn.innerHTML = '[ INITIATE FORENSIC SCAN ]';
           btn.disabled = false;
           dropZone.classList.remove('scan-active');
@@ -819,15 +819,15 @@
 
     // Generate Error Level Analysis by saving canvas as lower qual JPEG and diffing
     async function generateELA(imgObj) {
-        return new Promise((resolve) => {
+        return new Promise((resolve) =>{
             const canvas = document.getElementById('elaCanvas');
             const ctx = canvas.getContext('2d', { willReadFrequently: true });
             
             // Limit size for performance
             const MAX = 600;
             let w = imgObj.width, h = imgObj.height;
-            if(w > h && w > MAX) { h *= MAX/w; w = MAX; }
-            else if(h > MAX) { w *= MAX/h; h = MAX; }
+            if(w >h && w >MAX) { h *= MAX/w; w = MAX; }
+            else if(h >MAX) { w *= MAX/h; h = MAX; }
             w = Math.round(w); h = Math.round(h);
             canvas.width = w; canvas.height = h;
 
@@ -839,7 +839,7 @@
             const compressedUrl = canvas.toDataURL('image/jpeg', 0.90);
             
             const compImg = new Image();
-            compImg.onload = () => {
+            compImg.onload = () =>{
                 ctx.drawImage(compImg, 0, 0, w, h);
                 const compData = ctx.getImageData(0,0,w,h);
                 const data = compData.data;
@@ -875,14 +875,14 @@
 
     // Generate High Frequency Noise map (Laplacian/High-pass equivalent)
     async function generateNoiseMap(imgObj) {
-         return new Promise((resolve) => {
+         return new Promise((resolve) =>{
             const canvas = document.getElementById('noiseCanvas');
             const ctx = canvas.getContext('2d', { willReadFrequently: true });
             
             const MAX = 600;
             let w = imgObj.width, h = imgObj.height;
-            if(w > h && w > MAX) { h *= MAX/w; w = MAX; }
-            else if(h > MAX) { w *= MAX/h; h = MAX; }
+            if(w >h && w >MAX) { h *= MAX/w; w = MAX; }
+            else if(h >MAX) { w *= MAX/h; h = MAX; }
             w = Math.round(w); h = Math.round(h);
             canvas.width = w; canvas.height = h;
 
@@ -911,7 +911,7 @@
                     let diff = Math.abs((lumaC * 4) - (top + bottom + left + right));
                     
                     // Amplify small diffs (camera noise) and threshold big diffs (hard edges)
-                    if (diff > 5 && diff < 40) {
+                    if (diff >5 && diff < 40) {
                         totalNoise += diff;
                         resData[idx] = resData[idx+1] = resData[idx+2] = Math.min(diff * 5, 255);
                     } else if (diff >= 40) {
@@ -962,20 +962,20 @@
       <!-- RELATED TOOLS FOR SEO INTERNAL LINKING -->
       <div style="max-width: 1000px; margin: 60px auto 40px; padding: 0 20px;">
         <div style="padding: 30px; background: rgba(0,0,0,0.2); border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
-          <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 20px; font-family: 'Outfit', sans-serif;">🔗 Explore More Premium Free Tools</h3>
+          <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 20px; font-family: 'Outfit', sans-serif;">Explore More Premium Free Tools</h3>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
             <a href="ai-content-detector.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
-              <div style="font-size: 1.5rem; margin-bottom: 8px;">🕵️‍♂️</div>
+              <div style="font-size: 1.5rem; margin-bottom: 8px;">‍</div>
               <strong style="display: block; margin-bottom: 4px;">Deep AI Content Detector</strong>
               <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Identify ChatGPT text & deepfake images instantly.</span>
             </a>
             <a href="ai-prompt-humanizer.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
-              <div style="font-size: 1.5rem; margin-bottom: 8px;">✍️</div>
+              <div style="font-size: 1.5rem; margin-bottom: 8px;"></div>
               <strong style="display: block; margin-bottom: 4px;">AI Text Humanizer</strong>
               <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Bypass AI detectors with 100% human-like text.</span>
             </a>
             <a href="qr-generator.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
-              <div style="font-size: 1.5rem; margin-bottom: 8px;">🔲</div>
+              <div style="font-size: 1.5rem; margin-bottom: 8px;"></div>
               <strong style="display: block; margin-bottom: 4px;">Advanced QR Generator</strong>
               <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Create custom branded QR codes instantly.</span>
             </a>
@@ -1001,7 +1001,7 @@
       </div>
       <div class="footer-bottom" style="border-top: none; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-size: 0.9rem; color: var(--text-muted);">
         <span>© 2026 PixelCraft AI - All tools are free forever</span>
-        <span>Made by 💗 Biradar Swapnil</span>
+        <span>Made by Biradar Swapnil</span>
       </div>
     </div>
   </footer>

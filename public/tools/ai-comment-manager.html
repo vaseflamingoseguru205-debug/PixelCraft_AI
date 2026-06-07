@@ -172,14 +172,14 @@
   <div id="toast-container" class="toast-container"></div>
 
   <nav class="navbar">
-    <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+    <a href="../index.html" class="nav-logo"><div class="nav-logo-icon"></div>PixelCraft AI</a>
     <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
   </nav>
 
   <div class="tool-page">
     <div class="tool-page-header">
       <a href="../index.html" class="back-link">← Back to All Tools</a>
-      <div style="font-size:2.5rem;margin-bottom:12px;">💬</div>
+      <div style="font-size:2.5rem;margin-bottom:12px;"></div>
       <h1>AI Fan-Engage Manager</h1>
       <p>Paste a fan's comment and AI will instantly generate 3 engaging, personalized replies matching your creator "vibe".</p>
     </div>
@@ -191,16 +191,16 @@
         <div class="prompt-box">
           <h3>Paste Fan Comment Here</h3>
           <div class="input-wrapper">
-            <textarea id="ai-input" class="prompt-input" placeholder="e.g. 'Omg this video was insane! How did you do the explosion scene?! Love from India ❤️'" spellcheck="false"></textarea>
+            <textarea id="ai-input" class="prompt-input" placeholder="e.g. 'Omg this video was insane! How did you do the explosion scene?! Love from India '" spellcheck="false"></textarea>
             
             <div class="options-row">
               <div class="control-group">
                 <label>Your Creator "Vibe"</label>
                 <select id="tone">
-                  <option value="High Energy (MrBeast style, lots of exclamation marks)">High Energy & Hype 🚀</option>
-                  <option value="Humble & Grateful">Humble & Grateful 🙏</option>
-                  <option value="Funny & Sarcastic">Funny & Sarcastic 😂</option>
-                  <option value="Mysterious & Teasing">Mysterious & Teasing 👀</option>
+                  <option value="High Energy (MrBeast style, lots of exclamation marks)">High Energy & Hype </option>
+                  <option value="Humble & Grateful">Humble & Grateful </option>
+                  <option value="Funny & Sarcastic">Funny & Sarcastic </option>
+                  <option value="Mysterious & Teasing">Mysterious & Teasing </option>
                 </select>
               </div>
               <div class="control-group">
@@ -214,7 +214,7 @@
             </div>
           </div>
           <button class="btn btn-blue generate-btn" id="btn-generate">
-            ⚡ Generate Replies
+             Generate Replies
           </button>
         </div>
 
@@ -258,7 +258,7 @@
     const resBox = document.getElementById('result-box');
     const resOutput = document.getElementById('result-output');
 
-    btnGen.addEventListener('click', async () => {
+    btnGen.addEventListener('click', async () =>{
       const text = aiInput.value.trim();
       if(!text) { showToast('Please paste a fan comment first!', 'error'); return; }
       
@@ -298,12 +298,12 @@ Rules:
         
         let generatedText = await response.text();
         
-        const replies = generatedText.split('|||').map(r => r.trim()).filter(r => r.length > 0);
+        const replies = generatedText.split('|||').map(r =>r.trim()).filter(r =>r.length >0);
         
         if (replies.length === 0) throw new Error("Format error");
 
         resOutput.innerHTML = '';
-        replies.forEach((reply, index) => {
+        replies.forEach((reply, index) =>{
           // Remove leading numbers like "1." if AI added them
           let cleanReply = reply.replace(/^\d+[\.\)]\s*/, '').replace(/^"|"$/g, '');
           
@@ -315,9 +315,9 @@ Rules:
           `;
         });
 
-        showToast('⚡ Replies generated!', 'success');
+        showToast(' Replies generated!', 'success');
       } catch(err) {
-        showToast('❌ Failed to generate replies. Please try again.', 'error');
+        showToast(' Failed to generate replies. Please try again.', 'error');
         resOutput.innerHTML = '<p style="color:var(--text-main);">Error connecting to AI service. Please try again later.</p>';
       }
 
@@ -327,12 +327,12 @@ Rules:
 
     window.copyReply = function(btn) {
       const text = btn.previousElementSibling.textContent;
-      navigator.clipboard.writeText(text).then(() => {
+      navigator.clipboard.writeText(text).then(() =>{
         const oldText = btn.textContent;
         btn.textContent = "Copied!";
         btn.style.background = "#10b981";
-        showToast('📋 Copied to clipboard!', 'success');
-        setTimeout(() => {
+        showToast(' Copied to clipboard!', 'success');
+        setTimeout(() =>{
           btn.textContent = oldText;
           btn.style.background = "var(--primary)";
         }, 2000);

@@ -187,14 +187,14 @@
   <div id="toast-container" class="toast-container"></div>
 
   <nav class="navbar">
-    <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+    <a href="../index.html" class="nav-logo"><div class="nav-logo-icon"></div>PixelCraft AI</a>
     <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
   </nav>
 
   <div class="tool-page">
     <div class="tool-page-header">
       <a href="../index.html" class="back-link">← Back to All Tools</a>
-      <div style="font-size:2.5rem;margin-bottom:12px;">🎵</div>
+      <div style="font-size:2.5rem;margin-bottom:12px;"></div>
       <h1>AI Sound Effect (SFX) Generator</h1>
       <p>Type what you want to hear, and AI will generate a completely unique, 100% copyright-free sound effect for your videos.</p>
     </div>
@@ -207,11 +207,11 @@
           <h3>Describe Your Sound</h3>
           
           <div class="tag-suggestions">
-            <button class="suggestion-btn" onclick="addTag('Fast cinematic whoosh')">💨 Cinematic Whoosh</button>
-            <button class="suggestion-btn" onclick="addTag('Sci-fi laser gun pew')">🔫 Sci-fi Laser</button>
-            <button class="suggestion-btn" onclick="addTag('Magical fairy sparkle twinkle')">✨ Magic Sparkle</button>
-            <button class="suggestion-btn" onclick="addTag('Deep impact bass drop')">💥 Bass Drop</button>
-            <button class="suggestion-btn" onclick="addTag('Glitchy digital stutter')">🤖 Cyber Glitch</button>
+            <button class="suggestion-btn" onclick="addTag('Fast cinematic whoosh')">Cinematic Whoosh</button>
+            <button class="suggestion-btn" onclick="addTag('Sci-fi laser gun pew')">Sci-fi Laser</button>
+            <button class="suggestion-btn" onclick="addTag('Magical fairy sparkle twinkle')">Magic Sparkle</button>
+            <button class="suggestion-btn" onclick="addTag('Deep impact bass drop')">Bass Drop</button>
+            <button class="suggestion-btn" onclick="addTag('Glitchy digital stutter')">Cyber Glitch</button>
           </div>
 
           <div class="input-wrapper">
@@ -219,7 +219,7 @@
           </div>
           
           <button class="btn btn-blue generate-btn" id="btn-generate">
-            🔊 Generate Sound Effect
+             Generate Sound Effect
           </button>
           <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px; text-align: center;">
             Note: Audio generation requires high processing power. It may take 10-20 seconds.
@@ -233,7 +233,7 @@
           <div class="audio-player-container">
             <audio id="audio-player" controls></audio>
             <a id="download-link" class="download-btn" download="pixelcraft_sfx.wav">
-              ⬇️ Download .WAV
+              Download .WAV
             </a>
           </div>
 
@@ -277,7 +277,7 @@
       aiInput.focus();
     };
 
-    btnGen.addEventListener('click', async () => {
+    btnGen.addEventListener('click', async () =>{
       const prompt = aiInput.value.trim();
       if(!prompt) { showToast('Please describe the sound you want!', 'error'); return; }
       
@@ -297,7 +297,7 @@
         if (response.status === 503) {
            loadingMsg.textContent = "AI Model is waking up... Please wait.";
            // Retry logic for Hugging Face Cold Start
-           await new Promise(r => setTimeout(r, 15000));
+           await new Promise(r =>setTimeout(r, 15000));
            const retryResponse = await fetch('/api/generate-sfx', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -309,7 +309,7 @@
            
            audioPlayer.src = data.audio;
            downloadLink.href = data.audio;
-           showToast('🎵 SFX generated successfully!', 'success');
+           showToast(' SFX generated successfully!', 'success');
         } else if (!response.ok) {
            const errData = await response.json();
            throw new Error(errData.error || "Failed to connect to AI");
@@ -319,11 +319,11 @@
            
            audioPlayer.src = data.audio;
            downloadLink.href = data.audio;
-           showToast('🎵 SFX generated successfully!', 'success');
+           showToast(' SFX generated successfully!', 'success');
         }
 
       } catch(err) {
-        showToast('❌ ' + err.message, 'error');
+        showToast(' ' + err.message, 'error');
         // fallback empty UI
       }
 

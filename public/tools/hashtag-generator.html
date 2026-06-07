@@ -211,14 +211,14 @@
   <div id="toast-container" class="toast-container"></div>
 
   <nav class="navbar">
-    <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div> PixelCraft AI</a>
+    <a href="../index.html" class="nav-logo"><div class="nav-logo-icon"></div>PixelCraft AI</a>
     <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
   </nav>
 
   <div class="tool-page">
     <div class="tool-page-header">
       <a href="../index.html" class="back-link">← Back to All Tools</a>
-      <div style="font-size:2.5rem;margin-bottom:12px;">🚀</div>
+      <div style="font-size:2.5rem;margin-bottom:12px;"></div>
       <h1>AI Hashtag & Keyword Generator</h1>
       <p>Instantly generate trending SEO keywords, viral hashtags, and highly professional titles for your content.</p>
     </div>
@@ -234,21 +234,21 @@
             
             <div class="toggle-group">
               <button class="toggle-btn active" id="btn-tags" onclick="setMode('tags')"># Hashtags</button>
-              <button class="toggle-btn" id="btn-keys" onclick="setMode('keys')">🔑 Keywords</button>
+              <button class="toggle-btn" id="btn-keys" onclick="setMode('keys')">Keywords</button>
             </div>
             
-            <button id="btn-generate" class="generate-btn" onclick="generateContent()">✨ Generate Magic</button>
+            <button id="btn-generate" class="generate-btn" onclick="generateContent()">Generate Magic</button>
           </div>
         </div>
 
         <!-- Result -->
         <div class="result-box">
-          <div id="loader" class="loader">🤖 AI is analyzing trends and generating powerful content...</div>
+          <div id="loader" class="loader">AI is analyzing trends and generating powerful content...</div>
 
           <!-- Titles Section -->
           <div id="titles-card" class="result-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-              <h4 style="margin: 0;">🎯 Professional Titles</h4>
+              <h4 style="margin: 0;">Professional Titles</h4>
               <button class="copy-btn" onclick="copyAllTitles()">Copy All</button>
             </div>
             <div id="titles-output"></div>
@@ -257,7 +257,7 @@
           <!-- Tags/Keywords Section -->
           <div id="tags-card" class="result-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-              <h4 id="tags-header" style="margin: 0;">📈 Trending Hashtags</h4>
+              <h4 id="tags-header" style="margin: 0;">Trending Hashtags</h4>
               <button class="copy-btn" onclick="copyTags()">Copy All</button>
             </div>
             <div id="tags-output" class="tags-container"></div>
@@ -279,17 +279,17 @@
       document.getElementById('btn-keys').classList.remove('active');
       if(mode === 'tags') {
         document.getElementById('btn-tags').classList.add('active');
-        document.getElementById('tags-header').innerHTML = '📈 Trending Hashtags';
+        document.getElementById('tags-header').innerHTML = ' Trending Hashtags';
       } else {
         document.getElementById('btn-keys').classList.add('active');
-        document.getElementById('tags-header').innerHTML = '🔑 SEO Keywords';
+        document.getElementById('tags-header').innerHTML = ' SEO Keywords';
       }
     }
 
     function extractCoreWords(text) {
       const stops = ["how", "to", "a", "an", "the", "in", "on", "for", "and", "or", "is", "are", "with", "of", "start", "make", "my"];
       const words = text.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(' ');
-      return words.filter(w => w.length > 2 && !stops.includes(w));
+      return words.filter(w =>w.length >2 && !stops.includes(w));
     }
 
     function generateContent() {
@@ -305,7 +305,7 @@
       document.getElementById('btn-generate').disabled = true;
 
       // Simulate AI Processing Time
-      setTimeout(() => {
+      setTimeout(() =>{
         document.getElementById('loader').style.display = 'none';
         
         // Generate Titles
@@ -321,12 +321,12 @@
         document.getElementById('titles-card').style.display = 'block';
         document.getElementById('tags-card').style.display = 'block';
         document.getElementById('btn-generate').disabled = false;
-        showToast('Content generated successfully! ✨', 'success');
+        showToast('Content generated successfully! ', 'success');
       }, 1500);
     }
 
     function capitalizeWords(str) {
-      return str.replace(/\b\w/g, l => l.toUpperCase());
+      return str.replace(/\b\w/g, l =>l.toUpperCase());
     }
 
     function generateTitles(topic) {
@@ -339,14 +339,14 @@
       // Professional rewriting logic
       const platforms = [
         { name: "YouTube", format: `10 SECRETS to Mastering ${mainSubject} (Mind-Blowing!)` },
-        { name: "Instagram", format: `The Ultimate Guide to ${mainSubject} ✨ Swipe to learn` },
+        { name: "Instagram", format: `The Ultimate Guide to ${mainSubject}  Swipe to learn` },
         { name: "LinkedIn", format: `Why ${mainSubject} is Transforming the Industry in 2026` },
         { name: "Facebook", format: `You Won't Believe How Easy ${mainSubject} Can Be!` },
         { name: "SEO Blog", format: `${mainSubject}: A Complete Step-by-Step Tutorial` }
       ];
 
       let html = '';
-      platforms.forEach(p => {
+      platforms.forEach(p =>{
         html += `
           <div class="title-item">
             <div>
@@ -367,21 +367,21 @@
       // Base generic tags
       const viralTags = ['viral', 'trending', 'foryou', 'explore', 'tips'];
       
-      coreWords.forEach(word => {
+      coreWords.forEach(word =>{
         tags.push('#' + word);
         tags.push('#' + word + 'tips');
         tags.push('#' + word + '2026');
       });
       
-      if(coreWords.length > 1) {
+      if(coreWords.length >1) {
         tags.push('#' + coreWords.join(''));
         tags.push('#' + coreWords[0] + capitalizeWords(coreWords[1] || ''));
       }
       
-      viralTags.forEach(t => tags.push('#' + t));
+      viralTags.forEach(t =>tags.push('#' + t));
       
       // Unique random 15 tags
-      tags = [...new Set(tags)].sort(() => 0.5 - Math.random()).slice(0, 15);
+      tags = [...new Set(tags)].sort(() =>0.5 - Math.random()).slice(0, 15);
       
       renderTags(tags);
     }
@@ -393,18 +393,18 @@
       const prefixes = ["best", "how to", "top", "free", "guide for"];
       const suffixes = ["tutorial", "for beginners", "tips", "tricks 2026", "strategy"];
       
-      coreWords.forEach(word => {
+      coreWords.forEach(word =>{
         keys.push(word);
-        prefixes.forEach(p => keys.push(`${p} ${word}`));
-        suffixes.forEach(s => keys.push(`${word} ${s}`));
+        prefixes.forEach(p =>keys.push(`${p} ${word}`));
+        suffixes.forEach(s =>keys.push(`${word} ${s}`));
       });
       
-      if(coreWords.length > 1) {
+      if(coreWords.length >1) {
         keys.push(coreWords.join(' '));
         keys.push(`best ${coreWords.join(' ')}`);
       }
       
-      keys = [...new Set(keys)].sort(() => 0.5 - Math.random()).slice(0, 15);
+      keys = [...new Set(keys)].sort(() =>0.5 - Math.random()).slice(0, 15);
       
       renderTags(keys, false);
     }
@@ -413,11 +413,11 @@
       const container = document.getElementById('tags-output');
       container.innerHTML = '';
       
-      items.forEach(item => {
+      items.forEach(item =>{
         const span = document.createElement('span');
         span.className = 'tag-item';
         span.innerText = item;
-        span.onclick = () => copyText(item);
+        span.onclick = () =>copyText(item);
         container.appendChild(span);
       });
     }
@@ -428,12 +428,12 @@
     }
 
     function copyAllTitles() {
-      const texts = Array.from(document.querySelectorAll('.title-text')).map(el => el.innerText);
+      const texts = Array.from(document.querySelectorAll('.title-text')).map(el =>el.innerText);
       copyText(texts.join('\\n\\n'));
     }
 
     function copyTags() {
-      const items = Array.from(document.querySelectorAll('.tag-item')).map(el => el.innerText);
+      const items = Array.from(document.querySelectorAll('.tag-item')).map(el =>el.innerText);
       // Join with space if tags, comma if keywords
       const sep = currentMode === 'tags' ? ' ' : ', ';
       copyText(items.join(sep));
