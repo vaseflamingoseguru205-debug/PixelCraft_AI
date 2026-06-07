@@ -227,8 +227,11 @@
       <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
           <h2 style="font-size: 1.2rem;">Arrangement <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">(Drag to reorder)</span></h2>
-          <button class="btn btn-gray" style="padding: 6px 12px; font-size: 0.85rem;" onclick="document.getElementById('add-more-input').click()">+ Add More</button>
-          <input type="file" id="add-more-input" accept="image/*" multiple style="display:none"/>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn" style="background: rgba(239, 68, 68, 0.9); color: white; padding: 6px 12px; font-size: 0.85rem; border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 4px;" onclick="clearAllImages()"><span>🗑️</span> Clear All</button>
+            <button class="btn btn-gray" style="padding: 6px 12px; font-size: 0.85rem;" onclick="document.getElementById('add-more-input').click()">+ Add More</button>
+            <input type="file" id="add-more-input" accept="image/*" multiple style="display:none"/>
+          </div>
         </div>
         
         <div class="image-grid" id="image-grid">
@@ -412,6 +415,15 @@
       const badge = item.querySelector('.order-badge');
       if(badge) badge.innerText = index + 1;
     });
+  }
+
+  function clearAllImages() {
+    imageFiles = [];
+    imageGrid.innerHTML = '';
+    initialUpload.style.display = 'block';
+    editorWorkspace.style.display = 'none';
+    fileInput.value = '';
+    addMoreInput.value = '';
   }
 
   // PDF Generation logic
