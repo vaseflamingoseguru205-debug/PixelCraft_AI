@@ -261,6 +261,19 @@
       display: block;
       margin: 0 auto;
     }
+    .download-qr-btn {
+      margin-top: 10px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .download-qr-btn:hover { background: #2563eb; }
     .success-icon {
       font-size: 3rem;
       color: #10b981;
@@ -277,6 +290,19 @@
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
       pointer-events: none; z-index: 9999;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .glass-panel { padding: 15px; }
+      .upload-area-pdf { padding: 30px 10px; }
+      .upload-icon-pdf { font-size: 3rem; }
+      h1 { font-size: 2rem !important; }
+      .share-actions { flex-direction: column; }
+      .share-btn { width: 100%; min-width: auto; padding: 12px; }
+      .link-display { flex-direction: column; gap: 10px; }
+      .link-display input { width: 100%; padding: 8px 0; text-align: center; }
+      .copy-btn { width: 100%; }
     }
   </style>
 </head>
@@ -344,6 +370,7 @@
             <div class="qr-container">
               <img id="qr-code" src="" alt="QR Code" width="150" height="150" />
               <p style="color: #333; font-size: 0.8rem; margin-top: 8px; font-weight: 600;">Scan to Open PDF</p>
+              <button class="download-qr-btn" onclick="downloadQR()">📥 Download QR</button>
             </div>
           </div>
 
@@ -559,6 +586,26 @@
     progressBar.style.width = '0%';
     statusText.textContent = 'Uploading magic... ✨';
     fileInput.value = '';
+  }
+
+  function downloadQR() {
+    const qrUrl = document.getElementById('qr-code').src;
+    fetch(qrUrl)
+      .then(res => res.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "PixelCraft-QR.png";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(err => {
+        console.error(err);
+        showToast('Error downloading QR code', 'error');
+      });
   }
 </script>
 </body>
