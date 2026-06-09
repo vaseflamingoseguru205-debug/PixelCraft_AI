@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V78ZLHJLR8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-V78ZLHJLR8');
+</script>
+
+  <!-- ===== SEO META TAGS ===== -->
+  <title>Free AI Background Remover - Remove BG from Image | PixelCraft AI</title>
+  <meta name="description" content="Remove image background instantly online using AI. High quality, sharp edges, 100% free and private. No signup needed. Works in your browser!"/>
+  <meta name="keywords" content="remove bg online, free background remover, AI background removal, clear background, transparent background maker, browser AI, high quality cutout, PixelCraft AI"/>
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"/>
+  <meta name="author" content="PixelCraft AI"/>
+  <meta name="language" content="English"/>
+  <link rel="canonical" href="https://pixelcraft-ai-94y5.onrender.com/tools/remove-bg.html"/>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="PixelCraft AI"/>
+  <meta property="og:url" content="https://pixelcraft-ai-94y5.onrender.com/tools/remove-bg.html"/>
+  <meta property="og:title" content="Free AI Background Remover - High Quality Cutouts | PixelCraft AI"/>
+  <meta property="og:description" content="Remove image background instantly online using AI. High quality, sharp edges, 100% free and private."/>
+  <meta property="og:image" content="https://pixelcraft-ai-94y5.onrender.com/og-image.png"/>
+
+  <meta name="theme-color" content="#2563EB"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <link rel="stylesheet" href="../css/style.css"/>
+
+  <!-- Google AdSense -->
+  <meta name="google-adsense-account" content="ca-pub-6696712816082259">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6696712816082259" crossorigin="anonymous"></script>
+
+  <!-- IMGLY Background Removal -->
+  <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.3/dist/imgly-background-removal.js"></script>
+
+  <style>
+    .loading-bar-container {
+      width: 100%;
+      height: 20px;
+      background: var(--bg-alt, #1e293b);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 10px;
+      display: none;
+    }
+    .loading-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      transition: width 0.3s;
+    }
+    .checkered-bg {
+      background-image: 
+        linear-gradient(45deg, #cbd5e1 25%, transparent 25%), 
+        linear-gradient(-45deg, #cbd5e1 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #cbd5e1 75%), 
+        linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      background-color: #f8fafc;
+      border-radius: 8px;
+    }
+    .result-image-container {
+      max-width: 100%;
+      text-align: center;
+      margin-bottom: 20px;
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .result-image-container img {
+      max-width: 100%;
+      max-height: 500px;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div>PixelCraft AI</a>
+  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back to All Tools</a>
+    <div style="font-size:2.5rem;margin-bottom:12px;">✂️</div>
+    <h1>AI Background Remover</h1>
+    <p>100% Free & Private. Professional quality background removal directly in your browser.</p>
+  </div>
+  
+  <div class="tool-workspace">
+    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" style="display:none"/>
+      <div style="font-size:3rem; margin-bottom:10px;">📸</div>
+      <h3>Drop image here or click to upload</h3>
+      <p>JPG, PNG, WebP supported</p>
+    </div>
+
+    <div id="processing-area" style="display:none; text-align: center; padding: 40px 20px; background: rgba(0,0,0,0.2); border-radius: 16px;">
+      <h3 id="loading-text" style="margin-bottom: 15px;">Initializing AI Engine...</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">First time usage will download a ~30MB AI model.</p>
+      <div class="loading-bar-container" id="loading-bar-container" style="display: block;">
+        <div class="loading-bar" id="loading-bar"></div>
+      </div>
+      <p id="progress-text" style="margin-top: 10px; font-weight: bold;">0%</p>
+    </div>
+
+    <div id="editor" style="display:none;">
+      <div class="result-area show" style="margin-top:0;">
+        <div class="result-header">
+          <span class="result-header-title">Background Removed successfully</span>
+          <button class="btn btn-gray" onclick="resetTool()">Upload New</button>
+        </div>
+        <div class="result-body">
+          <div class="result-image-container checkered-bg">
+            <img id="result-img" src="" alt="Result Image"/>
+          </div>
+          
+          <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center;">
+            <button class="btn btn-green" id="btn-download" style="font-size: 1.1rem; padding: 12px 24px;">📥 Download HD Image</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/utils.js"></script>
+<script>
+let currentFile = null;
+let currentResultUrl = null;
+
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('upload-area');
+const processingArea = document.getElementById('processing-area');
+const editor = document.getElementById('editor');
+const resultImg = document.getElementById('result-img');
+const loadingBar = document.getElementById('loading-bar');
+const progressText = document.getElementById('progress-text');
+const loadingText = document.getElementById('loading-text');
+
+setupDragDrop(uploadArea, handleFile);
+fileInput.addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+async function handleFile(file) {
+  currentFile = file;
+  uploadArea.style.display = 'none';
+  processingArea.style.display = 'block';
+  editor.style.display = 'none';
+  
+  loadingBar.style.width = '0%';
+  progressText.textContent = '0%';
+  loadingText.textContent = 'Analyzing Image...';
+
+  try {
+    // Generate object URL for the input file to pass to imgly
+    const imageUrl = URL.createObjectURL(file);
+    
+    const config = {
+      publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.3/dist/',
+      progress: (key, current, total) => {
+        // key is either 'fetch', 'compute', etc.
+        const percent = Math.round((current / total) * 100);
+        
+        if (key.includes('fetch')) {
+          loadingText.textContent = 'Downloading AI Model... (Only required once)';
+        } else if (key.includes('compute')) {
+          loadingText.textContent = 'Processing Image...';
+        }
+        
+        // Sometimes total is 0 or undefined initially
+        if (total > 0) {
+           loadingBar.style.width = percent + '%';
+           progressText.textContent = percent + '%';
+        } else {
+           loadingBar.style.width = '100%';
+           progressText.textContent = 'Please wait...';
+        }
+      }
+    };
+
+    const imageBlob = await imglyRemoveBackground(imageUrl, config);
+    
+    currentResultUrl = URL.createObjectURL(imageBlob);
+    resultImg.src = currentResultUrl;
+    
+    processingArea.style.display = 'none';
+    editor.style.display = 'block';
+    showToast('Background removed successfully!', 'success');
+  } catch (error) {
+    console.error('Error removing background:', error);
+    showToast('Failed to remove background. Please try a different image.', 'error');
+    resetTool();
+  }
+}
+
+document.getElementById('btn-download').addEventListener('click', () => {
+  if (currentResultUrl) {
+    downloadFile(currentResultUrl, `pixelcraft-nobg.png`);
+  }
+});
+
+function resetTool() {
+  currentFile = null;
+  if (currentResultUrl) {
+    URL.revokeObjectURL(currentResultUrl);
+    currentResultUrl = null;
+  }
+  uploadArea.style.display = 'flex'; 
+  processingArea.style.display = 'none';
+  editor.style.display = 'none'; 
+  fileInput.value = '';
+}
+</script>
+</body>
+</html>
