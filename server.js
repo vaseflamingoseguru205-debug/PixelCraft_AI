@@ -355,10 +355,11 @@ app.post('/api/scan-link', async (req, res) => {
     const domain = parsed.hostname.toLowerCase();
     
     // Advanced Military-Grade Heuristics
+    // Advanced Military-Grade Heuristics
     const heuristics = {
       homograph: /[а-яА-Я\u0400-\u04FF\u0500-\u052F\u2DE0-\u2DFF\uA640-\uA69F]/.test(domain) || domain.includes('xn--') || /[^\x00-\x7F]/.test(domain),
       deepSubdomains: domain.split('.').length > 3,
-      typosquatting: /(?:faceb[o0][o0]k|g[o0][o0]gle|appl[e3]|paypa1|micr[0o]s[0o]ft|netf1ix|amaz[0o]n|b[i1]nance|c[o0]inbase)/i.test(domain) || (domain.replace(/[01345@]/g, c => ({'0':'o','1':'l','3':'e','4':'a','5':'s','@':'a'})[c] || c).match(/(facebook|google|apple|paypal|microsoft|netflix|amazon|binance|coinbase)/) && !/(facebook|google|apple|paypal|microsoft|netflix|amazon|binance|coinbase)/.test(domain)),
+      typosquatting: /(?:faceb00k|g00gle|app1e|paypa1|micr0s0ft|netf1ix|amaz0n|b1nance|c0inbase)/i.test(domain) || (domain.replace(/[01345@]/g, c => ({'0':'o','1':'l','3':'e','4':'a','5':'s','@':'a'})[c] || c).match(/(facebook|google|apple|paypal|microsoft|netflix|amazon|binance|coinbase)/) && !/(facebook|google|apple|paypal|microsoft|netflix|amazon|binance|coinbase)/i.test(domain)),
       suspiciousPath: /login|verify|update|secure|banking|account|billing|auth|recover|password|admin|wallet|crypto/i.test(parsed.pathname) || parsed.pathname.length > 50,
       isShortener: /bit\.ly|t\.co|goo\.gl|tinyurl|is\.gd|ow\.ly|buff\.ly|bit\.do|shorturl\.at|cutt\.ly|shorte\.st|adf\.ly/i.test(domain),
       hasIpAddress: /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(domain),
@@ -393,12 +394,69 @@ app.post('/api/scan-link', async (req, res) => {
 
     riskScore = Math.min(100, riskScore);
 
+    // --- AI REASONING BRAIN ---
+    let aiAnalysis = null;
+    if (process.env.HF_API_KEY) {
+      try {
+        const prompt = `<|system|>
+You are an elite cybersecurity AI. Analyze this URL for phishing threats.
+URL: ${finalUrl}
+Base Heuristic Score: ${riskScore} (100 is max danger)
+
+Important: Genuine sites like "amazon.co.jp", "google.co.in", or "microsoft.com" might trigger basic alerts due to subdomains. If the domain is exactly a well-known genuine brand (like amazon.co.jp), it is SAFE (score 0). Fakes look like "amazon-update.com" or "amz0n.com".
+
+Output ONLY valid JSON in this exact format, with no extra text:
+{"overrideRiskScore": <number 0-100>, "reasoning": "<short explanation>"}
+</s>
+<|user|>
+Analyze the URL and output the JSON.
+</s>
+<|assistant|>
+{`;
+
+        const aiResponse = await fetch(
+          "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta",
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.HF_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify({ 
+              inputs: prompt,
+              parameters: {
+                max_new_tokens: 100,
+                temperature: 0.1,
+                top_p: 0.9,
+                return_full_text: false
+              }
+            }),
+          }
+        );
+
+        if (aiResponse.ok) {
+          const aiData = await aiResponse.json();
+          let rawText = aiData[0]?.generated_text || "";
+          rawText = "{" + rawText; // re-add the bracket
+          const jsonMatch = rawText.match(/\{[\s\S]*?\}/);
+          if (jsonMatch) {
+            const parsedAI = JSON.parse(jsonMatch[0]);
+            aiAnalysis = parsedAI;
+            riskScore = parsedAI.overrideRiskScore; // AI decides final score
+          }
+        }
+      } catch (e) {
+        console.error("AI Brain error:", e.message);
+      }
+    }
+
     res.json({
       originalUrl: url,
       finalUrl,
       heuristics,
       threatDbMatch,
-      riskScore
+      riskScore,
+      aiAnalysis
     });
   } catch (err) {
     res.status(400).json({ error: "Invalid URL format" });

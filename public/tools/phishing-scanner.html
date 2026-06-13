@@ -460,6 +460,16 @@
       setStatus('h-db', data.threatDbMatch ? 'BLACKLISTED' : 'NOT FOUND', data.threatDbMatch ? 'danger' : 'safe');
       if(data.threatDbMatch) logTerminal(`[CRITICAL] URL found in active phishing database!`, 'error');
 
+      logTerminal(`Engaging AI Neural Brain for Contextual Reasoning...`, 'sys');
+      await new Promise(r => setTimeout(r, 1000));
+      
+      if (data.aiAnalysis) {
+        logTerminal(`[AI NEURAL BRAIN] Reasoning: ${data.aiAnalysis.reasoning}`, 'sys');
+        logTerminal(`[AI NEURAL BRAIN] Adjusted Final Risk Score: ${data.aiAnalysis.overrideRiskScore}`, 'sys');
+      } else {
+        logTerminal(`[AI NEURAL BRAIN] Standard evaluation applied.`, 'sys');
+      }
+
       logTerminal(`Analysis complete. Compiling risk score.`, 'sys');
 
       // Final Score Update
