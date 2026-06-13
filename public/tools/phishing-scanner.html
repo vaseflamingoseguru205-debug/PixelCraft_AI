@@ -330,6 +330,14 @@
             <div class="heuristic-status status-pending" id="h-short">SCANNING</div>
           </div>
           <div class="heuristic-card">
+            <div class="heuristic-name">Suspicious TLD Check</div>
+            <div class="heuristic-status status-pending" id="h-tld">SCANNING</div>
+          </div>
+          <div class="heuristic-card">
+            <div class="heuristic-name">IP Address Routing</div>
+            <div class="heuristic-status status-pending" id="h-ip">SCANNING</div>
+          </div>
+          <div class="heuristic-card">
             <div class="heuristic-name">Global Threat DB Verification</div>
             <div class="heuristic-status status-pending" id="h-db">SCANNING</div>
           </div>
@@ -379,7 +387,7 @@
     riskTitleEl.innerText = 'Analyzing...';
     riskDescEl.innerText = 'Initializing heuristic engine and threat database queries...';
     
-    ['h-homo', 'h-sub', 'h-typo', 'h-path', 'h-short', 'h-db'].forEach(id => {
+    ['h-homo', 'h-sub', 'h-typo', 'h-path', 'h-short', 'h-tld', 'h-ip', 'h-db'].forEach(id => {
       setStatus(id, 'SCANNING', 'pending');
     });
   }
@@ -436,6 +444,16 @@
       await new Promise(r => setTimeout(r, 400));
       setStatus('h-short', data.heuristics.isShortener ? 'EXPANDED' : 'DIRECT', data.heuristics.isShortener ? 'warn' : 'safe');
       if (data.heuristics.isShortener) logTerminal(`Short URL expands to: ${data.finalUrl}`);
+
+      logTerminal(`Checking TLD reputation...`);
+      await new Promise(r => setTimeout(r, 400));
+      setStatus('h-tld', data.heuristics.isSuspiciousTLD ? 'HIGH RISK TLD' : 'NORMAL', data.heuristics.isSuspiciousTLD ? 'danger' : 'safe');
+      if(data.heuristics.isSuspiciousTLD) logTerminal(`[CRITICAL] Suspicious top-level domain detected!`, 'error');
+
+      logTerminal(`Analyzing IP routing and masking...`);
+      await new Promise(r => setTimeout(r, 400));
+      setStatus('h-ip', data.heuristics.hasIpAddress ? 'RAW IP' : 'DOMAIN', data.heuristics.hasIpAddress ? 'danger' : 'safe');
+      if(data.heuristics.hasIpAddress) logTerminal(`[CRITICAL] URL uses raw IP address instead of domain!`, 'error');
 
       logTerminal(`Querying Global Threat Intelligence databases...`);
       await new Promise(r => setTimeout(r, 800));

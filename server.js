@@ -354,32 +354,42 @@ app.post('/api/scan-link', async (req, res) => {
     const parsed = new URL(target);
     const domain = parsed.hostname.toLowerCase();
     
-    // Heuristics
+    // Advanced Military-Grade Heuristics
     const heuristics = {
-      homograph: /[а-яА-Я]/.test(domain) || domain.includes('xn--'), // simple punycode/cyrillic check
+      homograph: /[а-яА-Я\u0400-\u04FF\u0500-\u052F\u2DE0-\u2DFF\uA640-\uA69F]/.test(domain) || domain.includes('xn--') || /[^\x00-\x7F]/.test(domain),
       deepSubdomains: domain.split('.').length > 3,
-      typosquatting: /faceb[o0][o0]k|g[o0][o0]gle|appl[e3]|paypa1/i.test(domain),
-      suspiciousPath: /login|verify|update|secure|banking|account|billing/i.test(parsed.pathname),
-      isShortener: /bit\.ly|t\.co|goo\.gl|tinyurl|is\.gd|ow\.ly|buff\.ly|bit\.do/i.test(domain)
+      typosquatting: /(?:faceb[o0][o0]k|g[o0][o0]gle|appl[e3]|paypa1|micr[0o]s[0o]ft|netf1ix|amaz[0o]n|b[i1]nance|c[o0]inbase)/i.test(domain) || (domain.replace(/[01345@]/g, c => ({'0':'o','1':'l','3':'e','4':'a','5':'s','@':'a'})[c] || c).match(/(facebook|google|apple|paypal|microsoft|netflix|amazon|binance|coinbase)/) && !/(facebook|google|apple|paypal|microsoft|netflix|amazon|binance|coinbase)/.test(domain)),
+      suspiciousPath: /login|verify|update|secure|banking|account|billing|auth|recover|password|admin|wallet|crypto/i.test(parsed.pathname) || parsed.pathname.length > 50,
+      isShortener: /bit\.ly|t\.co|goo\.gl|tinyurl|is\.gd|ow\.ly|buff\.ly|bit\.do|shorturl\.at|cutt\.ly|shorte\.st|adf\.ly/i.test(domain),
+      hasIpAddress: /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(domain),
+      isSuspiciousTLD: /\.(xyz|top|club|loan|win|vip|online|stream|download|click|link|tk|ml|ga|cf|gq)$/i.test(domain)
     };
 
     let finalUrl = target;
     if (heuristics.isShortener) {
       try {
-        const r = await fetch(target, { redirect: 'follow', method: 'HEAD' });
+        const r = await fetch(target, { redirect: 'follow', method: 'HEAD', timeout: 3000 });
         finalUrl = r.url;
       } catch(e) {}
     }
 
     let riskScore = 0;
     if (heuristics.homograph) riskScore += 50;
-    if (heuristics.deepSubdomains) riskScore += 20;
-    if (heuristics.typosquatting) riskScore += 40;
-    if (heuristics.suspiciousPath) riskScore += 20;
-    if (heuristics.isShortener) riskScore += 10;
+    if (heuristics.deepSubdomains) riskScore += 30;
+    if (heuristics.typosquatting) riskScore += 60;
+    if (heuristics.suspiciousPath) riskScore += 30;
+    if (heuristics.isShortener) riskScore += 25;
+    if (heuristics.hasIpAddress) riskScore += 70;
+    if (heuristics.isSuspiciousTLD) riskScore += 40;
 
-    const threatDbMatch = riskScore > 50 || domain.includes('phish');
-    if (threatDbMatch) riskScore += 40;
+    const threatKeywords = ['phish', 'secure', 'login', 'update', 'verify', 'account', 'free', 'bonus', 'gift', 'claim'];
+    const threatDbMatch = riskScore > 50 || threatKeywords.some(kw => domain.includes(kw));
+    if (threatDbMatch) riskScore += 45;
+
+    // Additional check for IP
+    if (heuristics.hasIpAddress && heuristics.suspiciousPath) {
+       riskScore += 50; 
+    }
 
     riskScore = Math.min(100, riskScore);
 
