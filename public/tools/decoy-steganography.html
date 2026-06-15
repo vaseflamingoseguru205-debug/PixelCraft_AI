@@ -26,6 +26,100 @@
   <!-- CryptoJS for AES Encryption -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
+  <!-- CYBER THEME OVERRIDE -->
+  <style id="cyber-theme">
+    body {
+      background-color: #000 !important;
+      color: #0f0 !important;
+      font-family: 'Courier New', Courier, monospace !important;
+    }
+    #matrix-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: -1;
+    }
+    .navbar {
+      background: rgba(0,20,0,0.8) !important;
+      border-bottom: 1px solid #0f0 !important;
+      box-shadow: 0 0 10px #0f0 !important;
+    }
+    .nav-logo, .nav-logo-icon, .nav-links a, h1, h3 {
+      color: #0f0 !important;
+      text-shadow: 0 0 5px #0f0 !important;
+    }
+    .tool-workspace {
+      background: rgba(0, 20, 0, 0.8) !important;
+      border: 1px solid #0f0 !important;
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.2) !important;
+    }
+    .tab-btn {
+      color: #0a0 !important;
+      border: 1px solid #050 !important;
+    }
+    .tab-btn.active {
+      background: #0f0 !important;
+      color: #000 !important;
+      box-shadow: 0 0 10px #0f0 !important;
+    }
+    .file-drop-area {
+      border: 2px dashed #0f0 !important;
+      background: rgba(0, 255, 0, 0.05) !important;
+    }
+    .file-drop-area:hover {
+      background: rgba(0, 255, 0, 0.2) !important;
+      box-shadow: 0 0 15px #0f0 !important;
+    }
+    input[type="text"], input[type="password"], textarea, select {
+      background: #000 !important;
+      color: #0f0 !important;
+      border: 1px solid #0f0 !important;
+    }
+    input:focus, textarea:focus, select:focus {
+      box-shadow: 0 0 10px #0f0 !important;
+    }
+    .btn-blue, .btn-green {
+      background: #000 !important;
+      color: #0f0 !important;
+      border: 1px solid #0f0 !important;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+    .btn-blue:hover, .btn-green:hover {
+      background: #0f0 !important;
+      color: #000 !important;
+      box-shadow: 0 0 20px #0f0 !important;
+    }
+    .advanced-settings {
+      background: rgba(0, 30, 0, 0.5) !important;
+      border: 1px dashed #0f0 !important;
+    }
+    .capacity-bar {
+      background: #0f0 !important;
+      box-shadow: 0 0 10px #0f0 !important;
+    }
+    .decoded-message-box {
+      background: #000 !important;
+      border: 1px solid #0f0 !important;
+      color: #0f0 !important;
+      box-shadow: inset 0 0 10px #0f0 !important;
+    }
+    .copy-btn {
+      background: #0f0 !important;
+      color: #000 !important;
+    }
+    label, p, span {
+      color: #0c0 !important;
+    }
+    .back-link {
+      color: #0f0 !important;
+    }
+    .back-link:hover {
+      text-shadow: 0 0 10px #0f0;
+    }
+  </style>
+
   <style>
     .tabs-container {
       display: flex;
@@ -154,6 +248,7 @@
   </style>
 </head>
 <body>
+<canvas id="matrix-bg"></canvas>
 <div id="toast-container" class="toast-container"></div>
 <nav class="navbar">
   <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div>PixelCraft AI</a>
@@ -673,6 +768,36 @@ document.getElementById('btn-decode').addEventListener('click', () => {
   } else {
       showToast('Incorrect Password or no message found!', 'error');
   }
+});
+
+// --- Matrix Animation Background ---
+const canvas = document.getElementById('matrix-bg');
+const ctxM = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+const fontSize = 16;
+const columns = canvas.width / fontSize;
+const drops = [];
+for(let x = 0; x < columns; x++) drops[x] = 1;
+
+function drawMatrix() {
+  ctxM.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctxM.fillRect(0, 0, canvas.width, canvas.height);
+  ctxM.fillStyle = '#0f0';
+  ctxM.font = fontSize + 'px monospace';
+  for(let i = 0; i < drops.length; i++) {
+    const text = letters.charAt(Math.floor(Math.random() * letters.length));
+    ctxM.fillText(text, i * fontSize, drops[i] * fontSize);
+    if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+setInterval(drawMatrix, 33);
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
 </script>
 </body>
 </html>
