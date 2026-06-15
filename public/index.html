@@ -149,12 +149,10 @@
     <div class="container">
       <div class="hero-badge">✨ 10+ Professional AI Tools - 100% Free</div>
       <h1>
-        Generate &amp; Edit Images With <span>AI</span><br />- No Skills
-        Needed
+        Advanced Security &amp; Utility Tools With <span>AI</span><br />- Free &amp; Private
       </h1>
       <p>
-        Create stunning AI art from text, remove backgrounds, enhance photos,
-        and much more. All instant, private, and 100% free.
+        Detect phishing, hide secret messages, convert PDFs, and edit images instantly. All processing runs securely in your browser. 100% free.
       </p>
       <div class="hero-actions">
         <a href="#tools" class="btn-primary">🚀 Explore All Tools</a>
@@ -217,6 +215,17 @@
       </div>
 
       <div class="tools-grid" id="tools-grid">
+        <!-- TOP TOOL -->
+        <a href="tools/secret-image.html" class="tool-card" data-cat="edit">
+          <div class="tool-badge" style="background: #ef4444; color: white;">Popular</div>
+          <div class="tool-icon icon-blue">🕵️‍♂️</div>
+          <h3>Secret Message Hider &amp; Viewer</h3>
+          <p>
+            Hide secret messages or passwords invisibly inside any photo using military-grade AES-256 encryption.
+          </p>
+          <div class="tool-arrow">Open Tool →</div>
+        </a>
+
         <!-- NEW TOP 3 TOOLS -->
         <a href="tools/phishing-scanner.html" class="tool-card" data-cat="ai">
           <div class="tool-badge" style="background: #ef4444; color: white;">Popular</div>
@@ -249,7 +258,7 @@
         </a>
 
         <!-- OTHER AI TOOLS -->
-        <a href="javascript:void(0)" class="tool-card" data-cat="upcoming" style="opacity: 0.7; cursor: not-allowed;">
+        <a href="javascript:void(0)" class="tool-card" data-cat="upcoming" style="opacity: 0.7; cursor: not-allowed; display: none;">
           <div class="tool-badge" style="background: #eab308; color: white; padding: 4px 10px; font-size: 0.7rem; border-radius: 100px; text-transform: uppercase; font-weight: 700;">Coming Soon</div>
           <div class="tool-icon icon-teal">✂️</div>
           <h3>AI Background Remover</h3>
@@ -268,7 +277,7 @@
           <div class="tool-arrow">Open Tool →</div>
         </a>
 
-        <a href="javascript:void(0)" class="tool-card" data-cat="upcoming" style="opacity: 0.7; cursor: not-allowed;">
+        <a href="javascript:void(0)" class="tool-card" data-cat="upcoming" style="opacity: 0.7; cursor: not-allowed; display: none;">
           <div class="tool-badge" style="background: #eab308; color: white; padding: 4px 10px; font-size: 0.7rem; border-radius: 100px; text-transform: uppercase; font-weight: 700;">Coming Soon</div>
           <div class="tool-icon icon-teal">✍️</div>
           <h3>AI Text Humanizer</h3>
@@ -278,7 +287,7 @@
           <div class="tool-arrow">Coming Soon...</div>
         </a>
 
-        <a href="javascript:void(0)" class="tool-card" data-cat="upcoming" style="opacity: 0.7; cursor: not-allowed;">
+        <a href="javascript:void(0)" class="tool-card" data-cat="upcoming" style="opacity: 0.7; cursor: not-allowed; display: none;">
           <div class="tool-badge" style="background: #eab308; color: white; padding: 4px 10px; font-size: 0.7rem; border-radius: 100px; text-transform: uppercase; font-weight: 700;">Coming Soon</div>
           <div class="tool-icon icon-violet">🔊</div>
           <h3>AI SFX Generator</h3>
@@ -288,7 +297,7 @@
           <div class="tool-arrow">Coming Soon...</div>
         </a>
 
-        <a href="javascript:void(0)" class="tool-card" data-cat="upcoming" style="opacity: 0.7; cursor: not-allowed;">
+        <a href="javascript:void(0)" class="tool-card" data-cat="upcoming" style="opacity: 0.7; cursor: not-allowed; display: none;">
           <div class="tool-badge" style="background: #eab308; color: white; padding: 4px 10px; font-size: 0.7rem; border-radius: 100px; text-transform: uppercase; font-weight: 700;">Coming Soon</div>
           <div class="tool-icon icon-indigo">🧊</div>
           <h3>3D AI QR Art</h3>
@@ -300,16 +309,7 @@
         </a>
 
 
-        <!-- EDIT TOOLS -->
-        <a href="tools/secret-image.html" class="tool-card" data-cat="edit">
-          <div class="tool-badge" style="background: #ef4444; color: white;">Popular</div>
-          <div class="tool-icon icon-blue">🕵️‍♂️</div>
-          <h3>Secret Image Hider</h3>
-          <p>
-            Hide secret messages or passwords invisibly inside any photo using military-grade AES-256 encryption.
-          </p>
-          <div class="tool-arrow">Open Tool →</div>
-        </a>
+
         <a href="tools/image-filters.html" class="tool-card" data-cat="edit">
           <div class="tool-icon icon-violet">🎨</div>
           <h3>Filters &amp; Effects</h3>
@@ -819,6 +819,13 @@
     </div>
   </footer>
 
+  <!-- Terms & Conditions Modal -->
+  <div id="tc-modal" style="display: none; position: fixed; bottom: 24px; right: 24px; width: 350px; background: var(--glass-bg, rgba(15,23,42,0.95)); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border, rgba(255,255,255,0.1)); border-radius: 16px; padding: 24px; z-index: 10000; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: slideUp 0.5s ease forwards;">
+    <h3 style="color: var(--text-main, #fff); margin-bottom: 12px; font-family: 'Outfit', sans-serif; font-size: 1.25rem;">Terms &amp; Conditions</h3>
+    <p style="color: var(--text-muted, #94a3b8); font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5;">By using our tools, you agree to our Terms &amp; Conditions. You must accept to enable the tools section.</p>
+    <button id="tc-accept-btn" class="btn-primary" style="width: 100%; justify-content: center; border-radius: 12px;">I Accept</button>
+  </div>
+
   <script src="js/utils.js"></script>
   <script>
     // Filter tools
@@ -844,6 +851,28 @@
 
     // Handle Auth and Professional Tracking Setup
     document.addEventListener("DOMContentLoaded", async () => {
+      // T&C Modal Logic
+      if (!localStorage.getItem("tc_accepted")) {
+        document.getElementById("tc-modal").style.display = "block";
+        const toolsSec = document.getElementById("tools");
+        if(toolsSec) {
+          toolsSec.style.filter = "blur(5px)";
+          toolsSec.style.pointerEvents = "none";
+          toolsSec.style.userSelect = "none";
+        }
+      }
+
+      document.getElementById("tc-accept-btn")?.addEventListener("click", () => {
+        localStorage.setItem("tc_accepted", "true");
+        document.getElementById("tc-modal").style.display = "none";
+        const toolsSec = document.getElementById("tools");
+        if(toolsSec) {
+          toolsSec.style.filter = "none";
+          toolsSec.style.pointerEvents = "auto";
+          toolsSec.style.userSelect = "auto";
+        }
+      });
+
       const urlParams = new URLSearchParams(window.location.search);
 
       if (urlParams.get("error") === "login_failed") {
