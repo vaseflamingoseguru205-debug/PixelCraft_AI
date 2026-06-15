@@ -852,7 +852,7 @@
     // Handle Auth and Professional Tracking Setup
     document.addEventListener("DOMContentLoaded", async () => {
       // T&C Modal Logic
-      if (!localStorage.getItem("tc_accepted")) {
+      if (!sessionStorage.getItem("tc_accepted")) {
         document.getElementById("tc-modal").style.display = "block";
         const toolsSec = document.getElementById("tools");
         if(toolsSec) {
@@ -863,7 +863,7 @@
       }
 
       document.getElementById("tc-accept-btn")?.addEventListener("click", () => {
-        localStorage.setItem("tc_accepted", "true");
+        sessionStorage.setItem("tc_accepted", "true");
         document.getElementById("tc-modal").style.display = "none";
         const toolsSec = document.getElementById("tools");
         if(toolsSec) {
