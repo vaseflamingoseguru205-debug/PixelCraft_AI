@@ -11,9 +11,9 @@
 </script>
 
   <!-- ===== SEO META TAGS ===== -->
-  <title>Secret Image Hider - Hide Text & Passwords in Images | PixelCraft AI</title>
-  <meta name="description" content="Hide secret messages, numbers, or passwords inside an image using military-grade AES-256 encryption and Advanced Steganography. 100% Free and Private."/>
-  <meta name="keywords" content="image steganography online, hide message in image, secret image hider, AES-256 image encryption, invisible text in image, pixelcraft ai"/>
+  <title>FBI-Level Decoy Steganography | PixelCraft AI</title>
+  <meta name="description" content="Hide secret messages with plausible deniability using decoy passwords and military-grade AES-256 encryption. FBI-level stealth."/>
+  <meta name="keywords" content="decoy steganography, plausible deniability, truecrypt steganography, hide message in image, secret image hider, AES-256 image encryption, pixelcraft ai"/>
   <meta name="robots" content="index, follow"/>
   <meta name="author" content="PixelCraft AI"/>
   <meta name="language" content="English"/>
@@ -164,8 +164,8 @@
   <div class="tool-page-header">
     <a href="../index.html" class="back-link">← Back to All Tools</a>
     <div style="font-size:2.5rem;margin-bottom:12px;">🕵️‍♂️</div>
-    <h1>Advanced Secret Image Hider</h1>
-    <p>Hide strictly confidential text and numbers inside an image using military-grade AES-256 encryption. The image will look completely normal to everyone else.</p>
+    <h1>FBI-Level Decoy Steganography</h1>
+    <p>The ultimate plausible deniability tool. Hide a real message and a decoy message in the same image using TrueCrypt-style stealth architecture.</p>
   </div>
   
   <div class="tool-workspace" style="max-width: 800px;">
@@ -188,7 +188,7 @@
 
       <div id="encode-settings" style="display:none; margin-top: 24px;">
         <div class="control-group">
-          <label>Your Secret Message / Numbers</label>
+          <label id="lbl-secret-text">Your Secret Message / Numbers</label>
           <textarea id="secret-text" rows="5" placeholder="Enter the text, passwords, or numbers you want to hide in this image..."></textarea>
           <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:0.85rem; color:var(--text-muted);">
             <span id="char-count">0 characters</span>
@@ -198,7 +198,7 @@
         </div>
 
         <div class="control-group">
-          <label>Encryption Password <span style="color:#ef4444">*</span></label>
+          <label id="lbl-encode-pwd">Encryption Password <span style="color:#ef4444">*</span></label>
           <div class="password-input-wrapper">
             <input type="password" id="encode-password" placeholder="Enter a strong password (required)" />
             <span class="password-toggle" onclick="togglePassword('encode-password')">👁️</span>
@@ -207,13 +207,34 @@
         </div>
 
         <div class="advanced-settings">
-          <h4 style="margin-bottom: 12px; color: var(--text-main);">Advanced Stealth Settings</h4>
+          <h4 style="margin-bottom: 12px; color: var(--text-main);">Advanced Stealth Settings (FBI Level)</h4>
+          
+          <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="enable-decoy" style="width:18px; height:18px; cursor:pointer;" onchange="toggleDecoyMode()" />
+            <label for="enable-decoy" style="cursor:pointer; font-weight:600; color:#eab308;">Enable Plausible Deniability (Decoy Mode)</label>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">If checked, you can add a fake message with a different password. Giving the decoy password to adversaries will reveal only the fake message. The real message remains mathematically hidden in the noise padding.</p>
+
+          <div id="decoy-section" style="display:none; background:rgba(0,0,0,0.2); padding:16px; border-radius:8px; margin-bottom:16px; border-left:4px solid #eab308;">
+            <div class="control-group">
+              <label>Decoy Message (Fake Secret)</label>
+              <textarea id="decoy-text" rows="3" placeholder="Enter a believable fake secret..."></textarea>
+            </div>
+            <div class="control-group">
+              <label>Decoy Password <span style="color:#ef4444">*</span></label>
+              <div class="password-input-wrapper">
+                <input type="password" id="decoy-password" placeholder="Enter a fake password" />
+                <span class="password-toggle" onclick="togglePassword('decoy-password')">👁️</span>
+              </div>
+            </div>
+          </div>
+
           <div class="control-group">
             <label>Stealth Level (LSB Mode)</label>
             <select id="stealth-level">
-              <option value="1">High Stealth (1-bit / Invisible, Lower Capacity)</option>
+              <option value="1">Maximum Stealth (1-bit / Invisible, FBI Level)</option>
               <option value="2" selected>Medium Stealth (2-bit / Recommended)</option>
-              <option value="3">Low Stealth (3-bit / High Capacity, Slight visual noise)</option>
+              <option value="3">Low Stealth (3-bit / High Capacity)</option>
             </select>
           </div>
         </div>
@@ -291,6 +312,18 @@ function switchTab(tab) {
   
   document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
   document.getElementById(`tab-${tab}`).classList.add('active');
+}
+
+function toggleDecoyMode() {
+  const isChecked = document.getElementById('enable-decoy').checked;
+  document.getElementById('decoy-section').style.display = isChecked ? 'block' : 'none';
+  if(isChecked) {
+      document.getElementById('lbl-secret-text').innerHTML = 'Real Secret Message / Numbers';
+      document.getElementById('lbl-encode-pwd').innerHTML = 'Real Encryption Password <span style="color:#ef4444">*</span>';
+  } else {
+      document.getElementById('lbl-secret-text').innerHTML = 'Your Secret Message / Numbers';
+      document.getElementById('lbl-encode-pwd').innerHTML = 'Encryption Password <span style="color:#ef4444">*</span>';
+  }
 }
 
 // Password Visibility Toggle
@@ -386,37 +419,138 @@ function updateCharCount() {
   }
 }
 
-// LSB STEGANOGRAPHY LOGIC
-const MAGIC_SIGNATURE = "PXCRFT"; // Signature to identify if an image has our steganography
-const TERMINATOR = "||END||";
+// ADVANCED FBI-LEVEL STEGANOGRAPHY LOGIC
 
+// --- Cryptography Helpers ---
+function wordArrayToUint8Array(wordArray) {
+    const l = wordArray.sigBytes;
+    const words = wordArray.words;
+    const result = new Uint8Array(l);
+    for (let i = 0; i < l; i++) {
+        result[i] = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
+    }
+    return result;
+}
+
+function uint8ArrayToWordArray(u8arr) {
+    const len = u8arr.length;
+    const words = [];
+    for (let i = 0; i < len; i++) {
+        words[i >>> 2] |= (u8arr[i] & 0xff) << (24 - (i % 4) * 8);
+    }
+    return CryptoJS.lib.WordArray.create(words, len);
+}
+
+function generatePayload(msg, pwd) {
+    const saltWA = CryptoJS.lib.WordArray.random(8);
+    const key = CryptoJS.PBKDF2(pwd, saltWA, { keySize: 256/32, iterations: 10000 });
+    const hash = CryptoJS.SHA256(key);
+    const iv = CryptoJS.lib.WordArray.create(hash.words.slice(0, 4), 16);
+    
+    const msgBytes = CryptoJS.enc.Utf8.parse(msg);
+    const len = msgBytes.sigBytes;
+    const magicLenWords = [ 0x4B494E47, len ];
+    const prefixWA = CryptoJS.lib.WordArray.create(magicLenWords, 8);
+    
+    const plaintextWA = prefixWA.concat(msgBytes);
+    
+    // Pad to multiple of 16
+    let padBytes = 16 - (plaintextWA.sigBytes % 16);
+    if (padBytes !== 16) {
+        plaintextWA.concat(CryptoJS.lib.WordArray.create(new Uint8Array(padBytes), padBytes));
+    }
+    
+    const encrypted = CryptoJS.AES.encrypt(plaintextWA, key, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.NoPadding
+    });
+    
+    const finalPayloadWA = saltWA.concat(encrypted.ciphertext);
+    return wordArrayToUint8Array(finalPayloadWA);
+}
+
+function extractPayload(u8arr, pwd) {
+    if (u8arr.length < 24) return null;
+    const saltWA = uint8ArrayToWordArray(u8arr.slice(0, 8));
+    const cipherWA = uint8ArrayToWordArray(u8arr.slice(8));
+    
+    const key = CryptoJS.PBKDF2(pwd, saltWA, { keySize: 256/32, iterations: 10000 });
+    const hash = CryptoJS.SHA256(key);
+    const iv = CryptoJS.lib.WordArray.create(hash.words.slice(0, 4), 16);
+    
+    try {
+        const cipherParams = CryptoJS.lib.CipherParams.create({ ciphertext: cipherWA });
+        const decryptedWA = CryptoJS.AES.decrypt(cipherParams, key, {
+            iv: iv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.NoPadding
+        });
+        
+        if (decryptedWA.sigBytes < 8) return null;
+        const words = decryptedWA.words;
+        if (words[0] !== 0x4B494E47) return null;
+        
+        const msgLen = words[1];
+        if (msgLen < 0 || msgLen > decryptedWA.sigBytes - 8) return null;
+        
+        const msgWA = CryptoJS.lib.WordArray.create(words.slice(2), msgLen);
+        const text = msgWA.toString(CryptoJS.enc.Utf8);
+        if(!text) return null;
+        return text;
+    } catch(e) {
+        return null;
+    }
+}
+
+function extractStream(data, bitMask, bitsPerChannel, reverse) {
+    let capacityBits = (data.length / 4) * 3 * bitsPerChannel;
+    let capacityBytes = Math.floor(capacityBits / 8);
+    let u8 = new Uint8Array(capacityBytes);
+    
+    let byteIndex = 0;
+    let bitBuffer = 0;
+    let bitsInBuffer = 0;
+    
+    let processPixel = (val) => {
+        bitBuffer = (bitBuffer << bitsPerChannel) | val;
+        bitsInBuffer += bitsPerChannel;
+        while(bitsInBuffer >= 8) {
+            bitsInBuffer -= 8;
+            if(byteIndex < capacityBytes) {
+                u8[byteIndex++] = (bitBuffer >>> bitsInBuffer) & 0xFF;
+            }
+        }
+    };
+
+    if (!reverse) {
+        for(let i=0; i<data.length; i++) {
+            if((i+1)%4===0) continue;
+            processPixel(data[i] & bitMask);
+        }
+    } else {
+        for(let i=data.length-1; i>=0; i--) {
+            if((i+1)%4===0) continue;
+            processPixel(data[i] & bitMask);
+        }
+    }
+    return u8;
+}
+
+// --- Encoding ---
 document.getElementById('btn-encode').addEventListener('click', () => {
-  const msg = document.getElementById('secret-text').value;
-  const pwd = document.getElementById('encode-password').value;
+  const realMsg = document.getElementById('secret-text').value;
+  const realPwd = document.getElementById('encode-password').value;
   const bitsPerChannel = parseInt(document.getElementById('stealth-level').value);
 
-  if(!msg) return showToast('Please enter a secret message.', 'error');
-  if(!pwd) return showToast('Password is strictly required for encryption.', 'error');
+  const isDecoy = document.getElementById('enable-decoy').checked;
+  const decoyMsg = isDecoy ? document.getElementById('decoy-text').value : "";
+  const decoyPwd = isDecoy ? document.getElementById('decoy-password').value : "";
 
-  // 1. Encrypt Message
-  let encryptedBase64;
-  try {
-    encryptedBase64 = CryptoJS.AES.encrypt(msg, pwd).toString();
-  } catch(e) {
-    return showToast('Encryption failed.', 'error');
-  }
+  if(!realMsg) return showToast('Please enter the real secret message.', 'error');
+  if(!realPwd) return showToast('Real password is strictly required.', 'error');
+  if(isDecoy && (!decoyMsg || !decoyPwd)) return showToast('Decoy message and password are required if Decoy Mode is enabled.', 'error');
 
-  // Payload: SIGNATURE + ENCRYPTED_B64 + TERMINATOR
-  const payload = MAGIC_SIGNATURE + encryptedBase64 + TERMINATOR;
-  
-  // Convert payload to binary string
-  let binaryPayload = '';
-  for(let i=0; i<payload.length; i++) {
-    let bin = payload.charCodeAt(i).toString(2);
-    binaryPayload += '00000000'.substring(bin.length) + bin; // Pad to 8 bits
-  }
-
-  // Draw image to canvas
   const cvs = document.getElementById('stego-canvas');
   cvs.width = encodeImageObj.width;
   cvs.height = encodeImageObj.height;
@@ -426,56 +560,87 @@ document.getElementById('btn-encode').addEventListener('click', () => {
   const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
   const data = imgData.data;
 
-  // Check Capacity
-  const totalAvailableBits = (data.length / 4) * 3 * bitsPerChannel;
-  if(binaryPayload.length > totalAvailableBits) {
-    return showToast('Message is too large for this image! Use a larger image or higher stealth level.', 'error');
+  let bitMask = (1 << bitsPerChannel) - 1;
+  let clearMask = ~bitMask;
+
+  // Generate payloads
+  let realPayload, decoyPayload;
+  try {
+      realPayload = generatePayload(realMsg, realPwd);
+      if(isDecoy) decoyPayload = generatePayload(decoyMsg, decoyPwd);
+  } catch(e) {
+      return showToast('Encryption failed.', 'error');
   }
 
-  // 2. Embed Data
-  let payloadIndex = 0;
-  let bitMask = (1 << bitsPerChannel) - 1; // e.g., 2 bits -> 3 (binary 11)
-  let clearMask = ~bitMask; // e.g., ~3 -> ...11111100
+  const totalCapacity = Math.floor(((data.length / 4) * 3 * bitsPerChannel) / 8);
+  const requiredCap = realPayload.length + (isDecoy ? decoyPayload.length : 0);
+  
+  if(requiredCap > totalCapacity) {
+      return showToast('Message(s) too large for this image! Use a larger image or lower stealth level.', 'error');
+  }
 
-  // We loop over pixels, avoiding the Alpha channel
+  // 1. Fill entire image with secure random noise padding
   for(let i=0; i<data.length; i++) {
-    if((i + 1) % 4 === 0) continue; // Skip Alpha (transparency can break if modified or compressed)
-
-    if(payloadIndex < binaryPayload.length) {
-      // Extract `bitsPerChannel` bits from payload
-      let bitsToEmbedStr = binaryPayload.substring(payloadIndex, payloadIndex + bitsPerChannel);
-      // If we don't have enough bits left, pad with '0'
-      while(bitsToEmbedStr.length < bitsPerChannel) bitsToEmbedStr += '0';
-      
-      let bitsToEmbed = parseInt(bitsToEmbedStr, 2);
-      
-      // Clear lowest bits and set new bits
-      data[i] = (data[i] & clearMask) | bitsToEmbed;
-      
-      payloadIndex += bitsPerChannel;
-    } else {
-      // Add some random noise to the remaining lowest bits to prevent statistical detection
-      // (Advanced feature!)
-      let randomBits = Math.floor(Math.random() * (bitMask + 1));
-      data[i] = (data[i] & clearMask) | randomBits;
-    }
+      if((i+1)%4===0) continue;
+      data[i] = (data[i] & clearMask) | Math.floor(Math.random()*(bitMask+1));
   }
 
-  // Put image data back
+  // 2. Embed function
+  function embedData(payloadU8, reverse) {
+      if(!payloadU8 || payloadU8.length === 0) return;
+      let byteIndex = 0;
+      let bitBuffer = payloadU8[0];
+      let bitsInBuffer = 8;
+      
+      let writePixel = (i) => {
+          if(byteIndex >= payloadU8.length) return false;
+          if(bitsInBuffer < bitsPerChannel) {
+              byteIndex++;
+              if(byteIndex < payloadU8.length) {
+                  bitBuffer = (bitBuffer << 8) | payloadU8[byteIndex];
+                  bitsInBuffer += 8;
+              } else {
+                  return false;
+              }
+          }
+          bitsInBuffer -= bitsPerChannel;
+          let val = (bitBuffer >>> bitsInBuffer) & bitMask;
+          data[i] = (data[i] & clearMask) | val;
+          return true;
+      };
+
+      if (!reverse) {
+          for(let i=0; i<data.length; i++) {
+              if((i+1)%4===0) continue;
+              if(!writePixel(i)) break;
+          }
+      } else {
+          for(let i=data.length-1; i>=0; i--) {
+              if((i+1)%4===0) continue;
+              if(!writePixel(i)) break;
+          }
+      }
+  }
+
+  // 3. Apply payloads
+  if (isDecoy) {
+      embedData(decoyPayload, false); // Decoy at front
+  }
+  embedData(realPayload, isDecoy); // Real at front if no decoy, back if decoy
+
   ctx.putImageData(imgData, 0, 0);
   
-  const finalDataUrl = cvs.toDataURL('image/png'); // MUST use PNG to prevent lossy compression ruining bits
+  const finalDataUrl = cvs.toDataURL('image/png');
   document.getElementById('final-image').src = finalDataUrl;
   document.getElementById('encode-result').style.display = 'block';
   showToast('Image Encrypted Successfully!', 'success');
 
-  // Setup Download
   document.getElementById('btn-download').onclick = () => {
     downloadFile(finalDataUrl, 'pixelcraft-secret.png');
   };
 });
 
-// DECODE LOGIC
+// --- Decoding ---
 document.getElementById('btn-decode').addEventListener('click', () => {
   const pwd = document.getElementById('decode-password').value;
   const bitsPerChannel = parseInt(document.getElementById('decode-stealth-level').value);
@@ -490,65 +655,24 @@ document.getElementById('btn-decode').addEventListener('click', () => {
 
   const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
   const data = imgData.data;
-
   let bitMask = (1 << bitsPerChannel) - 1;
+
+  // Extract both streams
+  const streamF = extractStream(data, bitMask, bitsPerChannel, false);
+  let msg = extractPayload(streamF, pwd);
   
-  let extractedBinary = '';
-  let payloadStr = '';
-  let foundTerminator = false;
-
-  for(let i=0; i<data.length; i++) {
-    if((i + 1) % 4 === 0) continue; // Skip Alpha
-
-    let extractedBits = (data[i] & bitMask).toString(2);
-    extractedBinary += '00000000'.substring(extractedBits.length + 8 - bitsPerChannel) + extractedBits; // Pad correctly based on bitsPerChannel
-    
-    // Process every 8 bits (1 byte)
-    while(extractedBinary.length >= 8) {
-      let byteStr = extractedBinary.substring(0, 8);
-      extractedBinary = extractedBinary.substring(8);
-      
-      let charCode = parseInt(byteStr, 2);
-      payloadStr += String.fromCharCode(charCode);
-
-      // Optimization: Check signature early
-      if(payloadStr.length === MAGIC_SIGNATURE.length) {
-        if(payloadStr !== MAGIC_SIGNATURE) {
-          return showToast('No hidden secret found. Wrong Stealth Level or Invalid Image!', 'error');
-        }
-      }
-
-      // Check terminator
-      if(payloadStr.endsWith(TERMINATOR)) {
-        foundTerminator = true;
-        break;
-      }
-    }
-    if(foundTerminator) break;
+  if(!msg) {
+      const streamB = extractStream(data, bitMask, bitsPerChannel, true);
+      msg = extractPayload(streamB, pwd);
   }
 
-  if(!foundTerminator) {
-    return showToast('Image data corrupted or no message found.', 'error');
+  if(msg) {
+      document.getElementById('decoded-text').textContent = msg;
+      document.getElementById('decode-result').style.display = 'block';
+      showToast('Message decrypted successfully!', 'success');
+  } else {
+      showToast('Incorrect Password or no message found!', 'error');
   }
-
-  // Extract base64 payload
-  let encryptedBase64 = payloadStr.substring(MAGIC_SIGNATURE.length, payloadStr.length - TERMINATOR.length);
-
-  try {
-    const bytes = CryptoJS.AES.decrypt(encryptedBase64, pwd);
-    const decryptedMsg = bytes.toString(CryptoJS.enc.Utf8);
-
-    if(!decryptedMsg) throw new Error("Empty decryption");
-
-    document.getElementById('decoded-text').textContent = decryptedMsg;
-    document.getElementById('decode-result').style.display = 'block';
-    showToast('Message decrypted successfully!', 'success');
-    
-  } catch(e) {
-    showToast('Incorrect Password! Decryption failed.', 'error');
-  }
-
-});
 </script>
 </body>
 </html>
