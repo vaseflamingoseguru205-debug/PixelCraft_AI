@@ -1484,6 +1484,7 @@
         <input type="checkbox" id="home-req-terms" required style="margin-top: 3px; accent-color: #3b82f6;">
         <label for="home-req-terms">I agree to the Terms & Conditions and promise not to use this tool for illegal activities.</label>
       </div>
+      <div id="home-email-error" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem; line-height: 1.4; text-align: center; font-weight: 500;"></div>
       <button type="submit" id="home-submit-key-btn" style="width: 100%; padding: 14px; font-size: 1.1rem; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);">Get Secret Key</button>
     </form>
   </div>
@@ -1549,13 +1550,16 @@ async function submitHomeKeyRequest(e) {
     
     const name = document.getElementById('home-req-name').value;
     const email = document.getElementById('home-req-email').value;
+    const errorDiv = document.getElementById('home-email-error');
     
     // Strict fake email check with the requested joke
     if (isFakeEmail(email)) {
-        alert("Aapko kya lagta he koi bhi email dalne per ye tool acess hoga? 😂 Sahi aur asli email daliye!");
+        errorDiv.textContent = "Did you really think entering a random fake email would unlock this tool? 😂 Nice try! Please enter a real, valid email.";
+        errorDiv.style.display = 'block';
         return;
     }
     
+    errorDiv.style.display = 'none';
     const btn = document.getElementById('home-submit-key-btn');
     btn.textContent = 'Processing...';
     btn.disabled = true;
