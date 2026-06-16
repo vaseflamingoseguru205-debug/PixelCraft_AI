@@ -279,16 +279,36 @@
             box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
           }
         </style>
-        
-        <a href="tools/secret-image.html" class="tool-card premium-floating-card" data-cat="edit">
-          <div class="tool-badge most-used-badge">🔥 MOST USED</div>
-          <div class="tool-icon icon-blue" style="font-size: 3rem; text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);">🕵️‍♂️</div>
-          <h3 style="color: #38bdf8; font-size: 1.3rem;">Secret Message Hider &amp; Viewer</h3>
-          <p style="font-size: 0.95rem; color: #cbd5e1; font-weight: 400; line-height: 1.6;">
-            Hide secret messages or passwords invisibly inside any photo using military-grade AES-256 encryption. The ultimate Plausible Deniability tool.
-          </p>
-          <div class="tool-arrow" style="color: #38bdf8; font-weight: bold; font-size: 1rem; margin-top: 15px;">Launch Tool →</div>
-        </a>
+        <!-- SECRET TOOL -->
+        <div class="tool-card premium-floating-card" data-cat="edit" style="position: relative; padding-bottom: 20px;">
+          <!-- Clickable overlay for the entire card -->
+          <a href="tools/secret-image.html" onclick="handleSecretToolClick(event)" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></a>
+          
+          <div style="position: relative; z-index: 2; pointer-events: none;">
+            <div class="tool-badge most-used-badge">🔥 MOST USED</div>
+            <div class="tool-icon icon-blue" style="font-size: 3rem; text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);">🕵️‍♂️</div>
+            <h3 style="color: #38bdf8; font-size: 1.3rem;">Secret Message Hider &amp; Viewer</h3>
+            <p style="font-size: 0.95rem; color: #cbd5e1; font-weight: 400; line-height: 1.6;">
+              Hide secret messages or passwords invisibly inside any photo using military-grade AES-256 encryption. The ultimate Plausible Deniability tool.
+            </p>
+          </div>
+          
+          <div style="margin-top: 15px; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; position: relative; z-index: 10;">
+            <p style="color: #ef4444; font-size: 0.85rem; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; pointer-events: none;">🔒 Requires Secret Key</p>
+            <button type="button" onclick="openHomePopup()" class="gray-pulse-anim" style="color: #94a3b8; font-size: 0.85rem; display: inline-block; padding: 6px 15px; border: 1px dashed #475569; border-radius: 4px; background: rgba(0,0,0,0.8); cursor: pointer; position: relative; z-index: 20;">Get Secret Key</button>
+          </div>
+        </div>
+
+        <style>
+          @keyframes grayPulse {
+            0% { box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.4); border-color: #475569; }
+            50% { box-shadow: 0 0 10px 0 rgba(148, 163, 184, 0.6); border-color: #94a3b8; color: #cbd5e1; }
+            100% { box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.4); border-color: #475569; }
+          }
+          .gray-pulse-anim {
+            animation: grayPulse 2s infinite;
+          }
+        </style>
 
         <!-- DECOY TOOL -->
         <a href="tools/decoy-steganography.html" class="tool-card" data-cat="edit">
@@ -1442,6 +1462,149 @@
   pwaCloseBtn.addEventListener('click', () => {
     pwaInstallBanner.style.display = 'none';
   });
+</script>
+
+<!-- Home Page Key Generation Modal -->
+<div id="home-key-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(12px) saturate(180%);">
+  <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%); padding: 40px 30px; border-radius: 20px; max-width: 450px; width: 90%; position: relative; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1); animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+    <button onclick="closeHomePopup()" style="position: absolute; top: 15px; right: 20px; background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">&times;</button>
+    <h3 style="margin-bottom: 15px; color: white; text-shadow: 0 0 10px rgba(255,255,255,0.2);">Get Your Secret Key 🔑</h3>
+    <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">To ensure security, please provide your details. Your privacy is 100% protected and data is never stored.</p>
+    
+    <form id="home-get-key-form" onsubmit="submitHomeKeyRequest(event)">
+      <div style="margin-bottom: 15px;">
+        <label style="display: block; color: white; margin-bottom: 5px; font-size: 0.9rem;">Full Name</label>
+        <input type="text" id="home-req-name" required placeholder="Your Name" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+      </div>
+      <div style="margin-bottom: 15px;">
+        <label style="display: block; color: white; margin-bottom: 5px; font-size: 0.9rem;">Email Address</label>
+        <input type="email" id="home-req-email" required placeholder="your.email@example.com" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+      </div>
+      <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px; font-size: 0.85rem; color: #94a3b8;">
+        <input type="checkbox" id="home-req-terms" required style="margin-top: 3px; accent-color: #3b82f6;">
+        <label for="home-req-terms">I agree to the Terms & Conditions and promise not to use this tool for illegal activities.</label>
+      </div>
+      <button type="submit" id="home-submit-key-btn" style="width: 100%; padding: 14px; font-size: 1.1rem; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);">Get Secret Key</button>
+    </form>
+  </div>
+</div>
+
+<!-- Home Success Activation Modal -->
+<div id="home-success-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 11000; justify-content: center; align-items: center; backdrop-filter: blur(10px);">
+  <div style="background: linear-gradient(135deg, rgba(6, 78, 59, 0.95) 0%, rgba(2, 44, 34, 0.95) 100%); padding: 40px; border-radius: 20px; max-width: 450px; width: 90%; text-align: center; border: 1px solid #10b981; box-shadow: 0 0 40px rgba(16, 185, 129, 0.4); animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);">
+    <div style="font-size: 4rem; margin-bottom: 10px; animation: bounce 2s infinite;">✅</div>
+    <h2 style="color: #10b981; font-size: 1.8rem; margin-bottom: 10px;">Secret Key is Activated!</h2>
+    <p style="color: #a7f3d0; margin-bottom: 25px; font-size: 1rem;">Your unique 10-character key has been generated and locked to this device.</p>
+    
+    <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; border: 1px dashed #34d399; margin-bottom: 25px; overflow-wrap: break-word;">
+      <span id="home-display-generated-key" style="color: #34d399; font-size: 1.2rem; font-family: monospace; font-weight: bold; letter-spacing: 1px; text-shadow: 0 0 10px rgba(52, 211, 153, 0.5);">205XXXXXXX</span>
+    </div>
+    
+    <button onclick="goToTool()" style="background: #10b981; color: #022c22; border: none; padding: 14px 30px; font-size: 1.1rem; cursor: pointer; border-radius: 8px; font-weight: bold; width: 100%; transition: all 0.3s; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Open Secret Tool 🚀</button>
+  </div>
+</div>
+
+<script>
+function handleSecretToolClick(event) {
+    event.preventDefault();
+    openHomePopup();
+}
+
+function openHomePopup() {
+    document.getElementById('home-key-modal').style.display = 'flex';
+}
+function closeHomePopup() {
+    document.getElementById('home-key-modal').style.display = 'none';
+}
+function generateHomeRandomKey() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = 'pc_live_205_';
+    // Generate 18 random characters to make total length exactly 30
+    for (let i = 0; i < 18; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+function isFakeEmail(email) {
+    const e = email.toLowerCase();
+    // Basic fake checks
+    const fakePatterns = [/^test@/, /^fake@/, /^abc@/, /^123/, /^admin@/, /@test\.com$/, /@example\.com$/];
+    if (fakePatterns.some(pattern => pattern.test(e))) return true;
+    
+    // Require common valid domains to be strict
+    const validDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com'];
+    const domain = e.split('@')[1];
+    if (!validDomains.includes(domain)) return true;
+    
+    // Check if username part is too short or looks like keyboard smash
+    const username = e.split('@')[0];
+    if (username.length < 5) return true;
+    
+    return false;
+}
+
+async function submitHomeKeyRequest(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('home-req-name').value;
+    const email = document.getElementById('home-req-email').value;
+    
+    // Strict fake email check with the requested joke
+    if (isFakeEmail(email)) {
+        alert("Aapko kya lagta he koi bhi email dalne per ye tool acess hoga? 😂 Sahi aur asli email daliye!");
+        return;
+    }
+    
+    const btn = document.getElementById('home-submit-key-btn');
+    btn.textContent = 'Processing...';
+    btn.disabled = true;
+    
+    const YOUR_EMAIL_ADDRESS = "support.pixelcraft205@gmail.com";
+    const newSecretKey = generateHomeRandomKey();
+    
+    try {
+        const response = await fetch(`https://formsubmit.co/ajax/${YOUR_EMAIL_ADDRESS}`, {
+            method: "POST",
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                _subject: "New Secret Key Access - PixelCraft",
+                Name: name,
+                Email: email,
+                GeneratedKey: newSecretKey,
+                Tool: "Secret Image Hider"
+            })
+        });
+        
+        if(response.ok || response.status === 200) {
+            localStorage.setItem('pc_stealth_key', newSecretKey);
+            localStorage.setItem('pc_stealth_generated', 'true');
+            localStorage.setItem('pc_stealth_last_used', Date.now());
+            
+            // Redirect instantly instead of showing green popup
+            window.location.href = 'tools/secret-image.html';
+        } else {
+            alert("Email service needs activation. Check your inbox.");
+        }
+    } catch(err) {
+        console.error(err);
+        localStorage.setItem('pc_stealth_key', newSecretKey);
+        localStorage.setItem('pc_stealth_generated', 'true');
+        localStorage.setItem('pc_stealth_last_used', Date.now());
+        
+        // Redirect instantly instead of showing green popup
+        window.location.href = 'tools/secret-image.html';
+    } finally {
+        btn.textContent = 'Get Secret Key';
+        btn.disabled = false;
+    }
+}
+function goToTool() {
+    window.location.href = "tools/secret-image.html";
+}
 </script>
   </body>
 </html>
