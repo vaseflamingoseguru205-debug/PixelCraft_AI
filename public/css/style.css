@@ -410,18 +410,20 @@ body::after {
   margin-top: 40px;
 }
 .tool-card {
-  background: var(--glass-bg);
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.6));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 20px;
   padding: 32px 28px;
   text-decoration: none;
   color: inherit;
-  transition: var(--transition-bounce);
+  transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 .tool-card::before {
   content: "";
@@ -432,16 +434,16 @@ body::after {
   bottom: 0;
   background: radial-gradient(
     circle at top right,
-    rgba(56, 189, 248, 0.1),
+    rgba(56, 189, 248, 0.15),
     transparent 50%
   );
   opacity: 0;
   transition: var(--transition-smooth);
 }
 .tool-card:hover {
-  border-color: var(--glass-border-hover);
+  border-color: rgba(56, 189, 248, 0.8);
   transform: translateY(-8px);
-  box-shadow: var(--shadow-glass);
+  box-shadow: 0 15px 40px rgba(56, 189, 248, 0.2);
 }
 .tool-card:hover::before {
   opacity: 1;
@@ -475,36 +477,38 @@ body::after {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 .tool-card h3 {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  color: #f8fafc;
   font-weight: 700;
   margin-bottom: 10px;
   position: relative;
   z-index: 2;
 }
 .tool-card p {
-  font-size: 0.9rem;
-  color: var(--text-muted);
+  font-size: 0.95rem;
+  color: #cbd5e1;
   line-height: 1.6;
   position: relative;
   z-index: 2;
+  flex-grow: 1;
 }
 .tool-arrow {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--primary);
-  font-size: 0.9rem;
-  font-weight: 600;
+  color: #38bdf8;
+  font-size: 1rem;
+  font-weight: bold;
   margin-top: 20px;
-  opacity: 0.5;
-  transform: translateX(-5px);
-  transition: var(--transition-bounce);
+  opacity: 0.7;
+  transform: translateX(0px);
+  transition: all 0.3s ease;
   position: relative;
   z-index: 2;
 }
 .tool-card:hover .tool-arrow {
   opacity: 1;
-  transform: translateX(0);
+  transform: translateX(5px);
 }
 
 

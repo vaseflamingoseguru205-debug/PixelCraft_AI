@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Background Eraser Pro | PixelCraft AI</title>
+  <meta name="description" content="Surgically extract subjects from photos with perfectly smooth, feathered anti-aliased edges."/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <link rel="stylesheet" href="../css/style.css"/>
+
+  <!-- TensorFlow.js and Body Segmentation (MediaPipe) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.20.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-segmentation@1.0.1"></script>
+
+  <style>
+    /* Premium Futuristic Styling */
+    .tool-workspace {
+      box-shadow: 0 10px 40px rgba(59, 130, 246, 0.15);
+      border-top: 1px solid rgba(59, 130, 246, 0.3);
+      position: relative; overflow: hidden;
+    }
+    
+    .file-drop-area {
+      border: 2px dashed #3b82f6; border-radius: 16px; padding: 40px 20px;
+      text-align: center; cursor: pointer; transition: all 0.3s;
+      background: rgba(59, 130, 246, 0.05);
+    }
+    .file-drop-area:hover, .file-drop-area.drag-over {
+      background: rgba(59, 130, 246, 0.15); border-color: #60a5fa;
+    }
+
+    #result-container {
+      position: relative; width: 100%; max-width: 600px; margin: 20px auto;
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYNgvwEAAMGBiYmIQY4TpgIEMoAowxIMhZMC0B4YpMkwzGIyGATQxUAAACXEHv8j0cIQAAAAASUVORK5CYII=');
+      display: none;
+    }
+    
+    #result-canvas {
+      width: 100%; height: auto; display: block;
+    }
+
+    /* Dynamic UI */
+    .controls-panel {
+      background: rgba(0,0,0,0.2); border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 12px; padding: 20px; margin-top: 20px; display: none;
+    }
+    
+    .loading-overlay {
+      position: absolute; top:0; left:0; width:100%; height:100%;
+      background: rgba(15, 23, 42, 0.9);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      z-index: 10; display: none; border-radius: 12px;
+    }
+    .spinner {
+      width: 50px; height: 50px; border: 4px solid rgba(59, 130, 246, 0.3);
+      border-top-color: #3b82f6; border-radius: 50%;
+      animation: spin 1s linear infinite; margin-bottom: 15px;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    .btn-blue {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white; border: none; padding: 12px 24px; border-radius: 8px;
+      font-weight: 600; cursor: pointer; width: 100%; font-size: 1.1rem;
+      margin-top: 20px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+      transition: all 0.3s;
+    }
+    .btn-blue:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6); }
+  </style>
+</head>
+<body>
+<script>
+  (function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const authUrlToken = urlParams.get('auth_token');
+    const localAuthToken = localStorage.getItem('pixelcraft_auth_token');
+    
+    if (!authUrlToken || !authUrlToken.startsWith('G-SEC-205-') || authUrlToken !== localAuthToken) {
+      document.write(`
+        <div style="background:#000; color:#ef4444; position:fixed; top:0; left:0; width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; font-family:monospace; padding:20px; text-align:center; z-index:99999;">
+          <h1 style="font-size:3rem; margin-bottom:10px;">⚠️ ACCESS DENIED</h1>
+          <p style="font-size:1.2rem; color:#fff; max-width:600px; line-height:1.6;">
+            <strong>Device or Token Mismatch.</strong><br><br>
+            This Secret Link is bound to another user's device, or the link is invalid/expired.<br>
+            If you want to use this premium tool, please return to the Home page and generate your own Free Secret Key securely.
+          </p>
+          <a href="../index.html" style="margin-top:30px; padding:15px 30px; background:#ef4444; color:white; text-decoration:none; font-weight:bold; border-radius:8px; font-family:sans-serif;">← Return to Home</a>
+        </div>
+      `);
+      window.stop(); // Stops further loading
+    }
+  })();
+</script>
+<div id="toast-container" class="toast-container"></div>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div>PixelCraft AI</a>
+</nav>
+
+<div class="tool-page">
+  <div class="tool-page-header">
+    <a href="../index.html" class="back-link">← Back</a>
+    <div style="margin-bottom:12px; display:flex; justify-content:center;">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.4));">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </div>
+    <h1 style="color:#3b82f6;">AI Background Eraser Pro</h1>
+    <p>Upload a photo of a person. Our AI surgically extracts the subject with perfectly smooth, feathered edges.</p>
+  </div>
+  
+  <div class="tool-workspace" style="max-width: 800px;">
+    
+    <div class="file-drop-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/png, image/jpeg, image/webp" style="display:none"/>
+      <h3 style="color:#3b82f6;">Upload Image to Remove Background</h3>
+      <p>Works best with photos of people (selfies/portraits).</p>
+    </div>
+
+    <div id="result-container">
+      <div class="loading-overlay" id="loading">
+        <div class="spinner"></div>
+        <div style="color:#3b82f6; font-weight:bold; letter-spacing:1px;" id="loading-text">Loading AI Model...</div>
+      </div>
+      <canvas id="result-canvas"></canvas>
+    </div>
+
+    <div class="controls-panel" id="controls">
+      <div class="control-group" style="margin-bottom: 20px;">
+        <label style="display:flex; justify-content:space-between; color:#94a3b8; font-weight:bold;">
+          <span>Manual Eraser Brush Size</span>
+          <span id="brush-val">20px</span>
+        </label>
+        <input type="range" id="brush-size" min="5" max="100" value="20" oninput="document.getElementById('brush-val').innerText = this.value + 'px'">
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">If the AI misses a spot, click and drag on the image above to manually erase it!</p>
+      </div>
+      <button class="btn-blue" onclick="downloadPNG()">
+        📥 Download Transparent PNG
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script src="../js/utils.js"></script>
+<script>
+  // Setup Upload
+  setupDragDrop(document.getElementById('upload-area'), handleFile);
+  document.getElementById('file-input').addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+  const uploadArea = document.getElementById('upload-area');
+  const container = document.getElementById('result-container');
+  const controls = document.getElementById('controls');
+  const loading = document.getElementById('loading');
+  const loadingText = document.getElementById('loading-text');
+  
+  const canvas = document.getElementById('result-canvas');
+  const ctxResult = canvas.getContext('2d');
+
+  let model = null;
+
+  async function initModel() {
+      if(model) return;
+      loadingText.innerText = "Loading AI Core...";
+      container.style.display = 'block'; // Show container to show loading
+      loading.style.display = 'flex';
+      try {
+          const modelType = bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation;
+          const segmenterConfig = { runtime: 'tfjs', modelType: 'landscape' };
+          model = await bodySegmentation.createSegmenter(modelType, segmenterConfig);
+      } catch(e) {
+          console.error(e);
+          showToast("Failed to load AI model.", "error");
+      }
+  }
+
+  async function handleFile(file) {
+    try {
+      const img = await fileToImage(file);
+      
+      uploadArea.style.display = 'none';
+      container.style.display = 'block';
+      controls.style.display = 'block';
+      
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      await initModel();
+      loadingText.innerText = "Surgically Removing Background...";
+      
+      // Create hidden canvas to process image
+      const cvs = document.createElement('canvas');
+      cvs.width = img.width; cvs.height = img.height;
+      const ctx = cvs.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      
+      // Run Segmentation
+      const segmentation = await model.segmentPeople(img);
+      
+      if(segmentation.length > 0) {
+          const coloredPartImage = await segmentation[0].mask.toImageData();
+          
+          const origData = ctx.getImageData(0,0,img.width,img.height);
+          const fgData = ctxResult.createImageData(img.width,img.height);
+          
+          // Separate FG with Smooth Edge Feathering (Anti-Aliasing)
+          for(let i=0; i<origData.data.length; i+=4) {
+              const maskVal = coloredPartImage.data[i+3]; // Alpha of mask (0 to 255)
+              
+              // Foreground: Use maskVal directly for perfectly smooth, feathered edges
+              fgData.data[i] = origData.data[i];
+              fgData.data[i+1] = origData.data[i+1];
+              fgData.data[i+2] = origData.data[i+2];
+              fgData.data[i+3] = maskVal; // Transparent where mask is 0
+          }
+          
+          ctxResult.putImageData(fgData, 0, 0);
+          
+          setupEraser();
+          
+          loading.style.display = 'none';
+          showToast("Background Removed! Use the brush to clean up edges.", "success");
+      } else {
+          loading.style.display = 'none';
+          showToast("No person detected in image.", "error");
+      }
+      
+    } catch(e) {
+      console.error(e);
+      loading.style.display = 'none';
+      showToast('Error processing image', 'error');
+    }
+  }
+
+  function downloadPNG() {
+      const dataUrl = canvas.toDataURL('image/png');
+      downloadFile(dataUrl, 'pixelcraft-bg-removed.png');
+  }
+
+  // --- Manual Eraser Tool ---
+  let isErasing = false;
+
+  function getMousePos(evt) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return {
+          x: (evt.clientX - rect.left) * scaleX,
+          y: (evt.clientY - rect.top) * scaleY
+      };
+  }
+
+  function setupEraser() {
+      // Remove old listeners to prevent duplicates if user uploads multiple images
+      canvas.onmousedown = null;
+      canvas.onmousemove = null;
+      canvas.onmouseup = null;
+      canvas.onmouseleave = null;
+
+      canvas.onmousedown = (e) => {
+          isErasing = true;
+          erase(e);
+      };
+      canvas.onmousemove = (e) => {
+          if (isErasing) erase(e);
+      };
+      canvas.onmouseup = () => { isErasing = false; };
+      canvas.onmouseleave = () => { isErasing = false; };
+      
+      // Touch support
+      canvas.ontouchstart = (e) => {
+          e.preventDefault();
+          isErasing = true;
+          erase(e.touches[0]);
+      };
+      canvas.ontouchmove = (e) => {
+          e.preventDefault();
+          if (isErasing) erase(e.touches[0]);
+      };
+      canvas.ontouchend = () => { isErasing = false; };
+  }
+
+  function erase(e) {
+      const pos = getMousePos(e);
+      const brushSize = parseInt(document.getElementById('brush-size').value);
+      
+      ctxResult.save();
+      ctxResult.globalCompositeOperation = 'destination-out';
+      ctxResult.beginPath();
+      ctxResult.arc(pos.x, pos.y, brushSize, 0, Math.PI * 2, false);
+      ctxResult.fill();
+      ctxResult.restore();
+  }
+
+</script>
+</body>
+</html>
