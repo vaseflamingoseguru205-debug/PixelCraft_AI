@@ -503,6 +503,39 @@ app.post('/api/upload-pdf', upload.single('file'), async (req, res) => {
 });
 
 // Serve all static files (HTML, CSS, JS) from the 'public' folder
+/* --- GLOBAL AUTHENTICATION WALL (COMMENTED FOR ADSENSE APPROVAL) ---
+app.use((req, res, next) => {
+  const allowedPaths = [
+    '/login.html',
+    '/about-us.html',
+    '/contact-us.html',
+    '/privacy-policy.html',
+    '/terms-conditions.html',
+    '/cookies-policy.html',
+    '/disclaimer.html'
+  ];
+  
+  if (req.isAuthenticated() || allowedPaths.includes(req.path)) {
+    return next();
+  }
+
+  if (req.path.startsWith('/api') || req.path.startsWith('/auth')) {
+    return next();
+  }
+
+  const ext = path.extname(req.path).toLowerCase();
+  const allowedExtensions = ['.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.woff', '.woff2', '.ttf', '.json'];
+  if (allowedExtensions.includes(ext)) {
+    return next();
+  }
+
+  // Store requested URL to redirect back after login
+  req.session.returnTo = req.originalUrl;
+  res.redirect('/login.html');
+});
+*/
+
+// Serve all static files (HTML, CSS, JS) from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {

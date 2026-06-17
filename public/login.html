@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - PixelCraft AI</title>
+  <style>
+    :root {
+      --google-blue: #4285F4;
+      --google-red: #EA4335;
+      --google-yellow: #FBBC05;
+      --google-green: #34A853;
+      --bg-color: #0f172a;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    
+    body {
+      background-color: var(--bg-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    /* Floating Background Orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: 0;
+      animation: floatOrb 20s infinite ease-in-out alternate;
+    }
+    .orb-1 {
+      width: 400px;
+      height: 400px;
+      background: rgba(66, 133, 244, 0.4);
+      top: -100px;
+      left: -100px;
+    }
+    .orb-2 {
+      width: 300px;
+      height: 300px;
+      background: rgba(234, 67, 53, 0.4);
+      bottom: -50px;
+      right: -50px;
+      animation-delay: -5s;
+    }
+    .orb-3 {
+      width: 250px;
+      height: 250px;
+      background: rgba(52, 168, 83, 0.3);
+      top: 40%;
+      left: 60%;
+      animation-delay: -10s;
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(50px, 50px) scale(1.1); }
+      100% { transform: translate(-30px, 80px) scale(0.9); }
+    }
+
+    /* Floating animation for main container */
+    @keyframes floatContainer {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    /* Container for animated border */
+    .border-wrapper {
+      position: relative;
+      padding: 3px;
+      border-radius: 24px;
+      background: conic-gradient(
+        from var(--angle), 
+        var(--google-blue), 
+        var(--google-red), 
+        var(--google-yellow), 
+        var(--google-green), 
+        var(--google-blue)
+      );
+      animation: spin 4s linear infinite, floatContainer 6s ease-in-out infinite;
+      z-index: 1;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    /* CSS variable animation for conic gradient */
+    @property --angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @keyframes spin {
+      to {
+        --angle: 360deg;
+      }
+    }
+
+    /* Glassmorphism Inner Card */
+    .glass-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 21px;
+      padding: 40px 30px;
+      text-align: center;
+      position: relative;
+      height: 100%;
+      width: 100%;
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      background: #fff;
+      color: #1e293b;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+      margin-bottom: 25px;
+    }
+
+    .google-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+    }
+
+    .google-btn img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .disclaimer {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      text-align: left;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    .disclaimer strong {
+      color: #e2e8f0;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px 15px;
+      font-size: 0.8rem;
+    }
+
+    .links a {
+      color: #60a5fa;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .links a:hover {
+      color: #93c5fd;
+      text-decoration: underline;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Floating Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="border-wrapper">
+    <div class="glass-card">
+      <div class="logo">PixelCraft AI</div>
+      <p class="subtitle">Your professional, browser-based AI toolkit.</p>
+      
+      <a href="/auth/google" class="google-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
+        Sign in with Google
+      </a>
+
+      <div class="disclaimer">
+        <strong>🔒 Why we require Sign-In</strong>
+        We securely store your basic profile data (Name, Email) to provide a personalized, seamless experience across all your devices and to protect our tools from bot abuse. We respect your privacy and never sell your data.
+      </div>
+
+      <div class="links">
+        <a href="/about-us.html">About Us</a> •
+        <a href="/contact-us.html">Contact</a> •
+        <a href="/privacy-policy.html">Privacy Policy</a> •
+        <a href="/terms-conditions.html">Terms & Conditions</a> •
+        <a href="/cookies-policy.html">Cookies Policy</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
