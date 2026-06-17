@@ -709,7 +709,7 @@
           max-width: 1000px;
         ">
           <!-- Email Card -->
-          <a href="mailto:swapnil.biradar.cse@gmail.com" style="
+          <a href="mailto:support.pixelcraft205@gmail.com" style="
             flex: 1;
             min-width: 250px;
             max-width: 320px;
@@ -1464,29 +1464,92 @@
   });
 </script>
 
+<!-- Cyber Security Loading Animation -->
+<div id="cyber-loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 10001; justify-content: center; align-items: center; flex-direction: column; font-family: 'Courier New', monospace; color: #10b981;">
+  <div style="font-size: 1.5rem; margin-bottom: 20px; color: #ef4444; text-shadow: 0 0 10px #ef4444; animation: cyber-blink 1s infinite; text-align: center; font-weight: bold;">[ SYSTEM WARNING: SECURE CONNECTION REQUIRED ]</div>
+  <div style="width: 90%; max-width: 600px; text-align: left; background: #050505; padding: 20px; border: 1px solid #10b981; border-radius: 4px; box-shadow: 0 0 15px rgba(16, 185, 129, 0.2), inset 0 0 10px rgba(16, 185, 129, 0.1);">
+    <div id="cyber-loading-lines" style="line-height: 1.6; font-size: 0.9rem;"></div>
+    <div style="margin-top: 15px; color: #ef4444; font-weight: bold; font-size: 0.95rem;">> Please wait... Initializing secure terminal... <span style="animation: cyber-blink 1s infinite;">_</span></div>
+  </div>
+</div>
+<style>
+  @keyframes cyber-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+</style>
+
 <!-- Home Page Key Generation Modal -->
-<div id="home-key-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(12px) saturate(180%);">
-  <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%); padding: 40px 30px; border-radius: 20px; max-width: 450px; width: 90%; position: relative; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1); animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
-    <button onclick="closeHomePopup()" style="position: absolute; top: 15px; right: 20px; background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">&times;</button>
-    <h3 style="margin-bottom: 15px; color: white; text-shadow: 0 0 10px rgba(255,255,255,0.2);">Get Your Secret Key 🔑</h3>
-    <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">To ensure security, please provide your details. Your privacy is 100% protected and data is never stored.</p>
+<div id="home-key-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(12px) saturate(180%); padding: 20px;">
+  
+  <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; max-width: 900px; width: 100%; align-items: stretch; position: relative;">
     
-    <form id="home-get-key-form" onsubmit="submitHomeKeyRequest(event)">
-      <div style="margin-bottom: 15px;">
-        <label style="display: block; color: white; margin-bottom: 5px; font-size: 0.9rem;">Full Name</label>
-        <input type="text" id="home-req-name" required placeholder="Your Name" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
-      </div>
-      <div style="margin-bottom: 15px;">
-        <label style="display: block; color: white; margin-bottom: 5px; font-size: 0.9rem;">Email Address</label>
-        <input type="email" id="home-req-email" required placeholder="your.email@example.com" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
-      </div>
-      <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px; font-size: 0.85rem; color: #94a3b8;">
-        <input type="checkbox" id="home-req-terms" required style="margin-top: 3px; accent-color: #3b82f6;">
-        <label for="home-req-terms">I agree to the Terms & Conditions and promise not to use this tool for illegal activities.</label>
-      </div>
-      <div id="home-email-error" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem; line-height: 1.4; text-align: center; font-weight: 500;"></div>
-      <button type="submit" id="home-submit-key-btn" style="width: 100%; padding: 14px; font-size: 1.1rem; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);">Get Secret Key</button>
-    </form>
+    <!-- Info Card (Glassmorphism) -->
+    <div style="flex: 1; min-width: 280px; max-width: 400px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 40px 30px; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.02); animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);">
+       <h3 style="color: #60a5fa; margin-bottom: 20px; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; font-weight: 600;">🛡️ Why Secret Key is Required?</h3>
+       <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.7; margin-bottom: 20px;">This tool is highly advanced and powerful. To ensure it is used responsibly and to prevent automated abuse, we require a quick verification step.</p>
+       
+       <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; padding: 15px 20px; border-radius: 4px; margin-top: auto;">
+         <strong style="color: #10b981; display: block; margin-bottom: 8px; font-size: 1rem;">🔒 Strictly Confidential</strong>
+         <span style="color: #a7f3d0; font-size: 0.9rem; line-height: 1.6; display: block;">Your details are securely sent only to our admin team for verification to prevent spam. We respect your privacy—your data will <b>never</b> be shared, sold, or used for marketing.</span>
+       </div>
+    </div>
+
+    <!-- Existing Form Card -->
+    <div style="flex: 1; min-width: 280px; max-width: 450px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%); padding: 40px 30px; border-radius: 20px; position: relative; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1); animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+      <button onclick="closeHomePopup()" style="position: absolute; top: 15px; right: 20px; background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">&times;</button>
+      <h3 style="margin-bottom: 15px; color: white; text-shadow: 0 0 10px rgba(255,255,255,0.2);">Get Your Secret Key 🔑</h3>
+      <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">For security reasons, please provide your details. This data is securely sent directly to our admin to verify you are human and prevent bot abuse.</p>
+      
+      <form id="home-get-key-form" onsubmit="submitHomeKeyRequest(event)">
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; color: white; margin-bottom: 5px; font-size: 0.9rem;">Full Name</label>
+          <input type="text" id="home-req-name" required placeholder="Your Name" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; color: white; margin-bottom: 5px; font-size: 0.9rem;">Email Address</label>
+          <input type="email" id="home-req-email" required placeholder="your.email@example.com" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+        </div>
+        <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px; font-size: 0.85rem; color: #94a3b8;">
+          <input type="checkbox" id="home-req-terms" required style="margin-top: 3px; accent-color: #3b82f6;">
+          <label for="home-req-terms">I have read and agree to the <button type="button" onclick="openToolTermsModal(event)" style="background:none; border:none; color:#60a5fa; cursor:pointer; text-decoration:underline; font-size:inherit; padding:0; font-weight:600;">Tool's Deep Details (Terms, Privacy & FAQ)</button> and promise not to use it for illegal activities.</label>
+        </div>
+        <div id="home-email-error" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem; line-height: 1.4; text-align: center; font-weight: 500;"></div>
+        <button type="submit" id="home-submit-key-btn" style="width: 100%; padding: 14px; font-size: 1.1rem; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);">Get Secret Key</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Tool Specific Terms Modal -->
+<div id="tool-terms-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 12000; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 20px;">
+  <div style="background: #0f172a; padding: 40px; border-radius: 16px; max-width: 600px; width: 100%; max-height: 85vh; overflow-y: auto; position: relative; border: 1px solid #334155; box-shadow: 0 20px 40px rgba(0,0,0,0.5); color: #e2e8f0; font-family: 'Outfit', sans-serif;">
+    <button type="button" onclick="closeToolTermsModal()" style="position: absolute; top: 15px; right: 20px; background: transparent; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; transition: color 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">&times;</button>
+    
+    <h2 style="color: #60a5fa; margin-bottom: 20px; font-size: 1.6rem; border-bottom: 1px solid #334155; padding-bottom: 10px;">Secret Message Hider</h2>
+    
+    <h3 style="color: #cbd5e1; margin-bottom: 10px; font-size: 1.2rem;">📜 Terms of Use</h3>
+    <ul style="margin-bottom: 25px; padding-left: 20px; color: #94a3b8; font-size: 0.95rem; line-height: 1.6;">
+      <li>You must not use this tool to hide illegal, explicit, or copyrighted content without permission.</li>
+      <li>This tool is provided "as is" for educational and personal security purposes.</li>
+      <li>We hold the right to revoke access if automated abuse or spam is detected.</li>
+    </ul>
+
+    <h3 style="color: #cbd5e1; margin-bottom: 10px; font-size: 1.2rem;">🔒 Privacy Policy</h3>
+    <ul style="margin-bottom: 25px; padding-left: 20px; color: #94a3b8; font-size: 0.95rem; line-height: 1.6;">
+      <li style="margin-bottom: 10px;"><b>Form Details:</b> The name and email you provide are sent securely directly to our administrator's email via FormSubmit. This is strictly to verify genuine users and prevent bot spam.</li>
+      <li style="margin-bottom: 10px;"><b>No Database Storage:</b> We do not save your name or email in any central user database. We do not use them for marketing, nor do we sell them to third parties.</li>
+      <li><b>Local Image Processing:</b> The images you encrypt or decrypt using this tool are processed 100% locally in your browser. Your images are NEVER uploaded to our servers.</li>
+    </ul>
+
+    <h3 style="color: #cbd5e1; margin-bottom: 10px; font-size: 1.2rem;">❓ FAQ</h3>
+    <div style="margin-bottom: 15px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px;">
+      <strong style="color: #f8fafc; font-size: 0.95rem; display: block; margin-bottom: 5px;">Why do you need my email?</strong>
+      <p style="color: #94a3b8; font-size: 0.9rem; margin: 0; line-height: 1.5;">Because this tool uses advanced steganography algorithms, we want to ensure it is not abused by automated bots. Manually requesting a key helps keep the platform secure for real users.</p>
+    </div>
+    <div style="margin-bottom: 25px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px;">
+      <strong style="color: #f8fafc; font-size: 0.95rem; display: block; margin-bottom: 5px;">Who sees my email?</strong>
+      <p style="color: #94a3b8; font-size: 0.9rem; margin: 0; line-height: 1.5;">Only the site administrator. It is delivered directly to their secure inbox and is kept strictly confidential.</p>
+    </div>
+    
+    <button type="button" onclick="closeToolTermsModal()" style="width: 100%; padding: 14px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.05rem; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">I Understand</button>
   </div>
 </div>
 
@@ -1506,13 +1569,48 @@
 </div>
 
 <script>
+function openToolTermsModal(e) {
+    if (e) e.preventDefault();
+    document.getElementById('tool-terms-modal').style.display = 'flex';
+}
+function closeToolTermsModal() {
+    document.getElementById('tool-terms-modal').style.display = 'none';
+}
+
 function handleSecretToolClick(event) {
     event.preventDefault();
     openHomePopup();
 }
 
 function openHomePopup() {
-    document.getElementById('home-key-modal').style.display = 'flex';
+    const overlay = document.getElementById('cyber-loading-overlay');
+    const linesContainer = document.getElementById('cyber-loading-lines');
+    overlay.style.display = 'flex';
+    linesContainer.innerHTML = '';
+    
+    const lines = [
+      "Accessing secure server network...",
+      "Bypassing standard protocols...",
+      "Establishing AES-256 encrypted connection...",
+      "Verifying identity constraints...",
+      "Connection secured. Access Granted."
+    ];
+    
+    let currentLine = 0;
+    const interval = setInterval(() => {
+        if (currentLine < lines.length) {
+            linesContainer.innerHTML += `<div><span style="color: #64748b;">[${new Date().toISOString().split('T')[1].substring(0, 8)}]</span> > <span style="color: #10b981;">${lines[currentLine]}</span></div>`;
+            currentLine++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 300);
+
+    setTimeout(() => {
+        clearInterval(interval);
+        overlay.style.display = 'none';
+        document.getElementById('home-key-modal').style.display = 'flex';
+    }, 2000);
 }
 function closeHomePopup() {
     document.getElementById('home-key-modal').style.display = 'none';
