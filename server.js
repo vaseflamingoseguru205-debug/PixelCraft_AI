@@ -1,6 +1,7 @@
 require('dotenv').config();
 const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
+dns.setServers(['8.8.8.8', '8.8.4.4']); // Force Google DNS to bypass ISP block on SRV records
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -97,6 +98,20 @@ passport.use(new GoogleStrategy({
 ));
 
 // --- API ROUTES ---
+
+// Admin Panel Route
+app.post('/api/admin/users', async (req, res) => {
+  const { password } = req.body;
+  if (!password || password !== process.env.ADMIN_PASSWORD?.trim()) {
+    return res.status(401).json({ error: 'Unauthorized access. Incorrect password.' });
+  }
+  try {
+    const users = await User.find({}).sort({ createdAt: -1 });
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
 
 // Check if user is logged in (Frontend calls this to update UI)
 app.get('/api/auth/status', (req, res) => {
