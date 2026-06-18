@@ -25,7 +25,7 @@ mongoose.connect(process.env.MONGO_URI, {
 const MongoStore = require('connect-mongo').default || require('connect-mongo').MongoStore;
 
 const sessionConfig = {
-  secret: process.env.SESSION_SECRET || 'super-secret-key-pixelcraft',
+  secret: process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex'),
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -328,16 +328,16 @@ app.post('/api/contact', async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER || 'swapnil.biradar.cse@gmail.com',
+        user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
       }
     });
 
     // Gmail requires 'from' to match the authenticated email to prevent spam blocking
     const mailOptions = {
-      from: `"PixelCraft Contact" <${process.env.EMAIL_USER || 'swapnil.biradar.cse@gmail.com'}>`,
+      from: `"PixelCraft Contact" <${process.env.EMAIL_USER}>`,
       replyTo: email,
-      to: 'swapnil.biradar.cse@gmail.com',
+      to: process.env.EMAIL_USER, // Sends the contact message to the website owner's email
       subject: `New Message from PixelCraft Website: ${name}`,
       text: `Someone just sent a message from your website contact form!
       
