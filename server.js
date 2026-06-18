@@ -124,30 +124,6 @@ app.get('/api/auth/status', (req, res) => {
   }
 });
 
-// Telemetry endpoint to track tool usage and active time
-app.post('/api/user/track', async (req, res) => {
-  if (req.isAuthenticated()) {
-    const { toolName, durationSeconds } = req.body;
-    try {
-      const user = await User.findById(req.user.id);
-      if (user && durationSeconds) {
-        user.totalTimeSpentSeconds += durationSeconds;
-        if (toolName && toolName !== 'Home') {
-          user.toolUsageHistory.push({ toolName, durationSeconds });
-          user.toolsUsedCount += 1;
-        }
-        await user.save();
-      }
-      res.sendStatus(200);
-    } catch (err) {
-      console.error('Tracking Error:', err);
-      res.sendStatus(500);
-    }
-  } else {
-    res.sendStatus(401);
-  }
-});
-
 // Route to start Google Auth
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
@@ -165,19 +141,7 @@ app.get('/auth/google/callback',
 );
 
 // Logout Route
-app.get('/logout', async (req, res, next) => {
-  if (req.isAuthenticated()) {
-    try {
-      const user = await User.findById(req.user.id);
-      if (user) {
-        user.lastLogout = Date.now();
-        user.logoutCount += 1;
-        await user.save();
-      }
-    } catch (err) {
-      console.error('Logout tracking error:', err);
-    }
-  }
+app.get('/logout', (req, res, next) => {
   req.logout((err) => {
     if (err) { return next(err); }
     res.redirect('/');
