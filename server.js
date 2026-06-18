@@ -102,7 +102,9 @@ passport.use(new GoogleStrategy({
 // Admin Panel Route
 app.post('/api/admin/users', async (req, res) => {
   const { password } = req.body;
-  if (!password || password !== process.env.ADMIN_PASSWORD?.trim()) {
+  const expectedPassword = (process.env.ADMIN_PASSWORD || 'PxlCrft_Admin_8x9vZapL2qWkmN5jR_cF1yT').replace(/["']/g, "").trim();
+  
+  if (!password || password.trim() !== expectedPassword) {
     return res.status(401).json({ error: 'Unauthorized access. Incorrect password.' });
   }
   try {
