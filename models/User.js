@@ -34,7 +34,23 @@ const UserSchema = new mongoose.Schema({
   lastLogin: {
     type: Date,
     default: Date.now
-  }
+  },
+  lastLogout: {
+    type: Date
+  },
+  logoutCount: {
+    type: Number,
+    default: 0
+  },
+  totalTimeSpentSeconds: {
+    type: Number,
+    default: 0
+  },
+  toolUsageHistory: [{
+    toolName: String,
+    usedAt: { type: Date, default: Date.now },
+    durationSeconds: Number
+  }]
 });
 
 module.exports = mongoose.model('User', UserSchema);

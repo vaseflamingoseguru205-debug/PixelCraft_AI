@@ -236,3 +236,41 @@ window.addEventListener('appinstalled', () => {
   if (banner) banner.remove();
   console.log('PWA installed');
 });
+
+// ===== USER ANALYTICS TELEMETRY =====
+(function() {
+  const pageEnterTime = Date.now();
+  let toolName = 'Home';
+  
+  if (window.location.pathname.length > 1) {
+    const path = window.location.pathname.substring(1).replace('.html', '').replace('-', ' ');
+    toolName = path.charAt(0).toUpperCase() + path.slice(1);
+  }
+
+  function sendTelemetry() {
+    const durationSeconds = Math.floor((Date.now() - pageEnterTime) / 1000);
+    if (durationSeconds > 2) {
+      const payload = JSON.stringify({ toolName, durationSeconds });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/user/track', new Blob([payload], { type: 'application/json' }));
+      } else {
+        fetch('/api/user/track', {
+          method: 'POST',
+          body: payload,
+          headers: { 'Content-Type': 'application/json' },
+          keepalive: true
+        }).catch(() => {});
+      }
+    }
+  }
+
+  window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      sendTelemetry();
+    }
+  });
+
+  window.addEventListener('beforeunload', () => {
+    sendTelemetry();
+  });
+})();

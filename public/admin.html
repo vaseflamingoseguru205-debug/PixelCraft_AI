@@ -3,352 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PixelCraft AI - Admin Command Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>PixelCraft AI - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #0F172A; /* Slate 900 */
-            --surface-color: #1E293B; /* Slate 800 */
-            --surface-hover: #334155; /* Slate 700 */
-            --primary: #3B82F6; /* Blue 500 */
-            --primary-hover: #60A5FA; /* Blue 400 */
-            --text-primary: #F8FAFC; /* Slate 50 */
-            --text-secondary: #94A3B8; /* Slate 400 */
-            --border-color: #334155;
-            --accent: #10B981; /* Emerald 500 */
-            --danger: #EF4444; /* Red 500 */
-            --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.15);
+            --bg: #0B1120;
+            --surface: rgba(30, 41, 59, 0.4);
+            --surface-hover: rgba(51, 65, 85, 0.6);
+            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --accent: #38BDF8;
+            --success: #10B981;
         }
+
+        * { box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
             min-height: 100vh;
             background-image: 
-                radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.08), transparent 25%);
+                radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 40%);
         }
 
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            margin-top: 60px;
-            padding: 0 20px;
-        }
-
-        .card {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
+        .glass-panel {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
             border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), var(--shadow-glow);
-            padding: 40px;
-            backdrop-filter: blur(10px);
+            padding: 24px;
         }
 
-        /* --- Login View --- */
+        /* LOGIN SCREEN */
+        .login-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
         .login-box {
-            max-width: 420px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 400px;
             text-align: center;
-            transform: translateY(20px);
-            animation: fadeIn 0.5s ease-out forwards;
         }
 
-        @keyframes fadeIn {
-            to { opacity: 1; transform: translateY(0); }
-            from { opacity: 0; transform: translateY(20px); }
-        }
-
-        h1 {
-            margin: 0 0 8px 0;
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #fff, #94A3B8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        p.subtitle {
-            color: var(--text-secondary);
-            margin-bottom: 32px;
-            font-size: 15px;
-        }
-
-        .input-group {
-            margin-bottom: 24px;
-            text-align: left;
-            position: relative;
-        }
+        .login-box h1 { margin-bottom: 8px; font-weight: 600; }
+        .login-box p { color: var(--text-muted); margin-bottom: 30px; }
 
         input[type="password"] {
             width: 100%;
-            padding: 14px 16px 14px 44px;
-            background-color: #0F172A;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 16px;
-            color: var(--text-primary);
-            outline: none;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-            font-family: monospace;
-            letter-spacing: 2px;
-        }
-
-        input[type="password"]:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-        }
-
-        .lock-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-        }
-
-        button.primary-btn {
-            width: 100%;
-            background: linear-gradient(135deg, var(--primary), #2563EB);
+            padding: 14px 20px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             color: white;
-            border: none;
-            padding: 14px 16px;
-            border-radius: 10px;
+            font-family: monospace;
             font-size: 16px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.3s;
+        }
+        input[type="password"]:focus { border-color: var(--accent); }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: #0F172A;
+            border: none;
+            border-radius: 12px;
             font-weight: 600;
+            font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            transition: 0.3s;
+        }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        #error-msg {
+            color: #ef4444; margin-top: 15px; font-size: 14px; display: none;
         }
 
-        button.primary-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
-            background: linear-gradient(135deg, var(--primary-hover), var(--primary));
-        }
-
-        .error {
-            color: var(--danger);
-            font-size: 14px;
-            margin-top: 16px;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            padding: 10px;
-            border-radius: 8px;
-            display: none;
-        }
-
-        /* --- Dashboard View --- */
+        /* DASHBOARD */
         #dashboard {
             display: none;
-            padding: 30px;
-            animation: fadeIn 0.5s ease-out forwards;
+            padding: 40px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .dashboard-header {
+        .dash-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
         }
 
-        .logout-btn {
-            background-color: transparent;
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .logout-btn:hover {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-            border-color: var(--danger);
-        }
+        .dash-title h1 { margin: 0; font-size: 28px; }
+        .dash-title span { color: var(--success); font-size: 14px; display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+        .pulse { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: blink 2s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        .stats-grid {
+        .btn-logout {
+            background: transparent; border: 1px solid var(--border); color: var(--text-muted);
+            padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: 0.3s;
+        }
+        .btn-logout:hover { border-color: #ef4444; color: #ef4444; }
+
+        .grid-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
 
-        .stat-card {
-            background-color: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
+        .stat-card h3 { margin: 0 0 10px 0; font-size: 14px; color: var(--text-muted); font-weight: 500; }
+        .stat-card .value { font-size: 32px; font-weight: 700; margin: 0; }
+
+        .grid-charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
         }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 4px; height: 100%;
-        }
-
-        .stat-card.blue::before { background-color: var(--primary); }
-        .stat-card.green::before { background-color: var(--accent); }
-
-        .stat-label {
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        .stat-value {
-            font-size: 36px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .table-container {
-            background-color: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: rgba(30, 41, 59, 0.8);
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        tr:last-child td { border-bottom: none; }
+        @media (max-width: 900px) { .grid-charts { grid-template-columns: 1fr; } }
         
-        tr:hover td {
-            background-color: rgba(59, 130, 246, 0.05);
-        }
+        .chart-container { position: relative; height: 300px; width: 100%; }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 16px; border-bottom: 1px solid var(--border); }
+        th { color: var(--text-muted); font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
 
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: var(--surface-hover);
-            object-fit: cover;
-            border: 2px solid var(--border-color);
-        }
-
-        .user-name { font-weight: 600; color: var(--text-primary); }
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            background-color: rgba(16, 185, 129, 0.1);
-            color: var(--accent);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 12px; vertical-align: middle; }
+        .user-name { font-weight: 500; }
+        .user-email { color: var(--text-muted); font-size: 13px; display: block; margin-top: 4px; }
+        .sub-text { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+        .badge { background: rgba(56, 189, 248, 0.1); color: var(--accent); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;}
 
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- Login Screen -->
-    <div class="card login-box" id="login-view">
-        <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="url(#blue-grad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px;">
-            <defs>
-                <linearGradient id="blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#60A5FA" />
-                    <stop offset="100%" stop-color="#2563EB" />
-                </linearGradient>
-            </defs>
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-        </svg>
-        <h1>Admin Protocol</h1>
-        <p class="subtitle">Authenticate to access the command center.</p>
-        
-        <div class="input-group">
-            <svg class="lock-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <input type="password" id="admin-password" placeholder="Enter API Key / Password" autocomplete="off" />
+<!-- Login View -->
+<div class="login-wrapper" id="login-view">
+    <div class="glass-panel login-box">
+        <h1>Command Center</h1>
+        <p>PixelCraft Administrative Access</p>
+        <input type="password" id="admin-pass" placeholder="Enter API Key..." autocomplete="off">
+        <button class="btn-primary" id="login-btn">Initialize Connection</button>
+        <div id="error-msg">Invalid Credentials</div>
+    </div>
+</div>
+
+<!-- Dashboard View -->
+<div id="dashboard">
+    <div class="dash-header">
+        <div class="dash-title">
+            <h1>Platform Overview</h1>
+            <span><div class="pulse"></div> System Live & Analytics Active</span>
         </div>
-        <button id="login-btn" class="primary-btn">Initialize Connection</button>
-        <div class="error" id="error-msg">❌ Invalid credentials. Access denied.</div>
+        <button class="btn-logout" id="logout-btn">End Session</button>
     </div>
 
-    <!-- Dashboard Screen -->
-    <div class="card" id="dashboard">
-        <div class="dashboard-header">
-            <div>
-                <h1 style="margin-bottom: 4px; font-size: 24px;">Admin Console</h1>
-                <div style="color: var(--text-secondary); font-size: 14px; display: flex; align-items: center; gap: 6px;">
-                    <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color: var(--accent); box-shadow: 0 0 8px var(--accent);"></span>
-                    System Live & Secure
-                </div>
-            </div>
-            <button class="logout-btn" id="logout-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                Lock Session
-            </button>
+    <!-- Stats -->
+    <div class="grid-stats">
+        <div class="glass-panel stat-card">
+            <h3>Total Users</h3>
+            <p class="value" id="stat-users">0</p>
         </div>
-        
-        <div class="stats-grid">
-            <div class="stat-card blue">
-                <div class="stat-label">Total Authenticated Users</div>
-                <div class="stat-value" id="total-users">0</div>
-            </div>
-            <div class="stat-card green">
-                <div class="stat-label">Database Status</div>
-                <div class="stat-value" style="color: var(--accent); font-size: 24px; margin-top: auto;">Connected</div>
-            </div>
+        <div class="glass-panel stat-card">
+            <h3>Total Time Active</h3>
+            <p class="value" id="stat-time">0 hrs</p>
         </div>
+        <div class="glass-panel stat-card">
+            <h3>Avg. Tools Used / User</h3>
+            <p class="value" id="stat-tools">0.0</p>
+        </div>
+    </div>
 
-        <div class="table-container">
-            <table id="users-table">
+    <!-- Charts -->
+    <div class="grid-charts">
+        <div class="glass-panel">
+            <h3 style="margin-top:0; color:var(--text-muted); font-size:15px;">Most Popular Tools</h3>
+            <div class="chart-container">
+                <canvas id="toolsChart"></canvas>
+            </div>
+        </div>
+        <div class="glass-panel">
+            <h3 style="margin-top:0; color:var(--text-muted); font-size:15px;">User Registrations (Timeline)</h3>
+            <div class="chart-container">
+                <canvas id="growthChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="glass-panel">
+        <h3 style="margin-top:0; margin-bottom:20px; color:var(--text-main);">User Database</h3>
+        <div style="overflow-x: auto;">
+            <table>
                 <thead>
                     <tr>
                         <th>User Profile</th>
-                        <th>Email Address</th>
-                        <th>Date Joined</th>
+                        <th>Activity Stats</th>
+                        <th>Tool History</th>
                         <th>Status</th>
                     </tr>
                 </thead>
-                <tbody id="users-tbody">
-                    <!-- Data injected here -->
+                <tbody id="user-tbody">
+                    <!-- Dynamic -->
                 </tbody>
             </table>
         </div>
@@ -357,96 +228,158 @@
 
 <script>
     const loginView = document.getElementById('login-view');
-    const dashboardView = document.getElementById('dashboard');
+    const dashboard = document.getElementById('dashboard');
     const loginBtn = document.getElementById('login-btn');
-    const logoutBtn = document.getElementById('logout-btn');
-    const passwordInput = document.getElementById('admin-password');
+    const passInput = document.getElementById('admin-pass');
     const errorMsg = document.getElementById('error-msg');
-    const tbody = document.getElementById('users-tbody');
-    const totalUsersEl = document.getElementById('total-users');
+    
+    let toolsChartInstance = null;
+    let growthChartInstance = null;
 
-    let sessionPassword = sessionStorage.getItem('admin_pass') || '';
+    // Check Session
+    let sessionPass = sessionStorage.getItem('admin_pass') || '';
+    if (sessionPass) fetchDashboardData(sessionPass);
 
-    // Check if already logged in this session
-    if (sessionPassword) {
-        fetchUsers(sessionPassword);
-    }
+    loginBtn.onclick = () => {
+        if(passInput.value) fetchDashboardData(passInput.value);
+    };
+    passInput.onkeypress = (e) => { if(e.key === 'Enter') loginBtn.click(); };
 
-    loginBtn.addEventListener('click', () => {
-        const pass = passwordInput.value;
-        if (!pass) return;
-        
-        loginBtn.innerHTML = '<span style="opacity:0.7">Connecting...</span>';
-        loginBtn.disabled = true;
-        fetchUsers(pass);
-    });
-
-    passwordInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') loginBtn.click();
-    });
-
-    logoutBtn.addEventListener('click', () => {
+    document.getElementById('logout-btn').onclick = () => {
         sessionStorage.removeItem('admin_pass');
-        sessionPassword = '';
-        passwordInput.value = '';
-        dashboardView.style.display = 'none';
-        loginView.style.display = 'block';
-    });
+        window.location.reload();
+    };
 
-    async function fetchUsers(password) {
+    async function fetchDashboardData(password) {
         try {
+            loginBtn.textContent = 'Connecting...';
             const res = await fetch('/api/admin/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password })
             });
 
-            if (!res.ok) {
-                throw new Error('Unauthorized');
-            }
-
+            if (!res.ok) throw new Error('Unauthorized');
             const users = await res.json();
             
-            // Success
             sessionStorage.setItem('admin_pass', password);
-            errorMsg.style.display = 'none';
             loginView.style.display = 'none';
-            dashboardView.style.display = 'block';
+            dashboard.style.display = 'block';
             
-            renderUsers(users);
+            processData(users);
 
-        } catch (err) {
+        } catch(e) {
             errorMsg.style.display = 'block';
             sessionStorage.removeItem('admin_pass');
-        } finally {
             loginBtn.textContent = 'Initialize Connection';
-            loginBtn.disabled = false;
         }
     }
 
-    function renderUsers(users) {
-        totalUsersEl.textContent = users.length;
+    function processData(users) {
+        // 1. Calculate Stats
+        let totalTime = 0;
+        let totalTools = 0;
+        let toolCounts = {};
+        let dates = {};
+
+        const tbody = document.getElementById('user-tbody');
         tbody.innerHTML = '';
-        
-        users.forEach(user => {
+
+        users.forEach(u => {
+            // Stats aggregation
+            totalTime += (u.totalTimeSpentSeconds || 0);
+            totalTools += (u.toolsUsedCount || 0);
+            
+            if(u.toolUsageHistory) {
+                u.toolUsageHistory.forEach(t => {
+                    toolCounts[t.toolName] = (toolCounts[t.toolName] || 0) + 1;
+                });
+            }
+
+            const dateStr = new Date(u.createdAt).toLocaleDateString();
+            dates[dateStr] = (dates[dateStr] || 0) + 1;
+
+            // Table row
             const tr = document.createElement('tr');
+            const avatar = u.avatar || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394A3B8'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E`;
             
-            const joined = new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            let timeMins = Math.floor((u.totalTimeSpentSeconds || 0) / 60);
+            let activeStr = timeMins > 60 ? (timeMins/60).toFixed(1) + ' hrs' : timeMins + ' mins';
+            let logoutStr = u.lastLogout ? new Date(u.lastLogout).toLocaleDateString() : 'Active';
             
-            const defaultAvatar = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23334155'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E`;
-            
+            let recentTools = u.toolUsageHistory && u.toolUsageHistory.length > 0 
+                ? u.toolUsageHistory.slice(-3).map(t => t.toolName).join(', ') 
+                : 'No tools used yet';
+
             tr.innerHTML = `
                 <td>
-                    <div class="user-info">
-                        <img src="${user.avatar || defaultAvatar}" class="avatar" alt="avatar" onerror="this.src='${defaultAvatar}'">
-                        <span class="user-name">${user.name}</span>
+                    <img src="${avatar}" class="avatar">
+                    <div style="display:inline-block; vertical-align:middle;">
+                        <span class="user-name">${u.name}</span>
+                        <span class="user-email">${u.email}</span>
                     </div>
                 </td>
-                <td style="color: var(--text-secondary); font-family: monospace; font-size: 14px;">${user.email}</td>
-                <td style="color: var(--text-secondary);">${joined}</td>
+                <td class="sub-text">
+                    Time: ${activeStr}<br>
+                    Logouts: ${u.logoutCount || 0}
+                </td>
+                <td class="sub-text">${recentTools}</td>
                 <td><span class="badge">Verified</span></td>
             `;
             tbody.appendChild(tr);
+        });
+
+        // Update DOM Stats
+        document.getElementById('stat-users').textContent = users.length;
+        document.getElementById('stat-time').textContent = Math.floor(totalTime/3600) + ' hrs';
+        document.getElementById('stat-tools').textContent = users.length ? (totalTools / users.length).toFixed(1) : 0;
+
+        // Render Charts
+        renderCharts(toolCounts, dates);
+    }
+
+    function renderCharts(toolCounts, dates) {
+        Chart.defaults.color = '#94A3B8';
+        Chart.defaults.font.family = "'Outfit', sans-serif";
+
+        // Pie Chart
+        const toolNames = Object.keys(toolCounts);
+        const toolValues = Object.values(toolCounts);
+        
+        if(toolsChartInstance) toolsChartInstance.destroy();
+        toolsChartInstance = new Chart(document.getElementById('toolsChart'), {
+            type: 'doughnut',
+            data: {
+                labels: toolNames.length ? toolNames : ['No Data'],
+                datasets: [{
+                    data: toolValues.length ? toolValues : [1],
+                    backgroundColor: ['#38BDF8', '#818CF8', '#34D399', '#F472B6', '#FBBF24'],
+                    borderWidth: 0,
+                    cutout: '70%'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+        });
+
+        // Line Chart
+        const dateLabels = Object.keys(dates).reverse(); // simple chronological approximation
+        const dateValues = Object.values(dates).reverse();
+
+        if(growthChartInstance) growthChartInstance.destroy();
+        growthChartInstance = new Chart(document.getElementById('growthChart'), {
+            type: 'line',
+            data: {
+                labels: dateLabels.length ? dateLabels : ['Today'],
+                datasets: [{
+                    label: 'New Users',
+                    data: dateValues.length ? dateValues : [0],
+                    borderColor: '#38BDF8',
+                    backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
         });
     }
 </script>
