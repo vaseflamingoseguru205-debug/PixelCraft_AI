@@ -1374,6 +1374,63 @@ body::after {
   .controls-row {
     flex-wrap: wrap;
   }
+
+  /* Pop-up Modal Mobile Fixes (Max 768px) */
+  div[id$="-modal"] > div {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important; /* CRITICAL: Prevent horizontal column wrapping */
+    padding: 24px 16px !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    width: 90% !important;
+    max-width: 90% !important;
+    gap: 20px !important;
+    box-sizing: border-box !important;
+    margin: 0 auto !important;
+  }
+  
+  /* Hide Info Card on Mobile for a Compact Modern Pop-up */
+  #home-key-modal > div > div:first-child {
+    display: none !important;
+  }
+  
+  /* Target the main form card */
+  #home-key-modal > div > div:last-child {
+    min-width: 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 20px 16px !important;
+    flex: none !important;
+    box-sizing: border-box !important;
+    border-radius: 16px !important;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%) !important;
+  }
+  
+  /* Compact Modal Typography & Spacing */
+  div[id$="-modal"] h3 {
+    font-size: 1.25rem !important;
+    margin-bottom: 10px !important;
+  }
+  div[id$="-modal"] p {
+    font-size: 0.85rem !important;
+    margin-bottom: 15px !important;
+    line-height: 1.4 !important;
+  }
+  div[id$="-modal"] input {
+    padding: 10px 12px !important;
+    font-size: 0.95rem !important;
+  }
+  div[id$="-modal"] button[type="submit"] {
+    padding: 12px !important;
+    font-size: 1rem !important;
+    margin-top: 5px !important;
+  }
+  #home-key-modal > div {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
 }
 
 /* ULTRA MOBILE OPTIMIZATION (350px - 500px) */
@@ -1408,13 +1465,15 @@ body::after {
   .section-header h2 { font-size: 1.8rem !important; margin-bottom: 12px !important; }
   .section-header p { font-size: 0.95rem !important; }
 
-  /* 3. Button Optimization (Avoiding them looking too big/thick) */
+  /* 3. Button Optimization */
   .btn, .btn-primary, .btn-secondary {
-    padding: 12px 20px !important;
-    font-size: 0.95rem !important;
-    width: 100% !important; /* Spreading button width on mobile looks standard */
+    padding: 14px 28px !important;
+    font-size: 1rem !important;
+    width: auto !important; /* Naturally thick and satisfying width */
     justify-content: center !important;
-    border-radius: 12px !important;
+    border-radius: 14px !important;
+    display: inline-flex !important;
+    box-shadow: 0 4px 15px rgba(26, 86, 219, 0.4) !important;
   }
 
   /* 4. Form Components */
