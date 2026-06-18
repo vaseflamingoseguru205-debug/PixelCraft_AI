@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const oldId = '6696712816082259';
-const newId = '6696712816082259';
+const oldId = '3788374704176398';
+const newId = '3788374704176398';
 
 function replaceInFile(filePath) {
   try {

@@ -4,7 +4,7 @@ const path = require('path');
 const toolsDir = path.join(__dirname, 'public', 'tools');
 const files = fs.readdirSync(toolsDir).filter(f => f.endsWith('.html'));
 
-const adsenseId = 'ca-pub-6696712816082259';
+const adsenseId = 'ca-pub-3788374704176398';
 const analyticsId = 'G-V78ZLHJLR8';
 
 const report = [];

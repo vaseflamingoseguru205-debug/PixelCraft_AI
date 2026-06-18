@@ -14,7 +14,7 @@ const analyticsSnippet = `
 `;
 
 const adsenseSnippet = `
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6696712816082259"
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3788374704176398"
      crossorigin="anonymous"></script>
 `;
 
@@ -29,7 +29,7 @@ function patchFile(filepath) {
   if (!content.includes('G-V78ZLHJLR8')) {
     content = content.replace('</head>', `${analyticsSnippet}</head>`);
   }
-  if (!content.includes('ca-pub-6696712816082259')) {
+  if (!content.includes('ca-pub-3788374704176398')) {
     content = content.replace('</head>', `${adsenseSnippet}</head>`);
   }
   if (!content.includes('rel="canonical"')) {
