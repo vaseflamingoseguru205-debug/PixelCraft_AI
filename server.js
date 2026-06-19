@@ -70,25 +70,74 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID || 'dummy-client-id-to-prevent-crash',
   clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy-client-secret',
   callbackURL: "/auth/google/callback",
-  proxy: true // Necessary for HTTPS on Render
+  proxy: true, // Necessary for HTTPS on Render
+  passReqToCallback: true
 },
-  async (accessToken, refreshToken, profile, done) => {
+  async (req, accessToken, refreshToken, profile, done) => {
     try {
+      // Parse User-Agent
+      const ua = req.headers['user-agent'] || '';
+      let deviceType = 'Desktop';
+      if (/mobile/i.test(ua)) deviceType = 'Mobile';
+      if (/tablet|ipad|playbook|silk/i.test(ua)) deviceType = 'Tablet';
+      
+      let os = 'Unknown';
+      if (/windows/i.test(ua)) os = 'Windows';
+      else if (/mac/i.test(ua)) os = 'MacOS';
+      else if (/linux/i.test(ua)) os = 'Linux';
+      else if (/android/i.test(ua)) os = 'Android';
+      else if (/ios|iphone|ipad/i.test(ua)) os = 'iOS';
+
+      let browser = 'Unknown';
+      if (/chrome|crios|crmo/i.test(ua)) browser = 'Chrome';
+      else if (/firefox|fxios/i.test(ua)) browser = 'Firefox';
+      else if (/safari/i.test(ua)) browser = 'Safari';
+      else if (/opr\//i.test(ua)) browser = 'Opera';
+      else if (/edg/i.test(ua)) browser = 'Edge';
+
+      // Parse IP
+      let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown';
+      if (ip && ip.includes(',')) ip = ip.split(',')[0].trim();
+
       // Find or create user
       let user = await User.findOne({ googleId: profile.id });
       if (!user) {
-        user = await User.create({
+        user = new User({
           googleId: profile.id,
           name: profile.displayName,
           email: profile.emails && profile.emails.length > 0 ? profile.emails[0].value : 'no-email@provided.com',
           avatar: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : ''
         });
         console.log("New user registered:", user.email);
-      } else {
-        // Option to update last login / traffic logic can go here
-        user.lastLogin = Date.now();
-        await user.save();
       }
+      
+      // Update tracking data on every login
+      user.lastLogin = Date.now();
+      user.lastLoginIp = ip;
+      user.deviceType = deviceType;
+      user.os = os;
+      user.browser = browser;
+
+      // Async fetch location
+      if (ip && ip !== 'Unknown' && ip !== '::1' && ip !== '127.0.0.1') {
+        try {
+            const locRes = await fetch(`http://ip-api.com/json/${ip}?fields=status,country,city,isp`);
+            const locData = await locRes.json();
+            if (locData.status === 'success') {
+                user.country = locData.country || 'Unknown';
+                user.city = locData.city || 'Unknown';
+                user.isp = locData.isp || 'Unknown';
+            }
+        } catch (e) {
+            console.error("IP Lookup failed:", e.message);
+        }
+      } else if (ip === '::1' || ip === '127.0.0.1') {
+          user.country = 'Localhost';
+          user.city = 'Local';
+          user.isp = 'Local Network';
+      }
+
+      await user.save();
       return done(null, user);
     } catch (err) {
       console.error("🔴 Google Auth Error (Check MongoDB connection!):", err.message);

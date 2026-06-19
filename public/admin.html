@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PixelCraft AI - Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>PixelCraft AI - Control Room</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg: #0B1120;
-            --surface: rgba(30, 41, 59, 0.4);
-            --surface-hover: rgba(51, 65, 85, 0.6);
-            --border: rgba(255, 255, 255, 0.08);
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-            --accent: #38BDF8;
-            --success: #10B981;
+            --bg: #050b14;
+            --surface: rgba(16, 25, 43, 0.6);
+            --surface-hover: rgba(30, 45, 75, 0.8);
+            --border: rgba(0, 242, 254, 0.2);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #00f2fe;
+            --accent-glow: rgba(0, 242, 254, 0.4);
+            --success: #10b981;
+            --danger: #ef4444;
         }
 
         * { box-sizing: border-box; }
@@ -27,17 +29,20 @@
             margin: 0;
             min-height: 100vh;
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.03) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 40%);
+                linear-gradient(rgba(0, 242, 254, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 254, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            overflow-x: hidden;
         }
 
         .glass-panel {
             background: var(--surface);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 242, 254, 0.05);
         }
 
         /* LOGIN SCREEN */
@@ -50,51 +55,72 @@
         
         .login-box {
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             text-align: center;
+            position: relative;
+        }
+        
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, var(--accent), transparent, var(--accent));
+            z-index: -1;
+            border-radius: 18px;
+            animation: borderGlow 3s linear infinite;
         }
 
-        .login-box h1 { margin-bottom: 8px; font-weight: 600; }
-        .login-box p { color: var(--text-muted); margin-bottom: 30px; }
+        @keyframes borderGlow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .login-box h1 { margin-bottom: 8px; font-weight: 700; color: #fff; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 10px var(--accent-glow); }
+        .login-box p { color: var(--accent); margin-bottom: 30px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
 
         input[type="password"] {
             width: 100%;
-            padding: 14px 20px;
-            background: rgba(15, 23, 42, 0.6);
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.5);
             border: 1px solid var(--border);
             border-radius: 12px;
-            color: white;
-            font-family: monospace;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
             font-size: 16px;
             margin-bottom: 20px;
             outline: none;
             transition: 0.3s;
+            text-align: center;
+            letter-spacing: 5px;
         }
-        input[type="password"]:focus { border-color: var(--accent); }
+        input[type="password"]:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
 
         .btn-primary {
             width: 100%;
-            padding: 14px;
-            background: var(--accent);
-            color: #0F172A;
-            border: none;
+            padding: 16px;
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
             border-radius: 12px;
             font-weight: 600;
             font-size: 16px;
+            font-family: 'JetBrains Mono', monospace;
             cursor: pointer;
             transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
-        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-primary:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent-glow); }
 
         #error-msg {
-            color: #ef4444; margin-top: 15px; font-size: 14px; display: none;
+            color: var(--danger); margin-top: 15px; font-size: 14px; display: none; font-family: 'JetBrains Mono', monospace; text-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
         }
 
         /* DASHBOARD */
         #dashboard {
             display: none;
             padding: 40px 5%;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -103,18 +129,20 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
         }
 
-        .dash-title h1 { margin: 0; font-size: 28px; }
-        .dash-title span { color: var(--success); font-size: 14px; display: flex; align-items: center; gap: 6px; margin-top: 4px; }
-        .pulse { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: blink 2s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .dash-title h1 { margin: 0; font-size: 32px; color: #fff; text-shadow: 0 0 15px var(--accent-glow); text-transform: uppercase; letter-spacing: 2px; }
+        .dash-title span { color: var(--accent); font-size: 14px; display: flex; align-items: center; gap: 8px; margin-top: 8px; font-family: 'JetBrains Mono', monospace; }
+        .pulse { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 15px var(--accent); animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
 
         .btn-logout {
-            background: transparent; border: 1px solid var(--border); color: var(--text-muted);
-            padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: 0.3s;
+            background: transparent; border: 1px solid var(--danger); color: var(--danger);
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;
         }
-        .btn-logout:hover { border-color: #ef4444; color: #ef4444; }
+        .btn-logout:hover { background: var(--danger); color: #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
 
         .grid-stats {
             display: grid;
@@ -123,8 +151,9 @@
             margin-bottom: 30px;
         }
 
-        .stat-card h3 { margin: 0 0 10px 0; font-size: 14px; color: var(--text-muted); font-weight: 500; }
-        .stat-card .value { font-size: 32px; font-weight: 700; margin: 0; }
+        .stat-card { border-left: 4px solid var(--accent); }
+        .stat-card h3 { margin: 0 0 10px 0; font-size: 13px; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card .value { font-size: 36px; font-weight: 700; margin: 0; color: #fff; font-family: 'JetBrains Mono', monospace; }
 
         .grid-charts {
             display: grid;
@@ -136,18 +165,66 @@
         
         .chart-container { position: relative; height: 300px; width: 100%; }
 
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 16px; border-bottom: 1px solid var(--border); }
-        th { color: var(--text-muted); font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: rgba(255,255,255,0.02); }
+        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; text-align: left; }
+        th { padding: 0 16px 10px 16px; color: var(--accent); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; }
+        td { padding: 16px; background: rgba(0,0,0,0.3); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); transition: 0.2s; cursor: pointer; }
+        td:first-child { border-left: 1px solid var(--border); border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+        td:last-child { border-right: 1px solid var(--border); border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+        
+        tr:hover td { background: var(--surface-hover); box-shadow: inset 0 0 20px var(--accent-glow); transform: scale(1.01); }
 
-        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 12px; vertical-align: middle; }
-        .user-name { font-weight: 500; }
+        .avatar { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; margin-right: 16px; vertical-align: middle; border: 1px solid var(--border); }
+        .user-name { font-weight: 600; font-size: 1.05rem; color: #fff; }
         .user-email { color: var(--text-muted); font-size: 13px; display: block; margin-top: 4px; }
-        .sub-text { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
-        .badge { background: rgba(56, 189, 248, 0.1); color: var(--accent); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;}
+        .sub-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+        .highlight { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px;}
+        
+        /* User Drawer Modal */
+        #user-drawer {
+            position: fixed;
+            top: 0; right: -500px;
+            width: 450px; height: 100vh;
+            background: rgba(10, 15, 30, 0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-left: 1px solid var(--accent);
+            box-shadow: -10px 0 40px rgba(0,0,0,0.8);
+            z-index: 100000;
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+            padding: 40px 30px;
+        }
+        
+        #user-drawer.open { right: 0; }
+        
+        .drawer-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.6); z-index: 99999; display: none; backdrop-filter: blur(4px);
+        }
+        .drawer-overlay.open { display: block; }
 
+        .drawer-close {
+            position: absolute; top: 20px; right: 20px;
+            background: transparent; border: none; color: var(--text-muted);
+            font-size: 28px; cursor: pointer; transition: 0.3s;
+        }
+        .drawer-close:hover { color: var(--danger); transform: rotate(90deg); }
+
+        .drawer-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px dashed var(--border); }
+        .drawer-avatar { width: 100px; height: 100px; border-radius: 20px; border: 2px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow); margin-bottom: 15px; }
+        .drawer-name { font-size: 24px; color: #fff; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 1px;}
+        .drawer-email { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 14px; margin: 0; }
+
+        .data-group { margin-bottom: 25px; }
+        .data-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px; }
+        .data-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; align-items: center; }
+        .data-label { color: #cbd5e1; }
+        .data-val { color: #fff; font-family: 'JetBrains Mono', monospace; text-align: right; background: rgba(0,242,254,0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(0,242,254,0.2); }
+        .val-highlight { color: var(--accent); }
+
+        @media (max-width: 600px) {
+            #user-drawer { width: 100%; right: -100%; border-left: none; }
+        }
     </style>
 </head>
 <body>
@@ -156,10 +233,10 @@
 <div class="login-wrapper" id="login-view">
     <div class="glass-panel login-box">
         <h1>Command Center</h1>
-        <p>PixelCraft Administrative Access</p>
-        <input type="password" id="admin-pass" placeholder="Enter API Key..." autocomplete="off">
-        <button class="btn-primary" id="login-btn">Initialize Connection</button>
-        <div id="error-msg">Invalid Credentials</div>
+        <p>SECURE TELEMETRY ACCESS</p>
+        <input type="password" id="admin-pass" placeholder="ENTER ACCESS KEY" autocomplete="off">
+        <button class="btn-primary" id="login-btn">Initialize Link</button>
+        <div id="error-msg">ACCESS DENIED.</div>
     </div>
 </div>
 
@@ -167,24 +244,24 @@
 <div id="dashboard">
     <div class="dash-header">
         <div class="dash-title">
-            <h1>Platform Overview</h1>
-            <span><div class="pulse"></div> System Live & Analytics Active</span>
+            <h1>Global Telemetry Hub</h1>
+            <span><div class="pulse"></div> UPLINK SECURE // LIVE TRACKING</span>
         </div>
-        <button class="btn-logout" id="logout-btn">End Session</button>
+        <button class="btn-logout" id="logout-btn">Terminate Session</button>
     </div>
 
     <!-- Stats -->
     <div class="grid-stats">
         <div class="glass-panel stat-card">
-            <h3>Total Users</h3>
+            <h3>Registered Entities</h3>
             <p class="value" id="stat-users">0</p>
         </div>
         <div class="glass-panel stat-card">
-            <h3>Total Time Active</h3>
+            <h3>Total Compute Time</h3>
             <p class="value" id="stat-time">0 hrs</p>
         </div>
         <div class="glass-panel stat-card">
-            <h3>Avg. Tools Used / User</h3>
+            <h3>Engagement Ratio</h3>
             <p class="value" id="stat-tools">0.0</p>
         </div>
     </div>
@@ -192,13 +269,13 @@
     <!-- Charts -->
     <div class="grid-charts">
         <div class="glass-panel">
-            <h3 style="margin-top:0; color:var(--text-muted); font-size:15px;">Most Popular Tools</h3>
+            <h3 style="margin-top:0; color:var(--accent); font-size:13px; text-transform:uppercase; letter-spacing:1px; margin-bottom: 15px;">Vector Utilization</h3>
             <div class="chart-container">
                 <canvas id="toolsChart"></canvas>
             </div>
         </div>
         <div class="glass-panel">
-            <h3 style="margin-top:0; color:var(--text-muted); font-size:15px;">User Registrations (Timeline)</h3>
+            <h3 style="margin-top:0; color:var(--accent); font-size:13px; text-transform:uppercase; letter-spacing:1px; margin-bottom: 15px;">Entity Acquisition Rate</h3>
             <div class="chart-container">
                 <canvas id="growthChart"></canvas>
             </div>
@@ -207,14 +284,14 @@
 
     <!-- Table -->
     <div class="glass-panel">
-        <h3 style="margin-top:0; margin-bottom:20px; color:var(--text-main);">User Database</h3>
+        <h3 style="margin-top:0; margin-bottom:20px; color:var(--text-main); font-size: 20px; text-transform: uppercase; letter-spacing: 1px;">Entity Database</h3>
         <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
-                        <th>User Profile</th>
-                        <th>Activity Stats</th>
-                        <th>Tool History</th>
+                        <th>Identity</th>
+                        <th>Device Vector</th>
+                        <th>Geolocation</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -226,6 +303,43 @@
     </div>
 </div>
 
+<!-- Drawer Overlay -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+
+<!-- Drawer Modal -->
+<div id="user-drawer">
+    <button class="drawer-close" id="drawer-close">&times;</button>
+    
+    <div class="drawer-header">
+        <img src="" id="d-avatar" class="drawer-avatar">
+        <h2 class="drawer-name" id="d-name">John Doe</h2>
+        <p class="drawer-email" id="d-email">john@example.com</p>
+    </div>
+
+    <div class="data-group">
+        <div class="data-title">Network & Location Intel</div>
+        <div class="data-row"><span class="data-label">IP Address</span><span class="data-val" id="d-ip">192.168.1.1</span></div>
+        <div class="data-row"><span class="data-label">City</span><span class="data-val" id="d-city">Unknown</span></div>
+        <div class="data-row"><span class="data-label">Country</span><span class="data-val" id="d-country">Unknown</span></div>
+        <div class="data-row"><span class="data-label">ISP / Carrier</span><span class="data-val" id="d-isp">Unknown</span></div>
+    </div>
+
+    <div class="data-group">
+        <div class="data-title">Hardware & Software Vector</div>
+        <div class="data-row"><span class="data-label">Device Class</span><span class="data-val" id="d-device">Desktop</span></div>
+        <div class="data-row"><span class="data-label">Operating System</span><span class="data-val" id="d-os">Windows</span></div>
+        <div class="data-row"><span class="data-label">Client Browser</span><span class="data-val" id="d-browser">Chrome</span></div>
+    </div>
+
+    <div class="data-group">
+        <div class="data-title">Engagement Metrics</div>
+        <div class="data-row"><span class="data-label">Account Created</span><span class="data-val val-highlight" id="d-created">2026-06-19</span></div>
+        <div class="data-row"><span class="data-label">Last Ping</span><span class="data-val val-highlight" id="d-last">2 mins ago</span></div>
+        <div class="data-row"><span class="data-label">Total Time Active</span><span class="data-val" id="d-time">5 hrs</span></div>
+        <div class="data-row"><span class="data-label">Tools Executed</span><span class="data-val" id="d-toolscount">12</span></div>
+    </div>
+</div>
+
 <script>
     const loginView = document.getElementById('login-view');
     const dashboard = document.getElementById('dashboard');
@@ -233,8 +347,14 @@
     const passInput = document.getElementById('admin-pass');
     const errorMsg = document.getElementById('error-msg');
     
+    // Drawer elements
+    const drawer = document.getElementById('user-drawer');
+    const overlay = document.getElementById('drawer-overlay');
+    const drawerCloseBtn = document.getElementById('drawer-close');
+
     let toolsChartInstance = null;
     let growthChartInstance = null;
+    let usersData = [];
 
     // Check Session
     let sessionPass = sessionStorage.getItem('admin_pass') || '';
@@ -250,33 +370,74 @@
         window.location.reload();
     };
 
+    function closeDrawer() {
+        drawer.classList.remove('open');
+        overlay.classList.remove('open');
+    }
+
+    drawerCloseBtn.onclick = closeDrawer;
+    overlay.onclick = closeDrawer;
+
     async function fetchDashboardData(password) {
         try {
-            loginBtn.textContent = 'Connecting...';
+            loginBtn.textContent = 'AUTHENTICATING...';
             const res = await fetch('/api/admin/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password })
             });
 
-            if (!res.ok) throw new Error('Unauthorized');
-            const users = await res.json();
+            if (res.status === 401) throw new Error('ACCESS DENIED. INVALID KEY.');
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || 'DATABASE CONNECTION FAILED.');
+            }
+            
+            usersData = await res.json();
             
             sessionStorage.setItem('admin_pass', password);
             loginView.style.display = 'none';
             dashboard.style.display = 'block';
             
-            processData(users);
+            processData(usersData);
 
         } catch(e) {
+            errorMsg.textContent = e.message;
             errorMsg.style.display = 'block';
             sessionStorage.removeItem('admin_pass');
-            loginBtn.textContent = 'Initialize Connection';
+            loginBtn.textContent = 'Initialize Link';
         }
     }
 
+    function openUserDrawer(index) {
+        const u = usersData[index];
+        if(!u) return;
+
+        document.getElementById('d-avatar').src = u.avatar || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f2fe'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E`;
+        document.getElementById('d-name').textContent = u.name || 'Unknown';
+        document.getElementById('d-email').textContent = u.email || 'Unknown';
+
+        document.getElementById('d-ip').textContent = u.lastLoginIp || 'Unknown';
+        document.getElementById('d-city').textContent = u.city || 'Unknown';
+        document.getElementById('d-country').textContent = u.country || 'Unknown';
+        document.getElementById('d-isp').textContent = u.isp || 'Unknown';
+
+        document.getElementById('d-device').textContent = u.deviceType || 'Unknown';
+        document.getElementById('d-os').textContent = u.os || 'Unknown';
+        document.getElementById('d-browser').textContent = u.browser || 'Unknown';
+
+        document.getElementById('d-created').textContent = new Date(u.createdAt).toLocaleDateString();
+        document.getElementById('d-last').textContent = new Date(u.lastLogin).toLocaleString();
+        
+        let timeMins = Math.floor((u.totalTimeSpentSeconds || 0) / 60);
+        document.getElementById('d-time').textContent = timeMins > 60 ? (timeMins/60).toFixed(1) + ' hrs' : timeMins + ' mins';
+        document.getElementById('d-toolscount').textContent = u.toolsUsedCount || 0;
+
+        drawer.classList.add('open');
+        overlay.classList.add('open');
+    }
+
     function processData(users) {
-        // 1. Calculate Stats
         let totalTime = 0;
         let totalTools = 0;
         let toolCounts = {};
@@ -285,8 +446,7 @@
         const tbody = document.getElementById('user-tbody');
         tbody.innerHTML = '';
 
-        users.forEach(u => {
-            // Stats aggregation
+        users.forEach((u, idx) => {
             totalTime += (u.totalTimeSpentSeconds || 0);
             totalTools += (u.toolsUsedCount || 0);
             
@@ -299,17 +459,13 @@
             const dateStr = new Date(u.createdAt).toLocaleDateString();
             dates[dateStr] = (dates[dateStr] || 0) + 1;
 
-            // Table row
             const tr = document.createElement('tr');
-            const avatar = u.avatar || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394A3B8'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E`;
+            tr.onclick = () => openUserDrawer(idx);
+
+            const avatar = u.avatar || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f2fe'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E`;
             
-            let timeMins = Math.floor((u.totalTimeSpentSeconds || 0) / 60);
-            let activeStr = timeMins > 60 ? (timeMins/60).toFixed(1) + ' hrs' : timeMins + ' mins';
-            let logoutStr = u.lastLogout ? new Date(u.lastLogout).toLocaleDateString() : 'Active';
-            
-            let recentTools = u.toolUsageHistory && u.toolUsageHistory.length > 0 
-                ? u.toolUsageHistory.slice(-3).map(t => t.toolName).join(', ') 
-                : 'No tools used yet';
+            const deviceVector = `<span class="highlight">${u.deviceType || 'Unknown'} / ${u.os || 'Unknown'}</span>`;
+            const geoInfo = `<span class="highlight">${u.city || 'Unknown'}, ${u.country || 'Unknown'}</span>`;
 
             tr.innerHTML = `
                 <td>
@@ -319,30 +475,24 @@
                         <span class="user-email">${u.email}</span>
                     </div>
                 </td>
-                <td class="sub-text">
-                    Time: ${activeStr}<br>
-                    Logouts: ${u.logoutCount || 0}
-                </td>
-                <td class="sub-text">${recentTools}</td>
-                <td><span class="badge">Verified</span></td>
+                <td class="sub-text">${deviceVector}</td>
+                <td class="sub-text">${geoInfo}</td>
+                <td><span class="highlight" style="font-size:11px; padding: 4px 8px; border: 1px solid var(--border); border-radius: 8px;">TRACKED</span></td>
             `;
             tbody.appendChild(tr);
         });
 
-        // Update DOM Stats
         document.getElementById('stat-users').textContent = users.length;
         document.getElementById('stat-time').textContent = Math.floor(totalTime/3600) + ' hrs';
         document.getElementById('stat-tools').textContent = users.length ? (totalTools / users.length).toFixed(1) : 0;
 
-        // Render Charts
         renderCharts(toolCounts, dates);
     }
 
     function renderCharts(toolCounts, dates) {
-        Chart.defaults.color = '#94A3B8';
-        Chart.defaults.font.family = "'Outfit', sans-serif";
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = "'JetBrains Mono', monospace";
 
-        // Pie Chart
         const toolNames = Object.keys(toolCounts);
         const toolValues = Object.values(toolCounts);
         
@@ -353,16 +503,16 @@
                 labels: toolNames.length ? toolNames : ['No Data'],
                 datasets: [{
                     data: toolValues.length ? toolValues : [1],
-                    backgroundColor: ['#38BDF8', '#818CF8', '#34D399', '#F472B6', '#FBBF24'],
-                    borderWidth: 0,
-                    cutout: '70%'
+                    backgroundColor: ['#00f2fe', '#4facfe', '#34d399', '#f472b6', '#fbbf24'],
+                    borderWidth: 1,
+                    borderColor: '#050b14',
+                    cutout: '75%'
                 }]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
         });
 
-        // Line Chart
-        const dateLabels = Object.keys(dates).reverse(); // simple chronological approximation
+        const dateLabels = Object.keys(dates).reverse(); 
         const dateValues = Object.values(dates).reverse();
 
         if(growthChartInstance) growthChartInstance.destroy();
@@ -371,11 +521,12 @@
             data: {
                 labels: dateLabels.length ? dateLabels : ['Today'],
                 datasets: [{
-                    label: 'New Users',
+                    label: 'Entities Registered',
                     data: dateValues.length ? dateValues : [0],
-                    borderColor: '#38BDF8',
-                    backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                    tension: 0.4,
+                    borderColor: '#00f2fe',
+                    backgroundColor: 'rgba(0, 242, 254, 0.15)',
+                    borderWidth: 2,
+                    tension: 0.3,
                     fill: true
                 }]
             },

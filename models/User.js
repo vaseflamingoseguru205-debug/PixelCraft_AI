@@ -19,8 +19,31 @@ const UserSchema = new mongoose.Schema({
     type: String
   },
   country: {
-    // Captured optionally using client-side geolocation or IP services later
     type: String, 
+    default: 'Unknown'
+  },
+  city: {
+    type: String,
+    default: 'Unknown'
+  },
+  isp: {
+    type: String,
+    default: 'Unknown'
+  },
+  lastLoginIp: {
+    type: String,
+    default: 'Unknown'
+  },
+  deviceType: {
+    type: String,
+    default: 'Unknown'
+  },
+  os: {
+    type: String,
+    default: 'Unknown'
+  },
+  browser: {
+    type: String,
     default: 'Unknown'
   },
   toolsUsedCount: {
