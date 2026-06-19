@@ -638,8 +638,7 @@ app.use((req, res, next) => {
   res.redirect('/login.html');
 });
 */
-const nodemailer = require('nodemailer');
-const transporter = nodemailer.createTransport({
+const adminTransporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.EMAIL_USER,
@@ -728,7 +727,7 @@ app.post('/api/admin/ban', async (req, res) => {
                     </div>
                 </div>`
             };
-            transporter.sendMail(mailOptions).catch(err => console.error("Email send failed:", err));
+            adminTransporter.sendMail(mailOptions).catch(err => console.error("Email send failed:", err));
         }
     } else {
         user.banUntil = null;
@@ -776,7 +775,7 @@ app.post('/api/admin/warn', async (req, res) => {
                 </div>
             </div>`
         };
-        transporter.sendMail(mailOptions).catch(err => console.error("Email send failed:", err));
+        adminTransporter.sendMail(mailOptions).catch(err => console.error("Email send failed:", err));
     }
     
     res.json({ success: true });
