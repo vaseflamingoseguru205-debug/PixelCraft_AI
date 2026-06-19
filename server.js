@@ -65,6 +65,79 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
+// GLOBAL BAN ENFORCEMENT MIDDLEWARE
+app.use(async (req, res, next) => {
+    if (req.isAuthenticated() && req.user) {
+        if (req.user.isBanned) {
+            // Check if temporary ban has expired
+            if (req.user.banUntil && req.user.banUntil <= Date.now()) {
+                try {
+                    req.user.isBanned = false;
+                    req.user.banUntil = null;
+                    req.user.banReason = '';
+                    await req.user.save();
+                    return next();
+                } catch(e) { console.error("Error auto-unbanning:", e); }
+            } else {
+                // User is still banned. Block them!
+                if (req.path.startsWith('/api/admin/')) {
+                    return next(); // Don't block admin routes just in case
+                }
+                
+                // Allow static assets so the page doesn't look completely broken, but block HTML and APIs
+                if (req.path.endsWith('.css') || req.path.endsWith('.js') || req.path.endsWith('.png') || req.path.endsWith('.svg') || req.path.endsWith('.ico')) {
+                    return next();
+                }
+
+                if (req.path.startsWith('/api/')) {
+                    return res.status(403).json({ error: "Your account is suspended." });
+                }
+                
+                if (req.path === '/admin.html') {
+                    return next(); // Let admin.html load
+                }
+
+                const untilStr = req.user.banUntil ? req.user.banUntil.toLocaleString() : 'Permanent';
+                const reason = req.user.banReason || 'Violation of Guidelines';
+
+                return res.send(`
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head><title>Account Suspended</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+                    <style>
+                        body { background-color: #050b14; color: #ef4444; font-family: 'Outfit', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; background-image: radial-gradient(circle at center, rgba(239,68,68,0.1) 0%, transparent 70%); }
+                        .box { background: rgba(20,20,30,0.8); border: 1px solid #ef4444; padding: 40px; border-radius: 16px; box-shadow: 0 0 40px rgba(239,68,68,0.2); max-width: 500px; width: 90%; }
+                        h1 { font-size: 32px; margin-top: 0; text-transform: uppercase; letter-spacing: 2px; }
+                        p { color: #e2e8f0; line-height: 1.6; font-size: 16px; margin-bottom: 25px; }
+                        .details { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border-left: 4px solid #ef4444; text-align: left; }
+                        .details span { display: block; margin-bottom: 8px; font-size: 14px; }
+                        .details b { color: #ef4444; }
+                        .btn { background: transparent; border: 1px solid #94a3b8; color: #94a3b8; padding: 10px 20px; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; transition: 0.3s; }
+                        .btn:hover { background: #94a3b8; color: #000; }
+                    </style>
+                    </head>
+                    <body>
+                        <div class="box">
+                            <h1>🚨 ACCESS REVOKED</h1>
+                            <p>Your connection to PixelCraft AI has been suspended due to suspicious activity or a violation of our terms.</p>
+                            <div class="details">
+                                <span><b>REASON:</b> ${reason}</span>
+                                <span><b>EXPIRES:</b> ${untilStr}</span>
+                            </div>
+                            <br>
+                            <a href="/auth/google" class="btn">Check Status / Switch Account</a>
+                        </div>
+                    </body>
+                    </html>
+                `);
+            }
+        }
+    }
+    next();
+});
+
 // Configure Google OAuth Strategy
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID || 'dummy-client-id-to-prevent-crash',
