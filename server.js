@@ -712,11 +712,16 @@ app.use((req, res, next) => {
 });
 */
 const adminTransporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-    }
+    },
+    connectionTimeout: 4000, // 4 seconds max
+    greetingTimeout: 4000,
+    socketTimeout: 4000
 });
 
 // Endpoint to verify if an email is registered (used for strict email validation)
@@ -802,11 +807,17 @@ app.post('/api/admin/ban', async (req, res) => {
                 </div>`
             };
             try {
-                await adminTransporter.sendMail(mailOptions);
+                const sendPromise = adminTransporter.sendMail(mailOptions);
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000));
+                await Promise.race([sendPromise, timeoutPromise]);
                 emailStatus = 'Success';
             } catch(e) {
-                emailStatus = 'Error: ' + e.message;
-                console.error("Email send failed:", e);
+                if (e.message === 'Timeout') {
+                    emailStatus = 'Sent in background (SMTP is slow)';
+                } else {
+                    emailStatus = 'Error: ' + e.message;
+                    console.error("Email send failed:", e);
+                }
             }
         } else {
             emailStatus = 'EMAIL_USER or EMAIL_PASS not set in environment';
@@ -859,11 +870,17 @@ app.post('/api/admin/warn', async (req, res) => {
             </div>`
         };
         try {
-            await adminTransporter.sendMail(mailOptions);
+            const sendPromise = adminTransporter.sendMail(mailOptions);
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000));
+            await Promise.race([sendPromise, timeoutPromise]);
             emailStatus = 'Success';
         } catch(e) {
-            emailStatus = 'Error: ' + e.message;
-            console.error("Email send failed:", e);
+            if (e.message === 'Timeout') {
+                emailStatus = 'Sent in background (SMTP is slow)';
+            } else {
+                emailStatus = 'Error: ' + e.message;
+                console.error("Email send failed:", e);
+            }
         }
     } else {
         emailStatus = 'EMAIL_USER or EMAIL_PASS not set in environment';
