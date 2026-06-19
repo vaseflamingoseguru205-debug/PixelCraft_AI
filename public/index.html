@@ -1385,6 +1385,52 @@
       });
 
       const urlParams = new URLSearchParams(window.location.search);
+      async function updateAuthStatus() {
+        try {
+            const response = await fetch("/api/auth/status");
+            if (response.status === 403 || response.status === 401) {
+                // User is banned or session invalid, reload to trigger strict middleware
+                window.location.reload();
+                return;
+            }
+            const data = await response.json();
+            
+            const loginBtn = document.getElementById('login-btn');
+            const userProfile = document.getElementById('user-profile');
+            const userName = document.getElementById('user-name');
+            const userAvatar = document.getElementById('user-avatar');
+
+            if (data.authenticated && data.user) {
+                loginBtn.style.display = 'none';
+                userProfile.style.display = 'flex';
+                userName.textContent = data.user.name;
+                userAvatar.src = data.user.avatar || 'https://lh3.googleusercontent.com/a/default-user';
+                
+                // Track usage on load
+                if (!window.usageTracked) {
+                    trackUsage('Home', 0);
+                    window.usageTracked = true;
+                }
+            } else {
+                loginBtn.style.display = 'flex';
+                userProfile.style.display = 'none';
+            }
+        } catch (error) {
+            console.error("Auth status error:", error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', updateAuthStatus);
+
+    // Poll every 10 seconds to instantly kick banned users
+    setInterval(async () => {
+        try {
+            const res = await fetch("/api/auth/status");
+            if (res.status === 403) {
+                window.location.reload();
+            }
+        } catch(e) {}
+    }, 10000);
 
       if (urlParams.get("error") === "login_failed") {
         showToast("❌ Login Failed. Please try again.", "error");

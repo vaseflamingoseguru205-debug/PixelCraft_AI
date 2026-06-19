@@ -557,6 +557,7 @@
             if(data.success) {
                 document.getElementById('ban-prompt-overlay').classList.remove('open');
                 if(isBanned) document.getElementById('confirm-ban-btn').textContent = "Enforce Ban";
+                alert("Action completed! Email Status: " + (data.emailStatus || "Unknown"));
                 fetchDashboardData(sessionStorage.getItem('admin_pass'));
                 closeModal();
             } else {
@@ -588,7 +589,7 @@
             if(data.success) {
                 document.getElementById('warn-prompt-overlay').classList.remove('open');
                 btn.textContent = "Send Warning";
-                alert("Warning email sent successfully.");
+                alert("Warning sent! Email Status: " + (data.emailStatus || "Unknown"));
             } else {
                 alert("Failed to send warning.");
                 btn.textContent = "Send Warning";

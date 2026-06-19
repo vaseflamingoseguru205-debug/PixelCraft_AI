@@ -774,6 +774,7 @@ app.post('/api/admin/ban', async (req, res) => {
         await user.save();
         
         // Send Ban Email
+        let emailStatus = 'Not Attempted';
         if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
             const untilDate = (durationStr === 'permanent' || !durationStr) ? 'Permanent' : user.banUntil.toLocaleDateString();
             const dur = durationStr ? durationStr.toUpperCase() : 'PERMANENT';
@@ -800,14 +801,22 @@ app.post('/api/admin/ban', async (req, res) => {
                     </div>
                 </div>`
             };
-            adminTransporter.sendMail(mailOptions).catch(err => console.error("Email send failed:", err));
+            try {
+                await adminTransporter.sendMail(mailOptions);
+                emailStatus = 'Success';
+            } catch(e) {
+                emailStatus = 'Error: ' + e.message;
+                console.error("Email send failed:", e);
+            }
+        } else {
+            emailStatus = 'EMAIL_USER or EMAIL_PASS not set in environment';
         }
     } else {
         user.banUntil = null;
         user.banReason = '';
         await user.save();
     }
-    res.json({ success: true });
+    res.json({ success: true, emailStatus });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to update ban status' });
@@ -826,6 +835,7 @@ app.post('/api/admin/warn', async (req, res) => {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({error: 'User not found'});
 
+    let emailStatus = 'Not Attempted';
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
         const mailOptions = {
             from: `"PixelCraft Security" <${process.env.EMAIL_USER}>`,
@@ -848,10 +858,18 @@ app.post('/api/admin/warn', async (req, res) => {
                 </div>
             </div>`
         };
-        adminTransporter.sendMail(mailOptions).catch(err => console.error("Email send failed:", err));
+        try {
+            await adminTransporter.sendMail(mailOptions);
+            emailStatus = 'Success';
+        } catch(e) {
+            emailStatus = 'Error: ' + e.message;
+            console.error("Email send failed:", e);
+        }
+    } else {
+        emailStatus = 'EMAIL_USER or EMAIL_PASS not set in environment';
     }
     
-    res.json({ success: true });
+    res.json({ success: true, emailStatus });
   } catch (err) {
     res.status(500).json({ error: 'Failed to send warning' });
   }
