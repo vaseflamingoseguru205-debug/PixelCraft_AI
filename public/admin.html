@@ -18,6 +18,7 @@
             --accent-glow: rgba(0, 242, 254, 0.4);
             --success: #10b981;
             --danger: #ef4444;
+            --warning: #f59e0b;
         }
 
         * { box-sizing: border-box; }
@@ -178,53 +179,94 @@
         .user-email { color: var(--text-muted); font-size: 13px; display: block; margin-top: 4px; }
         .sub-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
         .highlight { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px;}
+        .banned-text { color: var(--danger); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
         
-        /* User Drawer Modal */
-        #user-drawer {
-            position: fixed;
-            top: 0; right: -500px;
-            width: 450px; height: 100vh;
-            background: rgba(10, 15, 30, 0.95);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-left: 1px solid var(--accent);
-            box-shadow: -10px 0 40px rgba(0,0,0,0.8);
-            z-index: 100000;
-            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow-y: auto;
-            padding: 40px 30px;
-        }
-        
-        #user-drawer.open { right: 0; }
-        
-        .drawer-overlay {
+        /* Modal Overlay */
+        .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.6); z-index: 99999; display: none; backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.8); z-index: 99999; display: none; backdrop-filter: blur(8px);
+            justify-content: center; align-items: center;
         }
-        .drawer-overlay.open { display: block; }
+        .modal-overlay.open { display: flex; animation: fadeIn 0.3s ease; }
 
-        .drawer-close {
-            position: absolute; top: 20px; right: 20px;
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Big Window Modal */
+        .user-modal {
+            width: 90%; max-width: 1000px; max-height: 90vh;
+            background: rgba(10, 15, 30, 0.95);
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 50px rgba(0, 242, 254, 0.2);
+            border-radius: 20px;
+            position: relative;
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 30px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: flex-start;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .modal-user-info { display: flex; align-items: center; gap: 20px; }
+        .modal-avatar { width: 80px; height: 80px; border-radius: 16px; border: 2px solid var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        .modal-name { font-size: 28px; color: #fff; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 1px;}
+        .modal-email { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 14px; margin: 0; }
+
+        .modal-close {
             background: transparent; border: none; color: var(--text-muted);
-            font-size: 28px; cursor: pointer; transition: 0.3s;
+            font-size: 32px; cursor: pointer; transition: 0.3s; line-height: 1;
         }
-        .drawer-close:hover { color: var(--danger); transform: rotate(90deg); }
+        .modal-close:hover { color: var(--danger); transform: scale(1.1); }
 
-        .drawer-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px dashed var(--border); }
-        .drawer-avatar { width: 100px; height: 100px; border-radius: 20px; border: 2px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow); margin-bottom: 15px; }
-        .drawer-name { font-size: 24px; color: #fff; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 1px;}
-        .drawer-email { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 14px; margin: 0; }
+        .modal-body {
+            display: grid; grid-template-columns: 1fr 1fr;
+            padding: 30px; gap: 30px; overflow-y: auto;
+        }
 
-        .data-group { margin-bottom: 25px; }
-        .data-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px; }
+        @media (max-width: 800px) {
+            .modal-body { grid-template-columns: 1fr; }
+        }
+
+        .data-group { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
+        .data-title { font-size: 14px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; font-weight: 600;}
         .data-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; align-items: center; }
         .data-label { color: #cbd5e1; }
-        .data-val { color: #fff; font-family: 'JetBrains Mono', monospace; text-align: right; background: rgba(0,242,254,0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(0,242,254,0.2); }
+        .data-val { color: #fff; font-family: 'JetBrains Mono', monospace; text-align: right; background: rgba(0,242,254,0.05); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(0,242,254,0.1); }
         .val-highlight { color: var(--accent); }
 
-        @media (max-width: 600px) {
-            #user-drawer { width: 100%; right: -100%; border-left: none; }
+        /* Timeline */
+        .timeline {
+            max-height: 350px; overflow-y: auto; padding-right: 10px;
         }
+        .timeline::-webkit-scrollbar { width: 6px; }
+        .timeline::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+        .timeline-item {
+            position: relative; padding-left: 20px; margin-bottom: 20px; border-left: 2px solid var(--border);
+        }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -6px; top: 0;
+            width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent-glow);
+        }
+        .time-date { font-size: 12px; color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px; }
+        .time-details { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; color: #e2e8f0; }
+        .time-details span { display: block; margin-bottom: 4px; }
+
+        /* Ban Button */
+        .btn-ban {
+            background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger);
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%; margin-top: 20px;
+        }
+        .btn-ban:hover { background: var(--danger); color: #fff; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+        
+        .btn-unban {
+            background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success);
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%; margin-top: 20px;
+        }
+        .btn-unban:hover { background: var(--success); color: #fff; box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
+
     </style>
 </head>
 <body>
@@ -257,28 +299,12 @@
             <p class="value" id="stat-users">0</p>
         </div>
         <div class="glass-panel stat-card">
-            <h3>Total Compute Time</h3>
-            <p class="value" id="stat-time">0 hrs</p>
+            <h3>Total Logins Tracked</h3>
+            <p class="value" id="stat-logins">0</p>
         </div>
         <div class="glass-panel stat-card">
-            <h3>Engagement Ratio</h3>
-            <p class="value" id="stat-tools">0.0</p>
-        </div>
-    </div>
-
-    <!-- Charts -->
-    <div class="grid-charts">
-        <div class="glass-panel">
-            <h3 style="margin-top:0; color:var(--accent); font-size:13px; text-transform:uppercase; letter-spacing:1px; margin-bottom: 15px;">Vector Utilization</h3>
-            <div class="chart-container">
-                <canvas id="toolsChart"></canvas>
-            </div>
-        </div>
-        <div class="glass-panel">
-            <h3 style="margin-top:0; color:var(--accent); font-size:13px; text-transform:uppercase; letter-spacing:1px; margin-bottom: 15px;">Entity Acquisition Rate</h3>
-            <div class="chart-container">
-                <canvas id="growthChart"></canvas>
-            </div>
+            <h3>Banned Entities</h3>
+            <p class="value" id="stat-banned" style="color: var(--danger);">0</p>
         </div>
     </div>
 
@@ -290,8 +316,8 @@
                 <thead>
                     <tr>
                         <th>Identity</th>
-                        <th>Device Vector</th>
-                        <th>Geolocation</th>
+                        <th>Latest Device Vector</th>
+                        <th>Latest Geolocation</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -303,40 +329,51 @@
     </div>
 </div>
 
-<!-- Drawer Overlay -->
-<div class="drawer-overlay" id="drawer-overlay"></div>
+<!-- Modal Overlay -->
+<div class="modal-overlay" id="modal-overlay">
+    <!-- Big Window Modal -->
+    <div class="user-modal" id="user-modal">
+        <div class="modal-header">
+            <div class="modal-user-info">
+                <img src="" id="m-avatar" class="modal-avatar">
+                <div>
+                    <h2 class="modal-name" id="m-name">John Doe</h2>
+                    <p class="modal-email" id="m-email">john@example.com</p>
+                    <span id="m-status-badge" style="display:inline-block; margin-top:8px; padding: 4px 8px; border-radius: 6px; font-size:12px; font-weight:bold; font-family:'JetBrains Mono', monospace;"></span>
+                </div>
+            </div>
+            <button class="modal-close" id="modal-close">&times;</button>
+        </div>
 
-<!-- Drawer Modal -->
-<div id="user-drawer">
-    <button class="drawer-close" id="drawer-close">&times;</button>
-    
-    <div class="drawer-header">
-        <img src="" id="d-avatar" class="drawer-avatar">
-        <h2 class="drawer-name" id="d-name">John Doe</h2>
-        <p class="drawer-email" id="d-email">john@example.com</p>
-    </div>
+        <div class="modal-body">
+            <!-- Left Column: Overview -->
+            <div>
+                <div class="data-group">
+                    <div class="data-title">Account Overview</div>
+                    <div class="data-row"><span class="data-label">Account Created</span><span class="data-val val-highlight" id="m-created">2026-06-19</span></div>
+                    <div class="data-row"><span class="data-label">Total Sign-ins</span><span class="data-val" id="m-logins">0</span></div>
+                    <div class="data-row"><span class="data-label">Total Logouts</span><span class="data-val" id="m-logouts">0</span></div>
+                    <div class="data-row"><span class="data-label">Tools Executed</span><span class="data-val" id="m-toolscount">0</span></div>
+                </div>
 
-    <div class="data-group">
-        <div class="data-title">Network & Location Intel</div>
-        <div class="data-row"><span class="data-label">IP Address</span><span class="data-val" id="d-ip">192.168.1.1</span></div>
-        <div class="data-row"><span class="data-label">City</span><span class="data-val" id="d-city">Unknown</span></div>
-        <div class="data-row"><span class="data-label">Country</span><span class="data-val" id="d-country">Unknown</span></div>
-        <div class="data-row"><span class="data-label">ISP / Carrier</span><span class="data-val" id="d-isp">Unknown</span></div>
-    </div>
+                <div class="data-group" style="margin-top:20px;">
+                    <div class="data-title">Latest Known Vector</div>
+                    <div class="data-row"><span class="data-label">IP Address</span><span class="data-val" id="m-ip">Unknown</span></div>
+                    <div class="data-row"><span class="data-label">Device / OS</span><span class="data-val" id="m-device">Unknown</span></div>
+                    <div class="data-row"><span class="data-label">Location</span><span class="data-val" id="m-loc">Unknown</span></div>
+                </div>
 
-    <div class="data-group">
-        <div class="data-title">Hardware & Software Vector</div>
-        <div class="data-row"><span class="data-label">Device Class</span><span class="data-val" id="d-device">Desktop</span></div>
-        <div class="data-row"><span class="data-label">Operating System</span><span class="data-val" id="d-os">Windows</span></div>
-        <div class="data-row"><span class="data-label">Client Browser</span><span class="data-val" id="d-browser">Chrome</span></div>
-    </div>
+                <button id="btn-toggle-ban" class="btn-ban">SUSPEND ACCOUNT</button>
+            </div>
 
-    <div class="data-group">
-        <div class="data-title">Engagement Metrics</div>
-        <div class="data-row"><span class="data-label">Account Created</span><span class="data-val val-highlight" id="d-created">2026-06-19</span></div>
-        <div class="data-row"><span class="data-label">Last Ping</span><span class="data-val val-highlight" id="d-last">2 mins ago</span></div>
-        <div class="data-row"><span class="data-label">Total Time Active</span><span class="data-val" id="d-time">5 hrs</span></div>
-        <div class="data-row"><span class="data-label">Tools Executed</span><span class="data-val" id="d-toolscount">12</span></div>
+            <!-- Right Column: Login History -->
+            <div class="data-group">
+                <div class="data-title">Complete Session History</div>
+                <div class="timeline" id="m-timeline">
+                    <!-- Dynamic timeline items -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -347,14 +384,12 @@
     const passInput = document.getElementById('admin-pass');
     const errorMsg = document.getElementById('error-msg');
     
-    // Drawer elements
-    const drawer = document.getElementById('user-drawer');
-    const overlay = document.getElementById('drawer-overlay');
-    const drawerCloseBtn = document.getElementById('drawer-close');
-
-    let toolsChartInstance = null;
-    let growthChartInstance = null;
+    // Modal elements
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalCloseBtn = document.getElementById('modal-close');
+    
     let usersData = [];
+    let currentSelectedUserId = null;
 
     // Check Session
     let sessionPass = sessionStorage.getItem('admin_pass') || '';
@@ -370,13 +405,14 @@
         window.location.reload();
     };
 
-    function closeDrawer() {
-        drawer.classList.remove('open');
-        overlay.classList.remove('open');
+    function closeModal() {
+        modalOverlay.classList.remove('open');
     }
 
-    drawerCloseBtn.onclick = closeDrawer;
-    overlay.onclick = closeDrawer;
+    modalCloseBtn.onclick = closeModal;
+    modalOverlay.onclick = (e) => {
+        if(e.target === modalOverlay) closeModal();
+    };
 
     async function fetchDashboardData(password) {
         try {
@@ -409,63 +445,131 @@
         }
     }
 
-    function openUserDrawer(index) {
+    function openUserModal(index) {
         const u = usersData[index];
         if(!u) return;
 
-        document.getElementById('d-avatar').src = u.avatar || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f2fe'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E`;
-        document.getElementById('d-name').textContent = u.name || 'Unknown';
-        document.getElementById('d-email').textContent = u.email || 'Unknown';
+        currentSelectedUserId = u._id;
 
-        document.getElementById('d-ip').textContent = u.lastLoginIp || 'Unknown';
-        document.getElementById('d-city').textContent = u.city || 'Unknown';
-        document.getElementById('d-country').textContent = u.country || 'Unknown';
-        document.getElementById('d-isp').textContent = u.isp || 'Unknown';
+        document.getElementById('m-avatar').src = u.avatar || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f2fe'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E`;
+        document.getElementById('m-name').textContent = u.name || 'Unknown';
+        document.getElementById('m-email').textContent = u.email || 'Unknown';
 
-        document.getElementById('d-device').textContent = u.deviceType || 'Unknown';
-        document.getElementById('d-os').textContent = u.os || 'Unknown';
-        document.getElementById('d-browser').textContent = u.browser || 'Unknown';
+        // Overview
+        document.getElementById('m-created').textContent = new Date(u.createdAt).toLocaleDateString();
+        document.getElementById('m-logins').textContent = u.loginCount || 1;
+        document.getElementById('m-logouts').textContent = u.logoutCount || 0;
+        document.getElementById('m-toolscount').textContent = u.toolsUsedCount || 0;
 
-        document.getElementById('d-created').textContent = new Date(u.createdAt).toLocaleDateString();
-        document.getElementById('d-last').textContent = new Date(u.lastLogin).toLocaleString();
+        // Latest
+        document.getElementById('m-ip').textContent = u.lastLoginIp || 'Unknown';
+        document.getElementById('m-device').textContent = (u.deviceType || 'Unknown') + ' / ' + (u.os || 'Unknown');
+        document.getElementById('m-loc').textContent = (u.city || 'Unknown') + ', ' + (u.country || 'Unknown');
+
+        // Status Badge & Ban Button
+        const badge = document.getElementById('m-status-badge');
+        const banBtn = document.getElementById('btn-toggle-ban');
         
-        let timeMins = Math.floor((u.totalTimeSpentSeconds || 0) / 60);
-        document.getElementById('d-time').textContent = timeMins > 60 ? (timeMins/60).toFixed(1) + ' hrs' : timeMins + ' mins';
-        document.getElementById('d-toolscount').textContent = u.toolsUsedCount || 0;
+        if (u.isBanned) {
+            badge.textContent = "BANNED";
+            badge.style.backgroundColor = "rgba(239, 68, 68, 0.2)";
+            badge.style.color = "var(--danger)";
+            badge.style.border = "1px solid var(--danger)";
+            
+            banBtn.className = "btn-unban";
+            banBtn.textContent = "RESTORE ACCOUNT";
+            banBtn.onclick = () => toggleBan(u._id, false);
+        } else {
+            badge.textContent = "ACTIVE";
+            badge.style.backgroundColor = "rgba(16, 185, 129, 0.2)";
+            badge.style.color = "var(--success)";
+            badge.style.border = "1px solid var(--success)";
+            
+            banBtn.className = "btn-ban";
+            banBtn.textContent = "SUSPEND ACCOUNT";
+            banBtn.onclick = () => toggleBan(u._id, true);
+        }
 
-        drawer.classList.add('open');
-        overlay.classList.add('open');
+        // Render History Timeline
+        const timeline = document.getElementById('m-timeline');
+        timeline.innerHTML = '';
+        
+        if (u.loginHistory && u.loginHistory.length > 0) {
+            // Sort newest first
+            const history = [...u.loginHistory].sort((a,b) => new Date(b.loginAt) - new Date(a.loginAt));
+            
+            history.forEach(session => {
+                const dateObj = new Date(session.loginAt);
+                const dateStr = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString();
+                const dev = session.deviceType || 'Unknown';
+                const os = session.os || 'Unknown';
+                const browser = session.browser || 'Unknown';
+                const city = session.city || 'Unknown';
+                const country = session.country || 'Unknown';
+                const ip = session.ip || 'Unknown';
+
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                item.innerHTML = `
+                    <div class="time-date">${dateStr}</div>
+                    <div class="time-details">
+                        <span><b style="color:var(--accent);">IP:</b> ${ip}</span>
+                        <span><b style="color:var(--accent);">Loc:</b> ${city}, ${country}</span>
+                        <span><b style="color:var(--accent);">Sys:</b> ${dev} / ${os} / ${browser}</span>
+                    </div>
+                `;
+                timeline.appendChild(item);
+            });
+        } else {
+            timeline.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; font-style: italic;">No detailed session history available (Legacy Data).</div>';
+        }
+
+        modalOverlay.classList.add('open');
+    }
+
+    async function toggleBan(userId, banStatus) {
+        try {
+            const res = await fetch('/api/admin/ban', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: sessionStorage.getItem('admin_pass'), userId: userId, isBanned: banStatus })
+            });
+            const data = await res.json();
+            if(data.success) {
+                // Refresh data
+                fetchDashboardData(sessionStorage.getItem('admin_pass'));
+                closeModal();
+            } else {
+                alert("Failed to change ban status.");
+            }
+        } catch (e) {
+            alert("Error connecting to server.");
+        }
     }
 
     function processData(users) {
-        let totalTime = 0;
-        let totalTools = 0;
-        let toolCounts = {};
-        let dates = {};
+        let totalLogins = 0;
+        let totalBanned = 0;
 
         const tbody = document.getElementById('user-tbody');
         tbody.innerHTML = '';
 
         users.forEach((u, idx) => {
-            totalTime += (u.totalTimeSpentSeconds || 0);
-            totalTools += (u.toolsUsedCount || 0);
-            
-            if(u.toolUsageHistory) {
-                u.toolUsageHistory.forEach(t => {
-                    toolCounts[t.toolName] = (toolCounts[t.toolName] || 0) + 1;
-                });
-            }
-
-            const dateStr = new Date(u.createdAt).toLocaleDateString();
-            dates[dateStr] = (dates[dateStr] || 0) + 1;
+            totalLogins += (u.loginCount || 1);
+            if (u.isBanned) totalBanned++;
 
             const tr = document.createElement('tr');
-            tr.onclick = () => openUserDrawer(idx);
+            tr.onclick = () => openUserModal(idx);
 
             const avatar = u.avatar || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f2fe'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E`;
             
             const deviceVector = `<span class="highlight">${u.deviceType || 'Unknown'} / ${u.os || 'Unknown'}</span>`;
             const geoInfo = `<span class="highlight">${u.city || 'Unknown'}, ${u.country || 'Unknown'}</span>`;
+            
+            let statusBadge = `<span class="highlight" style="font-size:11px; padding: 4px 8px; border: 1px solid var(--success); border-radius: 8px; color: var(--success);">ACTIVE</span>`;
+            if (u.isBanned) {
+                statusBadge = `<span class="banned-text" style="font-size:11px; padding: 4px 8px; border: 1px solid var(--danger); border-radius: 8px;">BANNED</span>`;
+            }
 
             tr.innerHTML = `
                 <td>
@@ -477,61 +581,14 @@
                 </td>
                 <td class="sub-text">${deviceVector}</td>
                 <td class="sub-text">${geoInfo}</td>
-                <td><span class="highlight" style="font-size:11px; padding: 4px 8px; border: 1px solid var(--border); border-radius: 8px;">TRACKED</span></td>
+                <td>${statusBadge}</td>
             `;
             tbody.appendChild(tr);
         });
 
         document.getElementById('stat-users').textContent = users.length;
-        document.getElementById('stat-time').textContent = Math.floor(totalTime/3600) + ' hrs';
-        document.getElementById('stat-tools').textContent = users.length ? (totalTools / users.length).toFixed(1) : 0;
-
-        renderCharts(toolCounts, dates);
-    }
-
-    function renderCharts(toolCounts, dates) {
-        Chart.defaults.color = '#94a3b8';
-        Chart.defaults.font.family = "'JetBrains Mono', monospace";
-
-        const toolNames = Object.keys(toolCounts);
-        const toolValues = Object.values(toolCounts);
-        
-        if(toolsChartInstance) toolsChartInstance.destroy();
-        toolsChartInstance = new Chart(document.getElementById('toolsChart'), {
-            type: 'doughnut',
-            data: {
-                labels: toolNames.length ? toolNames : ['No Data'],
-                datasets: [{
-                    data: toolValues.length ? toolValues : [1],
-                    backgroundColor: ['#00f2fe', '#4facfe', '#34d399', '#f472b6', '#fbbf24'],
-                    borderWidth: 1,
-                    borderColor: '#050b14',
-                    cutout: '75%'
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
-        });
-
-        const dateLabels = Object.keys(dates).reverse(); 
-        const dateValues = Object.values(dates).reverse();
-
-        if(growthChartInstance) growthChartInstance.destroy();
-        growthChartInstance = new Chart(document.getElementById('growthChart'), {
-            type: 'line',
-            data: {
-                labels: dateLabels.length ? dateLabels : ['Today'],
-                datasets: [{
-                    label: 'Entities Registered',
-                    data: dateValues.length ? dateValues : [0],
-                    borderColor: '#00f2fe',
-                    backgroundColor: 'rgba(0, 242, 254, 0.15)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
-        });
+        document.getElementById('stat-logins').textContent = totalLogins;
+        document.getElementById('stat-banned').textContent = totalBanned;
     }
 </script>
 

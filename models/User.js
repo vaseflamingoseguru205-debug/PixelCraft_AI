@@ -58,6 +58,24 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  loginCount: {
+    type: Number,
+    default: 0
+  },
+  isBanned: {
+    type: Boolean,
+    default: false
+  },
+  loginHistory: [{
+    loginAt: { type: Date, default: Date.now },
+    ip: String,
+    deviceType: String,
+    os: String,
+    browser: String,
+    city: String,
+    country: String,
+    isp: String
+  }],
   lastLogout: {
     type: Date
   },

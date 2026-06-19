@@ -113,10 +113,13 @@ passport.use(new GoogleStrategy({
       
       // Update tracking data on every login
       user.lastLogin = Date.now();
+      user.loginCount = (user.loginCount || 0) + 1;
       user.lastLoginIp = ip;
       user.deviceType = deviceType;
       user.os = os;
       user.browser = browser;
+
+      let sessionLocation = { country: 'Unknown', city: 'Unknown', isp: 'Unknown' };
 
       // Async fetch location
       if (ip && ip !== 'Unknown' && ip !== '::1' && ip !== '127.0.0.1') {
@@ -127,6 +130,7 @@ passport.use(new GoogleStrategy({
                 user.country = locData.country || 'Unknown';
                 user.city = locData.city || 'Unknown';
                 user.isp = locData.isp || 'Unknown';
+                sessionLocation = { country: user.country, city: user.city, isp: user.isp };
             }
         } catch (e) {
             console.error("IP Lookup failed:", e.message);
@@ -135,7 +139,20 @@ passport.use(new GoogleStrategy({
           user.country = 'Localhost';
           user.city = 'Local';
           user.isp = 'Local Network';
+          sessionLocation = { country: 'Localhost', city: 'Local', isp: 'Local Network' };
       }
+
+      // Add to login history
+      user.loginHistory.push({
+          loginAt: Date.now(),
+          ip: ip,
+          deviceType: deviceType,
+          os: os,
+          browser: browser,
+          city: sessionLocation.city,
+          country: sessionLocation.country,
+          isp: sessionLocation.isp
+      });
 
       await user.save();
       return done(null, user);
@@ -630,6 +647,9 @@ app.post('/api/verify-registered-email', async (req, res) => {
         // Find user by email in MongoDB (exact match)
         const user = await User.findOne({ email: email.toLowerCase() });
         if (user) {
+            if (user.isBanned) {
+                return res.json({ exists: false, banned: true }); // Treat as not existing if banned, to trigger access denied
+            }
             res.json({ exists: true });
         } else {
             res.json({ exists: false });
@@ -639,6 +659,23 @@ app.post('/api/verify-registered-email', async (req, res) => {
         res.json({ exists: false });
     }
 });
+
+// Admin Route to Ban/Unban users
+app.post('/api/admin/ban', async (req, res) => {
+  const { password, userId, isBanned } = req.body;
+  const expectedPassword = (process.env.ADMIN_PASSWORD || 'PxlCrft_Admin_8x9vZapL2qWkmN5jR_cF1yT').replace(/["']/g, "").trim();
+  
+  if (!password || password.trim() !== expectedPassword) {
+    return res.status(401).json({ error: 'Unauthorized access.' });
+  }
+  try {
+    await User.findByIdAndUpdate(userId, { isBanned: isBanned });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update ban status' });
+  }
+});
+
 
 // Serve all static files (HTML, CSS, JS) from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
