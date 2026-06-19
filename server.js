@@ -767,6 +767,7 @@ app.post('/api/admin/ban', async (req, res) => {
     if (!user) return res.status(404).json({error: 'User not found'});
 
     user.isBanned = isBanned;
+    let emailStatus = 'Not Attempted';
     
     if (isBanned) {
         user.banReason = reason || 'Violation of Terms of Service';
@@ -779,7 +780,6 @@ app.post('/api/admin/ban', async (req, res) => {
         await user.save();
         
         // Send Ban Email
-        let emailStatus = 'Not Attempted';
         if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
             const untilDate = (durationStr === 'permanent' || !durationStr) ? 'Permanent' : user.banUntil.toLocaleDateString();
             const dur = durationStr ? durationStr.toUpperCase() : 'PERMANENT';
