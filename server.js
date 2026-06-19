@@ -710,6 +710,7 @@ app.use((req, res, next) => {
   req.session.returnTo = req.originalUrl;
   res.redirect('/login.html');
 });
+*/
 // Nodemailer setup removed (Using Apps Script Webhook instead)
 
 // Endpoint to verify if an email is registered (used for strict email validation)
