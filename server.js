@@ -572,6 +572,24 @@ app.use((req, res, next) => {
   res.redirect('/login.html');
 });
 */
+// Endpoint to verify if an email is registered (used for strict email validation)
+app.post('/api/verify-registered-email', async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.json({ exists: false });
+        
+        // Find user by email in MongoDB (exact match)
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (user) {
+            res.json({ exists: true });
+        } else {
+            res.json({ exists: false });
+        }
+    } catch (err) {
+        console.error("Error verifying email:", err);
+        res.json({ exists: false });
+    }
+});
 
 // Serve all static files (HTML, CSS, JS) from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));

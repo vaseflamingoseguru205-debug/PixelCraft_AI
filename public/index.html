@@ -1805,8 +1805,30 @@ async function submitHomeKeyRequest(e) {
     
     errorDiv.style.display = 'none';
     const btn = document.getElementById('home-submit-key-btn');
-    btn.textContent = 'Processing...';
+    btn.textContent = 'Verifying Account...';
     btn.disabled = true;
+
+    try {
+        // Strict verification: Ensure the email literally exists in our Google Auth DB
+        const verifyRes = await fetch('/api/verify-registered-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+        });
+        const verifyData = await verifyRes.json();
+        
+        if (!verifyData.exists) {
+            errorDiv.innerHTML = "Did you really think entering a random fake email would unlock this tool? Nice try!<br><br><span style='font-size: 0.8rem; color: #cbd5e1;'>For strict security, only 100% accurate, existing Google Accounts that have logged into this site can access this tool. If even one word is changed, access is denied.</span>";
+            errorDiv.style.display = 'block';
+            btn.textContent = 'Get Secret Key';
+            btn.disabled = false;
+            return;
+        }
+    } catch (e) {
+        console.error("Verification failed", e);
+    }
+
+    btn.textContent = 'Processing...';
     
     const YOUR_EMAIL_ADDRESS = "support.pixelcraft205@gmail.com";
     const newSecretKey = generateHomeRandomKey();
