@@ -710,19 +710,7 @@ app.use((req, res, next) => {
   req.session.returnTo = req.originalUrl;
   res.redirect('/login.html');
 });
-*/
-const adminTransporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-    connectionTimeout: 4000, // 4 seconds max
-    greetingTimeout: 4000,
-    socketTimeout: 4000
-});
+// Nodemailer setup removed (Using Apps Script Webhook instead)
 
 // Endpoint to verify if an email is registered (used for strict email validation)
 app.post('/api/verify-registered-email', async (req, res) => {
@@ -779,48 +767,55 @@ app.post('/api/admin/ban', async (req, res) => {
         
         await user.save();
         
-        // Send Ban Email
-        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-            const untilDate = (durationStr === 'permanent' || !durationStr) ? 'Permanent' : user.banUntil.toLocaleDateString();
-            const dur = durationStr ? durationStr.toUpperCase() : 'PERMANENT';
-            const mailOptions = {
-                from: `"PixelCraft Security" <${process.env.EMAIL_USER}>`,
-                to: user.email,
-                subject: '🚨 URGENT: Your Account Has Been Suspended',
-                html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ef4444; border-radius: 10px; overflow: hidden;">
-                    <div style="background-color: #ef4444; color: white; padding: 20px; text-align: center;">
-                        <h2 style="margin: 0; letter-spacing: 1px;">ACCOUNT SUSPENDED</h2>
-                    </div>
-                    <div style="padding: 30px; background-color: #111; color: #fff;">
-                        <p>Dear ${user.name},</p>
-                        <p>This is an automated notification from PixelCraft AI Security Systems.</p>
-                        <p>Your account access has been revoked due to a violation of our Terms of Service.</p>
-                        <div style="background-color: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0;">
-                            <p style="margin: 0;"><strong>Reason:</strong> ${user.banReason}</p>
-                            <p style="margin: 10px 0 0 0;"><strong>Ban Duration:</strong> ${dur}</p>
-                            <p style="margin: 10px 0 0 0;"><strong>Expiration:</strong> ${untilDate}</p>
-                        </div>
-                        <p>Any further attempts to bypass this suspension may result in a permanent hardware and IP ban.</p>
-                        <p style="margin-top: 30px; font-size: 12px; color: #888;">PixelCraft AI Automated Enforcement Agent</p>
-                    </div>
-                </div>`
-            };
-            try {
-                const sendPromise = adminTransporter.sendMail(mailOptions);
-                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000));
-                await Promise.race([sendPromise, timeoutPromise]);
+        // Send Ban Email using Google Apps Script Webhook
+        const untilDate = (durationStr === 'permanent' || !durationStr) ? 'Permanent' : user.banUntil.toLocaleDateString();
+        const dur = durationStr ? durationStr.toUpperCase() : 'PERMANENT';
+        const htmlBody = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ef4444; border-radius: 10px; overflow: hidden;">
+            <div style="background-color: #ef4444; color: white; padding: 20px; text-align: center;">
+                <h2 style="margin: 0; letter-spacing: 1px;">ACCOUNT SUSPENDED</h2>
+            </div>
+            <div style="padding: 30px; background-color: #111; color: #fff;">
+                <p>Dear ${user.name},</p>
+                <p>This is an automated notification from PixelCraft AI Security Systems.</p>
+                <p>Your account access has been revoked due to a violation of our Terms of Service.</p>
+                <div style="background-color: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0;">
+                    <p style="margin: 0;"><strong>Reason:</strong> ${user.banReason}</p>
+                    <p style="margin: 10px 0 0 0;"><strong>Ban Duration:</strong> ${dur}</p>
+                    <p style="margin: 10px 0 0 0;"><strong>Expiration:</strong> ${untilDate}</p>
+                </div>
+                <p>Any further attempts to bypass this suspension may result in a permanent hardware and IP ban.</p>
+                <p style="margin-top: 30px; font-size: 12px; color: #888;">PixelCraft AI Automated Enforcement Agent</p>
+            </div>
+        </div>`;
+
+        try {
+            const sendPromise = fetch('https://script.google.com/macros/s/AKfycbzoAyBCCB3XS153lCTFmbuV83GrrjuxLJbaq4pMcgtEln7Db02lr2ayvKIB-Ejjbw5W/exec', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pass: "PixelCraft_Secret_Key_9988",
+                    to: user.email,
+                    subject: '🚨 URGENT: Your Account Has Been Suspended',
+                    html: htmlBody
+                })
+            }).then(r => r.json());
+            
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 4000));
+            const result = await Promise.race([sendPromise, timeoutPromise]);
+            
+            if (result && result.success) {
                 emailStatus = 'Success';
-            } catch(e) {
-                if (e.message === 'Timeout') {
-                    emailStatus = 'Sent in background (SMTP is slow)';
-                } else {
-                    emailStatus = 'Error: ' + e.message;
-                    console.error("Email send failed:", e);
-                }
+            } else {
+                emailStatus = 'Error: ' + (result ? result.error : 'Unknown App Script Error');
             }
-        } else {
-            emailStatus = 'EMAIL_USER or EMAIL_PASS not set in environment';
+        } catch(e) {
+            if (e.message === 'Timeout') {
+                emailStatus = 'Sent in background (SMTP is slow)';
+            } else {
+                emailStatus = 'Error: ' + e.message;
+                console.error("Email send failed:", e);
+            }
         }
     } else {
         user.banUntil = null;
@@ -847,43 +842,50 @@ app.post('/api/admin/warn', async (req, res) => {
     if (!user) return res.status(404).json({error: 'User not found'});
 
     let emailStatus = 'Not Attempted';
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-        const mailOptions = {
-            from: `"PixelCraft Security" <${process.env.EMAIL_USER}>`,
-            to: user.email,
-            subject: '⚠️ WARNING: Suspicious Activity Detected',
-            html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #f59e0b; border-radius: 10px; overflow: hidden;">
-                <div style="background-color: #f59e0b; color: white; padding: 20px; text-align: center;">
-                    <h2 style="margin: 0; letter-spacing: 1px;">OFFICIAL WARNING</h2>
-                </div>
-                <div style="padding: 30px; background-color: #111; color: #fff;">
-                    <p>Dear ${user.name},</p>
-                    <p>This is an automated warning from PixelCraft AI Security Systems.</p>
-                    <p>We have detected activity on your account that violates our guidelines.</p>
-                    <div style="background-color: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
-                        <p style="margin: 0;"><strong>Warning Reason:</strong> ${reason}</p>
-                    </div>
-                    <p>Please stop this activity immediately. Repeated violations will result in an automatic account suspension.</p>
-                    <p style="margin-top: 30px; font-size: 12px; color: #888;">PixelCraft AI Automated Enforcement Agent</p>
-                </div>
-            </div>`
-        };
-        try {
-            const sendPromise = adminTransporter.sendMail(mailOptions);
-            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000));
-            await Promise.race([sendPromise, timeoutPromise]);
+    const htmlBody = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #f59e0b; border-radius: 10px; overflow: hidden;">
+        <div style="background-color: #f59e0b; color: white; padding: 20px; text-align: center;">
+            <h2 style="margin: 0; letter-spacing: 1px;">OFFICIAL WARNING</h2>
+        </div>
+        <div style="padding: 30px; background-color: #111; color: #fff;">
+            <p>Dear ${user.name},</p>
+            <p>This is an automated warning from PixelCraft AI Security Systems.</p>
+            <p>We have detected activity on your account that violates our guidelines.</p>
+            <div style="background-color: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
+                <p style="margin: 0;"><strong>Warning Reason:</strong> ${reason}</p>
+            </div>
+            <p>Please stop this activity immediately. Repeated violations will result in an automatic account suspension.</p>
+            <p style="margin-top: 30px; font-size: 12px; color: #888;">PixelCraft AI Automated Enforcement Agent</p>
+        </div>
+    </div>`;
+
+    try {
+        const sendPromise = fetch('https://script.google.com/macros/s/AKfycbzoAyBCCB3XS153lCTFmbuV83GrrjuxLJbaq4pMcgtEln7Db02lr2ayvKIB-Ejjbw5W/exec', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                pass: "PixelCraft_Secret_Key_9988",
+                to: user.email,
+                subject: '⚠️ WARNING: Suspicious Activity Detected',
+                html: htmlBody
+            })
+        }).then(r => r.json());
+        
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 4000));
+        const result = await Promise.race([sendPromise, timeoutPromise]);
+        
+        if (result && result.success) {
             emailStatus = 'Success';
-        } catch(e) {
-            if (e.message === 'Timeout') {
-                emailStatus = 'Sent in background (SMTP is slow)';
-            } else {
-                emailStatus = 'Error: ' + e.message;
-                console.error("Email send failed:", e);
-            }
+        } else {
+            emailStatus = 'Error: ' + (result ? result.error : 'Unknown App Script Error');
         }
-    } else {
-        emailStatus = 'EMAIL_USER or EMAIL_PASS not set in environment';
+    } catch(e) {
+        if (e.message === 'Timeout') {
+            emailStatus = 'Sent in background (SMTP is slow)';
+        } else {
+            emailStatus = 'Error: ' + e.message;
+            console.error("Email send failed:", e);
+        }
     }
     
     res.json({ success: true, emailStatus });
