@@ -156,16 +156,6 @@
         .stat-card h3 { margin: 0 0 10px 0; font-size: 13px; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
         .stat-card .value { font-size: 36px; font-weight: 700; margin: 0; color: #fff; font-family: 'JetBrains Mono', monospace; }
 
-        .grid-charts {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        @media (max-width: 900px) { .grid-charts { grid-template-columns: 1fr; } }
-        
-        .chart-container { position: relative; height: 300px; width: 100%; }
-
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; text-align: left; }
         th { padding: 0 16px 10px 16px; color: var(--accent); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; }
         td { padding: 16px; background: rgba(0,0,0,0.3); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); transition: 0.2s; cursor: pointer; }
@@ -181,7 +171,7 @@
         .highlight { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px;}
         .banned-text { color: var(--danger); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
         
-        /* Modal Overlay */
+        /* Modal Overlays */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.8); z-index: 99999; display: none; backdrop-filter: blur(8px);
@@ -237,36 +227,35 @@
         .val-highlight { color: var(--accent); }
 
         /* Timeline */
-        .timeline {
-            max-height: 350px; overflow-y: auto; padding-right: 10px;
-        }
+        .timeline { max-height: 350px; overflow-y: auto; padding-right: 10px; }
         .timeline::-webkit-scrollbar { width: 6px; }
         .timeline::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
-
-        .timeline-item {
-            position: relative; padding-left: 20px; margin-bottom: 20px; border-left: 2px solid var(--border);
-        }
-        .timeline-item::before {
-            content: ''; position: absolute; left: -6px; top: 0;
-            width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent-glow);
-        }
+        .timeline-item { position: relative; padding-left: 20px; margin-bottom: 20px; border-left: 2px solid var(--border); }
+        .timeline-item::before { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
         .time-date { font-size: 12px; color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px; }
         .time-details { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; color: #e2e8f0; }
         .time-details span { display: block; margin-bottom: 4px; }
 
-        /* Ban Button */
-        .btn-ban {
-            background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger);
-            padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%; margin-top: 20px;
-        }
+        /* Action Buttons */
+        .btn-ban { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%; margin-top: 10px; }
         .btn-ban:hover { background: var(--danger); color: #fff; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
         
-        .btn-unban {
-            background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success);
-            padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%; margin-top: 20px;
-        }
+        .btn-warn { background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); color: var(--warning); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%; margin-top: 20px; }
+        .btn-warn:hover { background: var(--warning); color: #fff; box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
+        
+        .btn-unban { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%; margin-top: 20px; }
         .btn-unban:hover { background: var(--success); color: #fff; box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
 
+        /* Small Prompts */
+        .prompt-modal { width: 90%; max-width: 400px; background: #0a0f1e; border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: 0 0 40px rgba(0,0,0,0.8); }
+        .prompt-modal h3 { margin-top: 0; color: #fff; }
+        .prompt-modal textarea, .prompt-modal select { width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-family: 'JetBrains Mono', monospace; margin-bottom: 15px; outline: none; }
+        .prompt-modal select { color: var(--accent); }
+        .prompt-actions { display: flex; gap: 10px; }
+        .btn-prompt-cancel { flex: 1; background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 10px; border-radius: 8px; cursor: pointer; }
+        .btn-prompt-submit { flex: 1; padding: 10px; border-radius: 8px; cursor: pointer; border: none; font-weight: bold; }
+        .btn-submit-ban { background: var(--danger); color: #fff; }
+        .btn-submit-warn { background: var(--warning); color: #fff; }
     </style>
 </head>
 <body>
@@ -329,9 +318,8 @@
     </div>
 </div>
 
-<!-- Modal Overlay -->
+<!-- Big Window Modal -->
 <div class="modal-overlay" id="modal-overlay">
-    <!-- Big Window Modal -->
     <div class="user-modal" id="user-modal">
         <div class="modal-header">
             <div class="modal-user-info">
@@ -361,9 +349,13 @@
                     <div class="data-row"><span class="data-label">IP Address</span><span class="data-val" id="m-ip">Unknown</span></div>
                     <div class="data-row"><span class="data-label">Device / OS</span><span class="data-val" id="m-device">Unknown</span></div>
                     <div class="data-row"><span class="data-label">Location</span><span class="data-val" id="m-loc">Unknown</span></div>
+                    <div class="data-row"><span class="data-label">ISP</span><span class="data-val" id="m-isp">Unknown</span></div>
                 </div>
 
-                <button id="btn-toggle-ban" class="btn-ban">SUSPEND ACCOUNT</button>
+                <div id="action-buttons-container">
+                    <button id="btn-open-warn" class="btn-warn">SEND OFFICIAL WARNING</button>
+                    <button id="btn-open-ban" class="btn-ban">SUSPEND ACCOUNT</button>
+                </div>
             </div>
 
             <!-- Right Column: Login History -->
@@ -377,6 +369,47 @@
     </div>
 </div>
 
+<!-- Ban Prompt Modal -->
+<div class="modal-overlay" id="ban-prompt-overlay" style="z-index: 999999;">
+    <div class="prompt-modal">
+        <h3 style="color:var(--danger)">Suspend Account</h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom: 15px;">An automated email will be sent notifying the user of this suspension.</p>
+        
+        <label style="font-size:12px; color:var(--accent);">Ban Duration:</label>
+        <select id="ban-duration">
+            <option value="1day">1 Day</option>
+            <option value="5days">5 Days</option>
+            <option value="10days">10 Days</option>
+            <option value="1month">1 Month</option>
+            <option value="permanent">Permanent Ban</option>
+        </select>
+
+        <label style="font-size:12px; color:var(--accent);">Reason for Suspension (Sent in Email):</label>
+        <textarea id="ban-reason" rows="3" placeholder="e.g. Repeated violation of rules..."></textarea>
+        
+        <div class="prompt-actions">
+            <button class="btn-prompt-cancel" onclick="document.getElementById('ban-prompt-overlay').classList.remove('open')">Cancel</button>
+            <button class="btn-prompt-submit btn-submit-ban" id="confirm-ban-btn">Enforce Ban</button>
+        </div>
+    </div>
+</div>
+
+<!-- Warn Prompt Modal -->
+<div class="modal-overlay" id="warn-prompt-overlay" style="z-index: 999999;">
+    <div class="prompt-modal">
+        <h3 style="color:var(--warning)">Send Official Warning</h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom: 15px;">An automated strict alert email will be sent to the user.</p>
+
+        <label style="font-size:12px; color:var(--accent);">Warning Reason (Sent in Email):</label>
+        <textarea id="warn-reason" rows="3" placeholder="e.g. Please stop spamming..."></textarea>
+        
+        <div class="prompt-actions">
+            <button class="btn-prompt-cancel" onclick="document.getElementById('warn-prompt-overlay').classList.remove('open')">Cancel</button>
+            <button class="btn-prompt-submit btn-submit-warn" id="confirm-warn-btn">Send Warning</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const loginView = document.getElementById('login-view');
     const dashboard = document.getElementById('dashboard');
@@ -384,20 +417,16 @@
     const passInput = document.getElementById('admin-pass');
     const errorMsg = document.getElementById('error-msg');
     
-    // Modal elements
     const modalOverlay = document.getElementById('modal-overlay');
     const modalCloseBtn = document.getElementById('modal-close');
     
     let usersData = [];
-    let currentSelectedUserId = null;
+    let currentSelectedUser = null;
 
-    // Check Session
     let sessionPass = sessionStorage.getItem('admin_pass') || '';
     if (sessionPass) fetchDashboardData(sessionPass);
 
-    loginBtn.onclick = () => {
-        if(passInput.value) fetchDashboardData(passInput.value);
-    };
+    loginBtn.onclick = () => { if(passInput.value) fetchDashboardData(passInput.value); };
     passInput.onkeypress = (e) => { if(e.key === 'Enter') loginBtn.click(); };
 
     document.getElementById('logout-btn').onclick = () => {
@@ -405,14 +434,9 @@
         window.location.reload();
     };
 
-    function closeModal() {
-        modalOverlay.classList.remove('open');
-    }
-
+    function closeModal() { modalOverlay.classList.remove('open'); }
     modalCloseBtn.onclick = closeModal;
-    modalOverlay.onclick = (e) => {
-        if(e.target === modalOverlay) closeModal();
-    };
+    modalOverlay.onclick = (e) => { if(e.target === modalOverlay) closeModal(); };
 
     async function fetchDashboardData(password) {
         try {
@@ -424,19 +448,13 @@
             });
 
             if (res.status === 401) throw new Error('ACCESS DENIED. INVALID KEY.');
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.error || 'DATABASE CONNECTION FAILED.');
-            }
+            if (!res.ok) throw new Error('DATABASE CONNECTION FAILED.');
             
             usersData = await res.json();
-            
             sessionStorage.setItem('admin_pass', password);
             loginView.style.display = 'none';
             dashboard.style.display = 'block';
-            
             processData(usersData);
-
         } catch(e) {
             errorMsg.textContent = e.message;
             errorMsg.style.display = 'block';
@@ -448,27 +466,24 @@
     function openUserModal(index) {
         const u = usersData[index];
         if(!u) return;
-
-        currentSelectedUserId = u._id;
+        currentSelectedUser = u;
 
         document.getElementById('m-avatar').src = u.avatar || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f2fe'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E`;
         document.getElementById('m-name').textContent = u.name || 'Unknown';
         document.getElementById('m-email').textContent = u.email || 'Unknown';
 
-        // Overview
         document.getElementById('m-created').textContent = new Date(u.createdAt).toLocaleDateString();
         document.getElementById('m-logins').textContent = u.loginCount || 1;
         document.getElementById('m-logouts').textContent = u.logoutCount || 0;
         document.getElementById('m-toolscount').textContent = u.toolsUsedCount || 0;
 
-        // Latest
         document.getElementById('m-ip').textContent = u.lastLoginIp || 'Unknown';
         document.getElementById('m-device').textContent = (u.deviceType || 'Unknown') + ' / ' + (u.os || 'Unknown');
         document.getElementById('m-loc').textContent = (u.city || 'Unknown') + ', ' + (u.country || 'Unknown');
+        document.getElementById('m-isp').textContent = u.isp || 'Unknown';
 
-        // Status Badge & Ban Button
         const badge = document.getElementById('m-status-badge');
-        const banBtn = document.getElementById('btn-toggle-ban');
+        const actionContainer = document.getElementById('action-buttons-container');
         
         if (u.isBanned) {
             badge.textContent = "BANNED";
@@ -476,81 +491,119 @@
             badge.style.color = "var(--danger)";
             badge.style.border = "1px solid var(--danger)";
             
-            banBtn.className = "btn-unban";
-            banBtn.textContent = "RESTORE ACCOUNT";
-            banBtn.onclick = () => toggleBan(u._id, false);
+            actionContainer.innerHTML = `<button id="btn-unban" class="btn-unban">RESTORE ACCOUNT (UNBAN)</button>`;
+            document.getElementById('btn-unban').onclick = () => submitBan(false);
         } else {
             badge.textContent = "ACTIVE";
             badge.style.backgroundColor = "rgba(16, 185, 129, 0.2)";
             badge.style.color = "var(--success)";
             badge.style.border = "1px solid var(--success)";
             
-            banBtn.className = "btn-ban";
-            banBtn.textContent = "SUSPEND ACCOUNT";
-            banBtn.onclick = () => toggleBan(u._id, true);
+            actionContainer.innerHTML = `
+                <button id="btn-open-warn" class="btn-warn">SEND OFFICIAL WARNING</button>
+                <button id="btn-open-ban" class="btn-ban">SUSPEND ACCOUNT</button>
+            `;
+            document.getElementById('btn-open-warn').onclick = () => { document.getElementById('warn-prompt-overlay').classList.add('open'); };
+            document.getElementById('btn-open-ban').onclick = () => { document.getElementById('ban-prompt-overlay').classList.add('open'); };
         }
 
-        // Render History Timeline
         const timeline = document.getElementById('m-timeline');
         timeline.innerHTML = '';
-        
         if (u.loginHistory && u.loginHistory.length > 0) {
-            // Sort newest first
             const history = [...u.loginHistory].sort((a,b) => new Date(b.loginAt) - new Date(a.loginAt));
-            
             history.forEach(session => {
                 const dateObj = new Date(session.loginAt);
-                const dateStr = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString();
-                const dev = session.deviceType || 'Unknown';
-                const os = session.os || 'Unknown';
-                const browser = session.browser || 'Unknown';
-                const city = session.city || 'Unknown';
-                const country = session.country || 'Unknown';
-                const ip = session.ip || 'Unknown';
-
                 const item = document.createElement('div');
                 item.className = 'timeline-item';
                 item.innerHTML = `
-                    <div class="time-date">${dateStr}</div>
+                    <div class="time-date">${dateObj.toLocaleDateString()} ${dateObj.toLocaleTimeString()}</div>
                     <div class="time-details">
-                        <span><b style="color:var(--accent);">IP:</b> ${ip}</span>
-                        <span><b style="color:var(--accent);">Loc:</b> ${city}, ${country}</span>
-                        <span><b style="color:var(--accent);">Sys:</b> ${dev} / ${os} / ${browser}</span>
+                        <span><b style="color:var(--accent);">IP:</b> ${session.ip || 'Unknown'} | <b style="color:var(--accent);">ISP:</b> ${session.isp || 'Unknown'}</span>
+                        <span><b style="color:var(--accent);">Loc:</b> ${session.city || 'Unknown'}, ${session.country || 'Unknown'}</span>
+                        <span><b style="color:var(--accent);">Sys:</b> ${session.deviceType || 'Unknown'} / ${session.os || 'Unknown'}</span>
                     </div>
                 `;
                 timeline.appendChild(item);
             });
-        } else {
-            timeline.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; font-style: italic;">No detailed session history available (Legacy Data).</div>';
         }
 
         modalOverlay.classList.add('open');
     }
 
-    async function toggleBan(userId, banStatus) {
+    // Submit Ban/Unban
+    async function submitBan(isBanned) {
+        let durationStr = null;
+        let reason = null;
+
+        if(isBanned) {
+            durationStr = document.getElementById('ban-duration').value;
+            reason = document.getElementById('ban-reason').value || 'Violation of rules.';
+            document.getElementById('confirm-ban-btn').textContent = "Banning...";
+        }
+
         try {
             const res = await fetch('/api/admin/ban', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password: sessionStorage.getItem('admin_pass'), userId: userId, isBanned: banStatus })
+                body: JSON.stringify({ 
+                    password: sessionStorage.getItem('admin_pass'), 
+                    userId: currentSelectedUser._id, 
+                    isBanned: isBanned,
+                    durationStr: durationStr,
+                    reason: reason
+                })
             });
             const data = await res.json();
             if(data.success) {
-                // Refresh data
+                document.getElementById('ban-prompt-overlay').classList.remove('open');
+                if(isBanned) document.getElementById('confirm-ban-btn').textContent = "Enforce Ban";
                 fetchDashboardData(sessionStorage.getItem('admin_pass'));
                 closeModal();
             } else {
-                alert("Failed to change ban status.");
+                alert("Failed to update status.");
+                if(isBanned) document.getElementById('confirm-ban-btn').textContent = "Enforce Ban";
             }
         } catch (e) {
             alert("Error connecting to server.");
         }
     }
 
+    // Submit Warn
+    async function submitWarn() {
+        const reason = document.getElementById('warn-reason').value || 'Suspicious activity detected.';
+        const btn = document.getElementById('confirm-warn-btn');
+        btn.textContent = "Sending...";
+
+        try {
+            const res = await fetch('/api/admin/warn', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    password: sessionStorage.getItem('admin_pass'), 
+                    userId: currentSelectedUser._id, 
+                    reason: reason
+                })
+            });
+            const data = await res.json();
+            if(data.success) {
+                document.getElementById('warn-prompt-overlay').classList.remove('open');
+                btn.textContent = "Send Warning";
+                alert("Warning email sent successfully.");
+            } else {
+                alert("Failed to send warning.");
+                btn.textContent = "Send Warning";
+            }
+        } catch (e) {
+            alert("Error connecting to server.");
+        }
+    }
+
+    document.getElementById('confirm-ban-btn').onclick = () => submitBan(true);
+    document.getElementById('confirm-warn-btn').onclick = () => submitWarn();
+
     function processData(users) {
         let totalLogins = 0;
         let totalBanned = 0;
-
         const tbody = document.getElementById('user-tbody');
         tbody.innerHTML = '';
 
@@ -560,27 +613,20 @@
 
             const tr = document.createElement('tr');
             tr.onclick = () => openUserModal(idx);
-
-            const avatar = u.avatar || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f2fe'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E`;
-            
-            const deviceVector = `<span class="highlight">${u.deviceType || 'Unknown'} / ${u.os || 'Unknown'}</span>`;
-            const geoInfo = `<span class="highlight">${u.city || 'Unknown'}, ${u.country || 'Unknown'}</span>`;
             
             let statusBadge = `<span class="highlight" style="font-size:11px; padding: 4px 8px; border: 1px solid var(--success); border-radius: 8px; color: var(--success);">ACTIVE</span>`;
-            if (u.isBanned) {
-                statusBadge = `<span class="banned-text" style="font-size:11px; padding: 4px 8px; border: 1px solid var(--danger); border-radius: 8px;">BANNED</span>`;
-            }
+            if (u.isBanned) statusBadge = `<span class="banned-text" style="font-size:11px; padding: 4px 8px; border: 1px solid var(--danger); border-radius: 8px;">BANNED</span>`;
 
             tr.innerHTML = `
                 <td>
-                    <img src="${avatar}" class="avatar">
+                    <img src="${u.avatar || ''}" class="avatar" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 24 24\\' fill=\\'%2300f2fe\\'%3E%3Cpath d=\\'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\\'/%3E%3C/svg%3E'">
                     <div style="display:inline-block; vertical-align:middle;">
                         <span class="user-name">${u.name}</span>
                         <span class="user-email">${u.email}</span>
                     </div>
                 </td>
-                <td class="sub-text">${deviceVector}</td>
-                <td class="sub-text">${geoInfo}</td>
+                <td class="sub-text"><span class="highlight">${u.deviceType || 'Unknown'} / ${u.os || 'Unknown'}</span></td>
+                <td class="sub-text"><span class="highlight">${u.city || 'Unknown'}, ${u.country || 'Unknown'}</span></td>
                 <td>${statusBadge}</td>
             `;
             tbody.appendChild(tr);

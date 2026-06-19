@@ -66,6 +66,14 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  banUntil: {
+    type: Date,
+    default: null
+  },
+  banReason: {
+    type: String,
+    default: ''
+  },
   loginHistory: [{
     loginAt: { type: Date, default: Date.now },
     ip: String,

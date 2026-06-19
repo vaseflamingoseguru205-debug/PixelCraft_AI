@@ -638,6 +638,15 @@ app.use((req, res, next) => {
   res.redirect('/login.html');
 });
 */
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
 // Endpoint to verify if an email is registered (used for strict email validation)
 app.post('/api/verify-registered-email', async (req, res) => {
     try {
@@ -648,6 +657,14 @@ app.post('/api/verify-registered-email', async (req, res) => {
         const user = await User.findOne({ email: email.toLowerCase() });
         if (user) {
             if (user.isBanned) {
+                // Check if temporary ban has expired
+                if (user.banUntil && user.banUntil <= Date.now()) {
+                    user.isBanned = false;
+                    user.banUntil = null;
+                    user.banReason = '';
+                    await user.save();
+                    return res.json({ exists: true });
+                }
                 return res.json({ exists: false, banned: true }); // Treat as not existing if banned, to trigger access denied
             }
             res.json({ exists: true });
@@ -662,17 +679,109 @@ app.post('/api/verify-registered-email', async (req, res) => {
 
 // Admin Route to Ban/Unban users
 app.post('/api/admin/ban', async (req, res) => {
-  const { password, userId, isBanned } = req.body;
+  const { password, userId, isBanned, durationStr, reason } = req.body;
   const expectedPassword = (process.env.ADMIN_PASSWORD || 'PxlCrft_Admin_8x9vZapL2qWkmN5jR_cF1yT').replace(/["']/g, "").trim();
   
   if (!password || password.trim() !== expectedPassword) {
     return res.status(401).json({ error: 'Unauthorized access.' });
   }
   try {
-    await User.findByIdAndUpdate(userId, { isBanned: isBanned });
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({error: 'User not found'});
+
+    user.isBanned = isBanned;
+    
+    if (isBanned) {
+        user.banReason = reason || 'Violation of Terms of Service';
+        if (durationStr === '1day') user.banUntil = new Date(Date.now() + 24*60*60*1000);
+        else if (durationStr === '5days') user.banUntil = new Date(Date.now() + 5*24*60*60*1000);
+        else if (durationStr === '10days') user.banUntil = new Date(Date.now() + 10*24*60*60*1000);
+        else if (durationStr === '1month') user.banUntil = new Date(Date.now() + 30*24*60*60*1000);
+        else user.banUntil = new Date(Date.now() + 100*365*24*60*60*1000); // permanent
+        
+        await user.save();
+        
+        // Send Ban Email
+        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+            const untilDate = (durationStr === 'permanent' || !durationStr) ? 'Permanent' : user.banUntil.toLocaleDateString();
+            const dur = durationStr ? durationStr.toUpperCase() : 'PERMANENT';
+            const mailOptions = {
+                from: `"PixelCraft Security" <${process.env.EMAIL_USER}>`,
+                to: user.email,
+                subject: '🚨 URGENT: Your Account Has Been Suspended',
+                html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ef4444; border-radius: 10px; overflow: hidden;">
+                    <div style="background-color: #ef4444; color: white; padding: 20px; text-align: center;">
+                        <h2 style="margin: 0; letter-spacing: 1px;">ACCOUNT SUSPENDED</h2>
+                    </div>
+                    <div style="padding: 30px; background-color: #111; color: #fff;">
+                        <p>Dear ${user.name},</p>
+                        <p>This is an automated notification from PixelCraft AI Security Systems.</p>
+                        <p>Your account access has been revoked due to a violation of our Terms of Service.</p>
+                        <div style="background-color: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0;">
+                            <p style="margin: 0;"><strong>Reason:</strong> ${user.banReason}</p>
+                            <p style="margin: 10px 0 0 0;"><strong>Ban Duration:</strong> ${dur}</p>
+                            <p style="margin: 10px 0 0 0;"><strong>Expiration:</strong> ${untilDate}</p>
+                        </div>
+                        <p>Any further attempts to bypass this suspension may result in a permanent hardware and IP ban.</p>
+                        <p style="margin-top: 30px; font-size: 12px; color: #888;">PixelCraft AI Automated Enforcement Agent</p>
+                    </div>
+                </div>`
+            };
+            transporter.sendMail(mailOptions).catch(err => console.error("Email send failed:", err));
+        }
+    } else {
+        user.banUntil = null;
+        user.banReason = '';
+        await user.save();
+    }
     res.json({ success: true });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Failed to update ban status' });
+  }
+});
+
+// Admin Route to Send Warning Email
+app.post('/api/admin/warn', async (req, res) => {
+  const { password, userId, reason } = req.body;
+  const expectedPassword = (process.env.ADMIN_PASSWORD || 'PxlCrft_Admin_8x9vZapL2qWkmN5jR_cF1yT').replace(/["']/g, "").trim();
+  
+  if (!password || password.trim() !== expectedPassword) {
+    return res.status(401).json({ error: 'Unauthorized access.' });
+  }
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({error: 'User not found'});
+
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        const mailOptions = {
+            from: `"PixelCraft Security" <${process.env.EMAIL_USER}>`,
+            to: user.email,
+            subject: '⚠️ WARNING: Suspicious Activity Detected',
+            html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #f59e0b; border-radius: 10px; overflow: hidden;">
+                <div style="background-color: #f59e0b; color: white; padding: 20px; text-align: center;">
+                    <h2 style="margin: 0; letter-spacing: 1px;">OFFICIAL WARNING</h2>
+                </div>
+                <div style="padding: 30px; background-color: #111; color: #fff;">
+                    <p>Dear ${user.name},</p>
+                    <p>This is an automated warning from PixelCraft AI Security Systems.</p>
+                    <p>We have detected activity on your account that violates our guidelines.</p>
+                    <div style="background-color: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
+                        <p style="margin: 0;"><strong>Warning Reason:</strong> ${reason}</p>
+                    </div>
+                    <p>Please stop this activity immediately. Repeated violations will result in an automatic account suspension.</p>
+                    <p style="margin-top: 30px; font-size: 12px; color: #888;">PixelCraft AI Automated Enforcement Agent</p>
+                </div>
+            </div>`
+        };
+        transporter.sendMail(mailOptions).catch(err => console.error("Email send failed:", err));
+    }
+    
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to send warning' });
   }
 });
 
