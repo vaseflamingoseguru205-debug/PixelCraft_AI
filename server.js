@@ -127,7 +127,7 @@ app.use(async (req, res, next) => {
                                 <span><b>EXPIRES:</b> ${untilStr}</span>
                             </div>
                             <br>
-                            <a href="/auth/google" class="btn">Check Status / Switch Account</a>
+                            <a href="/auth/google?prompt=select_account" class="btn">Switch Account</a>
                         </div>
                     </body>
                     </html>
@@ -329,9 +329,14 @@ app.post('/api/user/track-behavior', async (req, res) => {
 });
 
 // Route to start Google Auth
-app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
+app.get('/auth/google', (req, res, next) => {
+  const options = { scope: ['profile', 'email'] };
+  // If ?prompt=select_account is passed (e.g. from ban page), force Google account chooser
+  if (req.query.prompt === 'select_account') {
+    options.prompt = 'select_account';
+  }
+  passport.authenticate('google', options)(req, res, next);
+});
 
 // Callback after Google Authorization
 app.get('/auth/google/callback',
