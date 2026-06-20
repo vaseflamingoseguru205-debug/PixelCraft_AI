@@ -646,7 +646,9 @@
         }
 
         // TAB 1: Overview
-        document.getElementById('m-created').textContent = new Date(u.createdAt).toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' });
+        // Derive account creation date from MongoDB ObjectID
+        const createdDate = new Date(parseInt(u._id.substring(0, 8), 16) * 1000);
+        document.getElementById('m-created').textContent = createdDate.toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' });
         document.getElementById('m-logins').textContent = u.loginCount || 1;
         document.getElementById('m-logouts').textContent = u.logoutCount || 0;
         const totalMins = Math.round((u.totalTimeSpentSeconds || 0) / 60);
@@ -775,10 +777,19 @@
 
         // TAB 5: Actions
         const actionContainer = document.getElementById('action-buttons-container');
+        
+        const deleteButtonHtml = `
+            <div style="margin-top: 35px; border-top: 1px solid rgba(239, 68, 68, 0.2); padding-top: 25px;">
+                <p style="color:var(--text-muted); font-size:12px; text-align:center; margin-bottom:12px;">Dangerous Action: Completely erase user from database</p>
+                <button id="btn-delete-db" class="btn-ban" style="background: rgba(185, 28, 28, 0.1); border-color: #b91c1c; color: #fca5a5;">🗑️ DELETE FROM DATABASE</button>
+            </div>
+        `;
+
         if (u.isBanned) {
             actionContainer.innerHTML = `
                 <p style="color:var(--text-muted); font-size:14px; text-align:center; margin-bottom:20px;">This account is currently suspended. Restoring will send them a welcome-back email.</p>
                 <button id="btn-unban" class="btn-unban">✅ RESTORE ACCOUNT & SEND EMAIL</button>
+                ${deleteButtonHtml}
             `;
             document.getElementById('btn-unban').onclick = () => submitBan(false);
         } else {
@@ -786,16 +797,24 @@
                 <p style="color:var(--text-muted); font-size:14px; text-align:center; margin-bottom:20px;">This account is active. You can send a warning or suspend access.</p>
                 <button id="btn-open-warn" class="btn-warn">⚠️ SEND OFFICIAL WARNING</button>
                 <button id="btn-open-ban" class="btn-ban">🚫 SUSPEND ACCOUNT</button>
+                ${deleteButtonHtml}
             `;
             document.getElementById('btn-open-warn').onclick = () => { document.getElementById('warn-prompt-overlay').classList.add('open'); };
             document.getElementById('btn-open-ban').onclick = () => { document.getElementById('ban-prompt-overlay').classList.add('open'); };
         }
+
+        document.getElementById('btn-delete-db').onclick = () => {
+            if(confirm("⚠️ ARE YOU SURE?\n\nThis will permanently erase this user's account and all history from the database. This action CANNOT be undone!")) {
+                deleteUserFromDB(u._id);
+            }
+        };
 
         modalOverlay.classList.add('open');
     }
 
     // Submit Ban/Unban
     async function submitBan(isBanned) {
+
         let durationStr = null;
         let reason = null;
 
@@ -827,6 +846,30 @@
             } else {
                 showCustomAlert("Failed to update status.", false);
                 if(isBanned) document.getElementById('confirm-ban-btn').textContent = "Enforce Ban";
+            }
+        } catch (e) {
+            showCustomAlert("Error connecting to server.", false);
+        }
+    }
+
+    // Delete User from DB
+    async function deleteUserFromDB(userId) {
+        try {
+            const res = await fetch('/api/admin/delete-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    password: sessionStorage.getItem('admin_pass'), 
+                    userId: userId 
+                })
+            });
+            const data = await res.json();
+            if(data.success) {
+                showCustomAlert("User permanently erased from database!", true);
+                fetchDashboardData(sessionStorage.getItem('admin_pass'));
+                closeModal();
+            } else {
+                showCustomAlert(data.error || "Failed to delete user.", false);
             }
         } catch (e) {
             showCustomAlert("Error connecting to server.", false);

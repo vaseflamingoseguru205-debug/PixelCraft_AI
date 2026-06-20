@@ -1189,6 +1189,23 @@ app.post('/api/admin/warn', async (req, res) => {
   }
 });
 
+// Delete User Route
+app.post('/api/admin/delete-user', async (req, res) => {
+  const { password, userId } = req.body;
+  const expectedPassword = (process.env.ADMIN_PASSWORD || 'PxlCrft_Admin_8x9vZapL2qWkmN5jR_cF1yT').replace(/["']/g, "").trim();
+  
+  if (!password || password.trim() !== expectedPassword) {
+    return res.status(401).json({ error: 'Unauthorized access.' });
+  }
+  try {
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) return res.status(404).json({error: 'User not found'});
+    res.json({ success: true, message: 'User permanently deleted from database' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
 
 // Serve all static files (HTML, CSS, JS) from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
