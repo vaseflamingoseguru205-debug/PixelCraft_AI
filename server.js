@@ -127,7 +127,7 @@ app.use(async (req, res, next) => {
                                 <span><b>EXPIRES:</b> ${untilStr}</span>
                             </div>
                             <br>
-                            <a href="/auth/google?prompt=select_account" class="btn">Switch Account</a>
+                            <a href="/auth/switch-account" class="btn">Switch Account</a>
                         </div>
                     </body>
                     </html>
@@ -331,11 +331,29 @@ app.post('/api/user/track-behavior', async (req, res) => {
 // Route to start Google Auth
 app.get('/auth/google', (req, res, next) => {
   const options = { scope: ['profile', 'email'] };
-  // If ?prompt=select_account is passed (e.g. from ban page), force Google account chooser
   if (req.query.prompt === 'select_account') {
     options.prompt = 'select_account';
   }
   passport.authenticate('google', options)(req, res, next);
+});
+
+// Switch Account Route - Clears current session first, then forces Google account chooser
+// This is used from the Ban page so banned user can login with a different account
+app.get('/auth/switch-account', (req, res, next) => {
+  // Step 1: Destroy server session completely
+  req.logout((err) => {
+    if (err) { return next(err); }
+    req.session.destroy(() => {
+      // Step 2: Clear the session cookie from browser
+      res.clearCookie('connect.sid');
+      // Step 3: Now redirect to Google with prompt=select_account
+      // Since session is destroyed, Google will show the account chooser
+      passport.authenticate('google', {
+        scope: ['profile', 'email'],
+        prompt: 'select_account'
+      })(req, res, next);
+    });
+  });
 });
 
 // Callback after Google Authorization
