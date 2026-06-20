@@ -99,38 +99,322 @@ app.use(async (req, res, next) => {
 
                 const untilStr = req.user.banUntil ? req.user.banUntil.toLocaleString() : 'Permanent';
                 const reason = req.user.banReason || 'Violation of Guidelines';
-
                 return res.send(`
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head><title>Account Suspended</title>
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
-                    <style>
-                        body { background-color: #050b14; color: #ef4444; font-family: 'Outfit', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; background-image: radial-gradient(circle at center, rgba(239,68,68,0.1) 0%, transparent 70%); }
-                        .box { background: rgba(20,20,30,0.8); border: 1px solid #ef4444; padding: 40px; border-radius: 16px; box-shadow: 0 0 40px rgba(239,68,68,0.2); max-width: 500px; width: 90%; }
-                        h1 { font-size: 32px; margin-top: 0; text-transform: uppercase; letter-spacing: 2px; }
-                        p { color: #e2e8f0; line-height: 1.6; font-size: 16px; margin-bottom: 25px; }
-                        .details { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border-left: 4px solid #ef4444; text-align: left; }
-                        .details span { display: block; margin-bottom: 8px; font-size: 14px; }
-                        .details b { color: #ef4444; }
-                        .btn { background: transparent; border: 1px solid #94a3b8; color: #94a3b8; padding: 10px 20px; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; transition: 0.3s; }
-                        .btn:hover { background: #94a3b8; color: #000; }
-                    </style>
-                    </head>
-                    <body>
-                        <div class="box">
-                            <h1>🚨 ACCESS REVOKED</h1>
-                            <p>Your connection to PixelCraft AI has been suspended due to suspicious activity or a violation of our terms.</p>
-                            <div class="details">
-                                <span><b>REASON:</b> ${reason}</span>
-                                <span><b>EXPIRES:</b> ${untilStr}</span>
-                            </div>
-                            <br>
-                            <a href="/auth/switch-account" class="btn">Switch Account</a>
-                        </div>
-                    </body>
-                    </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Suspended — PixelCraft AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: #020810;
+            color: #e2e8f0;
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image:
+                radial-gradient(ellipse at 50% 0%, rgba(239,68,68,0.12) 0%, transparent 60%),
+                linear-gradient(rgba(239,68,68,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(239,68,68,0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 620px;
+        }
+
+        /* Top Warning Bar */
+        .warn-bar {
+            background: rgba(239,68,68,0.15);
+            border: 1px solid rgba(239,68,68,0.4);
+            border-radius: 8px;
+            padding: 10px 20px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #ef4444;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            animation: pulse-bar 2s ease-in-out infinite;
+        }
+        @keyframes pulse-bar {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Main Card */
+        .card {
+            background: rgba(15, 8, 20, 0.95);
+            border: 1px solid rgba(239,68,68,0.35);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 60px rgba(239,68,68,0.12), 0 0 0 1px rgba(239,68,68,0.08) inset;
+        }
+
+        /* Header */
+        .card-header {
+            background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(100,10,10,0.3));
+            border-bottom: 1px solid rgba(239,68,68,0.25);
+            padding: 36px 36px 28px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(239,68,68,0.06) 0%, transparent 60%);
+            animation: rotate-glow 8s linear infinite;
+        }
+        @keyframes rotate-glow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .icon-wrap {
+            width: 72px; height: 72px;
+            background: rgba(239,68,68,0.1);
+            border: 2px solid rgba(239,68,68,0.4);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+            box-shadow: 0 0 20px rgba(239,68,68,0.2);
+            position: relative; z-index: 1;
+        }
+
+        .card-header h1 {
+            font-size: 28px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #ef4444;
+            text-shadow: 0 0 20px rgba(239,68,68,0.5);
+            position: relative; z-index: 1;
+            margin-bottom: 8px;
+        }
+        .card-header p {
+            font-size: 14px;
+            color: #94a3b8;
+            position: relative; z-index: 1;
+            line-height: 1.6;
+        }
+
+        /* Body */
+        .card-body { padding: 28px 32px; }
+
+        /* Details Box */
+        .details-box {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(239,68,68,0.2);
+            border-left: 4px solid #ef4444;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 14px;
+        }
+        .detail-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .detail-label { color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; margin-top: 1px; }
+        .detail-val { color: #e2e8f0; text-align: right; font-weight: 600; }
+        .detail-val.red { color: #ef4444; }
+        .detail-val.yellow { color: #f59e0b; }
+
+        /* Countdown */
+        .countdown-wrap {
+            background: rgba(239,68,68,0.05);
+            border: 1px solid rgba(239,68,68,0.2);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: ${req.user.banUntil && req.user.banUntil > Date.now() ? 'block' : 'none'};
+        }
+        .countdown-label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+        .countdown-timer { font-size: 28px; font-weight: 700; color: #ef4444; font-family: 'JetBrains Mono', monospace; letter-spacing: 2px; }
+        .countdown-sub { font-size: 11px; color: #475569; margin-top: 6px; }
+
+        /* Warning Notice */
+        .notice-box {
+            background: rgba(245,158,11,0.05);
+            border: 1px solid rgba(245,158,11,0.2);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.7;
+        }
+        .notice-box b { color: #f59e0b; }
+
+        /* Buttons */
+        .btn-appeal {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid rgba(239,68,68,0.5);
+            color: #ef4444;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: 0.3s;
+            margin-bottom: 12px;
+        }
+        .btn-appeal:hover {
+            background: rgba(239,68,68,0.1);
+            box-shadow: 0 0 20px rgba(239,68,68,0.15);
+        }
+
+        /* Links Footer */
+        .links-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 4px;
+        }
+        .links-row a {
+            color: #475569;
+            font-size: 12px;
+            text-decoration: none;
+            transition: 0.2s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .links-row a:hover { color: #94a3b8; }
+
+        /* Footer */
+        .card-footer {
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 14px 32px;
+            text-align: center;
+            font-size: 11px;
+            color: #334155;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="warn-bar">⚠ &nbsp; SECURITY ENFORCEMENT ACTIVE &nbsp; ⚠</div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-wrap">🚫</div>
+                <h1>Account Suspended</h1>
+                <p>Your access to PixelCraft AI has been revoked by our automated enforcement system due to a violation of our platform policies.</p>
+            </div>
+
+            <div class="card-body">
+                <!-- Details -->
+                <div class="details-box">
+                    <div class="detail-row">
+                        <span class="detail-label">Account</span>
+                        <span class="detail-val">${req.user.email}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Reason</span>
+                        <span class="detail-val red">${reason}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status</span>
+                        <span class="detail-val red">${req.user.banUntil && req.user.banUntil > Date.now() ? 'Temporary Suspension' : 'Permanent Ban'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Expires</span>
+                        <span class="detail-val yellow">${untilStr}</span>
+                    </div>
+                </div>
+
+                <!-- Countdown Timer (only for temp bans) -->
+                <div class="countdown-wrap" id="countdown-wrap">
+                    <div class="countdown-label">Time Remaining Until Auto-Restore</div>
+                    <div class="countdown-timer" id="countdown">--:--:--</div>
+                    <div class="countdown-sub">Your account will automatically be restored when the timer reaches zero.</div>
+                </div>
+
+                <!-- Warning Notice -->
+                <div class="notice-box">
+                    <b>⚠ Important Notice:</b> Any attempt to bypass this suspension using alternate accounts, VPNs, or proxy servers will result in a <b>permanent hardware-level ban</b> with no possibility of appeal. Our systems actively monitor for such activity.<br><br>
+                    If you believe this suspension was issued in error, you may submit an appeal by contacting our support team below.
+                </div>
+
+                <!-- Appeal Button -->
+                <a href="mailto:support.pixelcraft205@gmail.com?subject=Ban Appeal - ${encodeURIComponent(req.user.email)}&body=Hello PixelCraft AI Team,%0A%0AI would like to appeal my account suspension.%0A%0AAccount Email: ${req.user.email}%0ABan Reason: ${encodeURIComponent(reason)}%0A%0AMy explanation:%0A" class="btn-appeal">
+                    📧 &nbsp; Submit Appeal via Email
+                </a>
+
+                <!-- Policy Links -->
+                <div class="links-row">
+                    <a href="/terms-conditions.html" target="_blank">Terms & Conditions</a>
+                    <a href="/privacy-policy.html" target="_blank">Privacy Policy</a>
+                    <a href="/contact-us.html" target="_blank">Contact Us</a>
+                    <a href="/disclaimer.html" target="_blank">Disclaimer</a>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                PIXELCRAFT AI &nbsp;·&nbsp; AUTOMATED SECURITY SYSTEM &nbsp;·&nbsp; REF: ${req.user._id ? req.user._id.toString().slice(-8).toUpperCase() : 'N/A'}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Countdown timer for temporary bans
+        const banUntil = ${req.user.banUntil ? new Date(req.user.banUntil).getTime() : 0};
+        if (banUntil > Date.now()) {
+            function updateCountdown() {
+                const now = Date.now();
+                const diff = banUntil - now;
+                if (diff <= 0) {
+                    document.getElementById('countdown').textContent = 'EXPIRED — Refresh Page';
+                    return;
+                }
+                const d = Math.floor(diff / 86400000);
+                const h = Math.floor((diff % 86400000) / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                const parts = [];
+                if (d > 0) parts.push(d + 'd');
+                parts.push(String(h).padStart(2,'0') + 'h');
+                parts.push(String(m).padStart(2,'0') + 'm');
+                parts.push(String(s).padStart(2,'0') + 's');
+                document.getElementById('countdown').textContent = parts.join(' : ');
+            }
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+    </script>
+</body>
+</html>
                 `);
             }
         }
