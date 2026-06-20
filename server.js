@@ -510,9 +510,9 @@ app.post('/api/admin/users', requireAdminAuth, async (req, res) => {
 // Check if user is logged in (Frontend calls this to update UI)
 app.get('/api/auth/status', (req, res) => {
   if (req.isAuthenticated()) {
-    res.json({ authenticated: true, user: req.user });
+    res.json({ authenticated: true, user: req.user, requireLoginForTools: appSettings.requireLoginForTools });
   } else {
-    res.json({ authenticated: false });
+    res.json({ authenticated: false, requireLoginForTools: appSettings.requireLoginForTools });
   }
 });
 
