@@ -338,20 +338,17 @@ app.get('/auth/google', (req, res, next) => {
 });
 
 // Switch Account Route - Clears current session first, then forces Google account chooser
-// This is used from the Ban page so banned user can login with a different account
 app.get('/auth/switch-account', (req, res, next) => {
-  // Step 1: Destroy server session completely
+  // Step 1: Logout from passport
   req.logout((err) => {
     if (err) { return next(err); }
+    // Step 2: Destroy the server session completely
     req.session.destroy(() => {
-      // Step 2: Clear the session cookie from browser
+      // Step 3: Clear session cookie from browser
       res.clearCookie('connect.sid');
-      // Step 3: Now redirect to Google with prompt=select_account
-      // Since session is destroyed, Google will show the account chooser
-      passport.authenticate('google', {
-        scope: ['profile', 'email'],
-        prompt: 'select_account'
-      })(req, res, next);
+      // Step 4: Redirect to Google auth with prompt=select_account
+      // Now session is gone, so Google will show the full account chooser list
+      res.redirect('/auth/google?prompt=select_account');
     });
   });
 });
