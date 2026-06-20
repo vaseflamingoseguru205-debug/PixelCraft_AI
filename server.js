@@ -11,7 +11,7 @@ const path = require('path');
 const User = require('./models/User');
 const multer = require('multer');
 const FormData = require('form-data');
-
+const fs = require('fs');
 const app = express();
 app.set('trust proxy', 1); // Trust the Render proxy to fix HTTP/HTTPS mismatch
 const PORT = process.env.PORT || 8080;
@@ -403,14 +403,111 @@ passport.use(new GoogleStrategy({
 
 // --- API ROUTES ---
 
-// Admin Panel Route
-app.post('/api/admin/users', async (req, res) => {
-  const { password } = req.body;
+// Admin Authorization Middleware (2-Step Verification)
+const requireAdminAuth = (req, res, next) => {
+  // Try to get password from body (POST) or headers (GET)
+  const password = req.body.password || req.headers['x-admin-password'];
   const expectedPassword = (process.env.ADMIN_PASSWORD || 'PxlCrft_Admin_8x9vZapL2qWkmN5jR_cF1yT').replace(/["']/g, "").trim();
-  
-  if (!password || password.trim() !== expectedPassword) {
-    return res.status(401).json({ error: 'Unauthorized access. Incorrect password.' });
+
+  // Step 1: Check Google Login & Admin Email
+  if (!req.isAuthenticated() || !req.user || !req.user.email) {
+    return res.status(401).json({ error: 'Google Login Required for Admin Access.' });
   }
+
+  const allowedEmails = (process.env.ADMIN_EMAILS || 'lizardsquad1809@gmail.com').split(',').map(e => e.trim().toLowerCase());
+  if (!allowedEmails.includes(req.user.email.toLowerCase())) {
+    return res.status(403).json({ error: 'Access Denied. Your Google Account is not authorized.' });
+  }
+
+  // Step 2: Check Access Key
+  if (!password || password.trim() !== expectedPassword) {
+    return res.status(401).json({ error: 'Unauthorized access. Incorrect Access Key.' });
+  }
+
+  next();
+};
+
+// --- ADVANCED DEPLOYMENT CENTER ENDPOINTS ---
+
+// 1. Get Project Files
+app.get('/api/admin/files', requireAdminAuth, (req, res) => {
+  try {
+    const publicDir = path.join(__dirname, 'public');
+    const rootDir = __dirname;
+    
+    // Read root files (like server.js) and public directory
+    const getFiles = (dir, prefix = '') => {
+      let results = [];
+      const list = fs.readdirSync(dir);
+      list.forEach(file => {
+        const filePath = path.join(dir, file);
+        const stat = fs.statSync(filePath);
+        if (stat && stat.isDirectory()) {
+          // Exclude node_modules, .git, etc.
+          if (!file.startsWith('.') && file !== 'node_modules' && file !== 'models' && file !== 'scratch_imgly') {
+             results = results.concat(getFiles(filePath, prefix + file + '/'));
+          }
+        } else {
+          // Allow editing .html, .css, .js, .json
+          if (file.match(/\.(html|css|js|json)$/)) {
+            results.push({ name: file, path: prefix + file, fullPath: filePath });
+          }
+        }
+      });
+      return results;
+    };
+
+    const publicFiles = getFiles(publicDir, 'public/');
+    const rootFiles = getFiles(rootDir, '').filter(f => !f.path.startsWith('public/')); // Exclude duplicates
+    
+    res.json({ files: [...rootFiles, ...publicFiles] });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to read directory' });
+  }
+});
+
+// 2. Read specific file content
+app.get('/api/admin/file/read', requireAdminAuth, (req, res) => {
+  try {
+    const targetPath = req.query.path;
+    if (!targetPath || targetPath.includes('..')) return res.status(400).json({ error: 'Invalid path' });
+    
+    const absolutePath = path.join(__dirname, targetPath);
+    if (!fs.existsSync(absolutePath)) return res.status(404).json({ error: 'File not found' });
+
+    const content = fs.readFileSync(absolutePath, 'utf8');
+    res.json({ content });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to read file' });
+  }
+});
+
+// 3. Deploy/Save file content with Rollback support
+app.post('/api/admin/file/deploy', requireAdminAuth, (req, res) => {
+  try {
+    const { filePath, content } = req.body;
+    if (!filePath || filePath.includes('..')) return res.status(400).json({ error: 'Invalid path' });
+    if (typeof content !== 'string') return res.status(400).json({ error: 'Invalid content' });
+
+    const absolutePath = path.join(__dirname, filePath);
+    if (!fs.existsSync(absolutePath)) return res.status(404).json({ error: 'File not found' });
+
+    // Create Backup (Rollback Support)
+    const backupPath = absolutePath + '.bak';
+    fs.copyFileSync(absolutePath, backupPath);
+
+    // Write new content
+    fs.writeFileSync(absolutePath, content, 'utf8');
+
+    res.json({ success: true, message: 'File deployed successfully! Backup created.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to deploy file' });
+  }
+});
+
+// Admin Panel Route
+app.post('/api/admin/users', requireAdminAuth, async (req, res) => {
+
   try {
     const users = await User.find({}).sort({ createdAt: -1 });
     res.json(users);
@@ -970,13 +1067,9 @@ app.post('/api/verify-registered-email', async (req, res) => {
 });
 
 // Admin Route to Ban/Unban users
-app.post('/api/admin/ban', async (req, res) => {
-  const { password, userId, isBanned, durationStr, reason } = req.body;
-  const expectedPassword = (process.env.ADMIN_PASSWORD || 'PxlCrft_Admin_8x9vZapL2qWkmN5jR_cF1yT').replace(/["']/g, "").trim();
+app.post('/api/admin/ban', requireAdminAuth, async (req, res) => {
+  const { userId, isBanned, durationStr, reason } = req.body;
   
-  if (!password || password.trim() !== expectedPassword) {
-    return res.status(401).json({ error: 'Unauthorized access.' });
-  }
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({error: 'User not found'});
@@ -1125,13 +1218,9 @@ app.post('/api/admin/ban', async (req, res) => {
 });
 
 // Admin Route to Send Warning Email
-app.post('/api/admin/warn', async (req, res) => {
-  const { password, userId, reason } = req.body;
-  const expectedPassword = (process.env.ADMIN_PASSWORD || 'PxlCrft_Admin_8x9vZapL2qWkmN5jR_cF1yT').replace(/["']/g, "").trim();
+app.post('/api/admin/warn', requireAdminAuth, async (req, res) => {
+  const { userId, reason } = req.body;
   
-  if (!password || password.trim() !== expectedPassword) {
-    return res.status(401).json({ error: 'Unauthorized access.' });
-  }
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({error: 'User not found'});
@@ -1190,13 +1279,9 @@ app.post('/api/admin/warn', async (req, res) => {
 });
 
 // Delete User Route
-app.post('/api/admin/delete-user', async (req, res) => {
-  const { password, userId } = req.body;
-  const expectedPassword = (process.env.ADMIN_PASSWORD || 'PxlCrft_Admin_8x9vZapL2qWkmN5jR_cF1yT').replace(/["']/g, "").trim();
+app.post('/api/admin/delete-user', requireAdminAuth, async (req, res) => {
+  const { userId } = req.body;
   
-  if (!password || password.trim() !== expectedPassword) {
-    return res.status(401).json({ error: 'Unauthorized access.' });
-  }
   try {
     const deletedUser = await User.findByIdAndDelete(userId);
     if (!deletedUser) return res.status(404).json({error: 'User not found'});

@@ -6,6 +6,15 @@
     <title>PixelCraft AI - Control Room</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- CodeMirror for Advanced Code Editor -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script>
     <style>
         :root {
             --bg: #050b14;
@@ -363,8 +372,57 @@
         .scroll-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #10b981, #00f2fe); transition: width 0.5s ease; }
         .behavior-info { font-size: 11px; color: var(--text-muted); text-align: right; white-space: nowrap; }
     </style>
+    <!-- CodeMirror -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
 </head>
 <body>
+
+<!-- Deployment Hub Modal -->
+<div class="modal-overlay" id="deploy-modal-overlay">
+    <div class="user-modal" id="deploy-modal" style="max-width: 1200px; height: 85vh;">
+        <div class="modal-header">
+            <div class="modal-user-info">
+                <div>
+                    <h2 class="modal-name">Deployment Hub</h2>
+                    <p class="modal-email">Advanced File Management & Editor</p>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-primary" id="preview-file-btn" style="width:auto; padding:8px 15px; font-size:12px; display:none;">Preview</button>
+                <button class="btn-primary" id="save-deploy-btn" style="width:auto; padding:8px 15px; font-size:12px; background:var(--success); color:#fff; border-color:var(--success); display:none;">Deploy Gravity</button>
+                <button class="modal-close" id="deploy-modal-close">&times;</button>
+            </div>
+        </div>
+        
+        <div style="display:flex; height: calc(100% - 100px); overflow: hidden;">
+            <!-- Sidebar: File List -->
+            <div style="width: 250px; background: rgba(0,0,0,0.4); border-right: 1px solid var(--border); overflow-y: auto; padding: 10px;" id="file-list-container">
+                <p style="color:var(--accent); font-family:'JetBrains Mono', monospace; font-size:12px; margin-bottom:15px; text-transform:uppercase;">Project Files</p>
+                <ul id="file-list" style="list-style:none; padding:0; margin:0; font-family:'JetBrains Mono', monospace; font-size:13px; color:#cbd5e1;">
+                    <!-- Dynamically populated -->
+                </ul>
+            </div>
+            
+            <!-- Main Area: Code Editor -->
+            <div style="flex:1; display:flex; flex-direction:column; background: #282a36;">
+                <div style="padding: 10px 15px; background: rgba(0,0,0,0.5); border-bottom: 1px solid #444; color: #f8f8f2; font-family: 'JetBrains Mono', monospace; font-size: 13px; display:flex; justify-content:space-between; align-items:center;">
+                    <span id="current-file-label">Select a file to edit</span>
+                    <span id="editor-status" style="color:var(--text-muted); font-size:11px;"></span>
+                </div>
+                <div style="flex:1; position:relative;" id="editor-container">
+                    <!-- CodeMirror goes here -->
+                    <textarea id="code-editor"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Login View -->
 <div class="login-wrapper" id="login-view">
@@ -384,7 +442,10 @@
             <h1>Global Telemetry Hub</h1>
             <span><div class="pulse"></div> UPLINK SECURE // LIVE TRACKING</span>
         </div>
-        <button class="btn-logout" id="logout-btn">Terminate Session</button>
+        <div style="display:flex; gap:15px; align-items:center;">
+            <button class="btn-primary" id="open-deploy-btn" style="width:auto; padding: 10px 20px; font-size: 13px;">Deployment Hub</button>
+            <button class="btn-logout" id="logout-btn">Terminate Session</button>
+        </div>
     </div>
 
     <!-- Stats -->
@@ -566,9 +627,23 @@
     
     let usersData = [];
     let currentSelectedUser = null;
+    let currentPassword = sessionStorage.getItem('admin_pass') || '';
+    
+    // Initialize CodeMirror
+    const editorTextArea = document.getElementById('code-editor');
+    const codeMirrorInstance = CodeMirror.fromTextArea(editorTextArea, {
+        mode: "htmlmixed",
+        theme: "dracula",
+        lineNumbers: true,
+        autoCloseTags: true,
+        autoCloseBrackets: true,
+        styleActiveLine: true,
+        matchBrackets: true
+    });
+    codeMirrorInstance.setSize("100%", "100%");
+    let currentActiveFile = null;
 
-    let sessionPass = sessionStorage.getItem('admin_pass') || '';
-    if (sessionPass) fetchDashboardData(sessionPass);
+    if (currentPassword) fetchDashboardData(currentPassword);
 
     loginBtn.onclick = () => { if(passInput.value) fetchDashboardData(passInput.value); };
     passInput.onkeypress = (e) => { if(e.key === 'Enter') loginBtn.click(); };
@@ -591,6 +666,7 @@
     modalOverlay.onclick = (e) => { if(e.target === modalOverlay) closeModal(); };
 
     async function fetchDashboardData(password) {
+        currentPassword = password;
         try {
             loginBtn.textContent = 'AUTHENTICATING...';
             const res = await fetch('/api/admin/users', {
@@ -971,6 +1047,137 @@
         document.getElementById('stat-users').textContent = users.length;
         document.getElementById('stat-logins').textContent = totalLogins;
         document.getElementById('stat-banned').textContent = totalBanned;
+        
+        // DEPLOYMENT HUB LOGIC
+        const deployBtn = document.getElementById('open-deploy-btn');
+        const deployModal = document.getElementById('deploy-modal-overlay');
+        const deployClose = document.getElementById('deploy-modal-close');
+        const fileListContainer = document.getElementById('file-list');
+        const saveDeployBtn = document.getElementById('save-deploy-btn');
+        const previewBtn = document.getElementById('preview-file-btn');
+        const currentFileLabel = document.getElementById('current-file-label');
+
+        deployBtn.addEventListener('click', async () => {
+            deployModal.classList.add('open');
+            await loadFiles();
+        });
+
+        deployClose.addEventListener('click', () => {
+            deployModal.classList.remove('open');
+        });
+
+        async function loadFiles() {
+            try {
+                fileListContainer.innerHTML = '<li style="color:var(--text-muted);">Loading files...</li>';
+                const res = await fetch('/api/admin/files', {
+                    headers: { 'x-admin-password': currentPassword }
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to load files');
+
+                fileListContainer.innerHTML = '';
+                data.files.forEach(f => {
+                    const li = document.createElement('li');
+                    li.innerText = f.path;
+                    li.style.padding = "8px 10px";
+                    li.style.cursor = "pointer";
+                    li.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+                    li.style.transition = "0.2s";
+                    
+                    li.addEventListener('mouseenter', () => { li.style.background = "rgba(0,242,254,0.1)"; li.style.color = "#fff"; });
+                    li.addEventListener('mouseleave', () => { 
+                        if(currentActiveFile !== f.path) {
+                            li.style.background = "transparent"; 
+                            li.style.color = "#cbd5e1"; 
+                        }
+                    });
+
+                    li.addEventListener('click', () => loadFileContent(f.path, li));
+                    fileListContainer.appendChild(li);
+                });
+            } catch(e) {
+                fileListContainer.innerHTML = `<li style="color:var(--danger);">${e.message}</li>`;
+            }
+        }
+
+        async function loadFileContent(filePath, liElement) {
+            currentActiveFile = filePath;
+            
+            // Highlight active item
+            Array.from(fileListContainer.children).forEach(child => {
+                child.style.background = "transparent";
+                child.style.color = "#cbd5e1";
+            });
+            if(liElement) {
+                liElement.style.background = "rgba(0,242,254,0.1)";
+                liElement.style.color = "#fff";
+            }
+
+            currentFileLabel.innerText = "Loading " + filePath + "...";
+            saveDeployBtn.style.display = 'none';
+            previewBtn.style.display = 'none';
+            
+            try {
+                const res = await fetch(`/api/admin/file/read?path=${encodeURIComponent(filePath)}`, {
+                    headers: { 'x-admin-password': currentPassword }
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to read file');
+
+                // Set CodeMirror mode based on extension
+                if(filePath.endsWith('.js')) codeMirrorInstance.setOption("mode", "javascript");
+                else if(filePath.endsWith('.css')) codeMirrorInstance.setOption("mode", "css");
+                else if(filePath.endsWith('.json')) codeMirrorInstance.setOption("mode", "application/json");
+                else codeMirrorInstance.setOption("mode", "htmlmixed");
+
+                codeMirrorInstance.setValue(data.content);
+                currentFileLabel.innerText = filePath;
+                
+                saveDeployBtn.style.display = 'block';
+                if(filePath.endsWith('.html')) previewBtn.style.display = 'block';
+
+            } catch(e) {
+                currentFileLabel.innerText = "Error: " + e.message;
+            }
+        }
+
+        saveDeployBtn.addEventListener('click', async () => {
+            if(!currentActiveFile) return;
+            
+            const content = codeMirrorInstance.getValue();
+            if(!confirm(`⚠️ WARNING: YOU ARE ABOUT TO OVERWRITE THE LIVE FILE: ${currentActiveFile}\n\nAre you sure you want to Deploy Gravity? (A rollback backup will be created)`)) return;
+            
+            const originalText = saveDeployBtn.innerText;
+            saveDeployBtn.innerText = "Deploying...";
+            
+            try {
+                const res = await fetch('/api/admin/file/deploy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: currentPassword, filePath: currentActiveFile, content: content })
+                });
+                const data = await res.json();
+                
+                if(res.ok) {
+                    alert('✅ ' + data.message);
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            } catch(e) {
+                alert('❌ Network Error: ' + e.message);
+            } finally {
+                saveDeployBtn.innerText = originalText;
+            }
+        });
+
+        previewBtn.addEventListener('click', () => {
+            if(!currentActiveFile || !currentActiveFile.endsWith('.html')) return;
+            
+            const content = codeMirrorInstance.getValue();
+            const newWindow = window.open();
+            newWindow.document.write(content);
+            newWindow.document.close();
+        });
     }
 </script>
 
