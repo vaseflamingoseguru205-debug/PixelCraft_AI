@@ -1292,6 +1292,14 @@ app.post('/api/admin/delete-user', requireAdminAuth, async (req, res) => {
 });
 
 
+// Protect the tools directory
+app.use('/tools', (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect('/login.html');
+  }
+  next();
+});
+
 // Serve all static files (HTML, CSS, JS) from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 

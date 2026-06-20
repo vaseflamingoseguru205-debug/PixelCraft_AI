@@ -429,7 +429,12 @@
     <div class="glass-panel login-box">
         <h1>Command Center</h1>
         <p>SECURE TELEMETRY ACCESS</p>
-        <input type="password" id="admin-pass" placeholder="ENTER ACCESS KEY" autocomplete="off">
+
+        <a href="/auth/google" class="btn-primary" style="display: flex; justify-content: center; align-items: center; text-decoration: none; margin-bottom: 20px; background: rgba(0, 242, 254, 0.1);">
+            Step 1: Authenticate via Google
+        </a>
+
+        <input type="password" id="admin-pass" placeholder="STEP 2: ENTER ACCESS KEY" autocomplete="off">
         <button class="btn-primary" id="login-btn">Initialize Link</button>
         <div id="error-msg">ACCESS DENIED.</div>
     </div>
@@ -675,10 +680,13 @@
                 body: JSON.stringify({ password })
             });
 
-            if (res.status === 401) throw new Error('ACCESS DENIED. INVALID KEY.');
-            if (!res.ok) throw new Error('DATABASE CONNECTION FAILED.');
+            const data = await res.json().catch(() => null);
+            if (!res.ok) {
+                const errMsg = data && data.error ? data.error : 'DATABASE CONNECTION FAILED.';
+                throw new Error(errMsg);
+            }
             
-            usersData = await res.json();
+            usersData = data;
             sessionStorage.setItem('admin_pass', password);
             loginView.style.display = 'none';
             dashboard.style.display = 'block';
