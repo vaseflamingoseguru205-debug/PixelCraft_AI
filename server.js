@@ -414,7 +414,7 @@ const requireAdminAuth = (req, res, next) => {
     return res.status(401).json({ error: 'Google Login Required for Admin Access.' });
   }
 
-  const allowedEmails = (process.env.ADMIN_EMAILS || 'lizardsquad1809@gmail.com').split(',').map(e => e.trim().toLowerCase());
+  const allowedEmails = (process.env.ADMIN_EMAILS || 'vaseflamingoseguru205@gmail.com').split(',').map(e => e.trim().toLowerCase());
   if (!allowedEmails.includes(req.user.email.toLowerCase())) {
     return res.status(403).json({ error: 'Access Denied. Your Google Account is not authorized.' });
   }
@@ -423,6 +423,7 @@ const requireAdminAuth = (req, res, next) => {
   if (!password || password.trim() !== expectedPassword) {
     return res.status(401).json({ error: 'Unauthorized access. Incorrect Access Key.' });
   }
+
 
   next();
 };
