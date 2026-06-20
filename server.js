@@ -597,6 +597,9 @@ app.get('/auth/google', (req, res, next) => {
   if (req.query.prompt === 'select_account') {
     options.prompt = 'select_account';
   }
+  if (req.query.returnTo) {
+    req.session.returnTo = req.query.returnTo;
+  }
   passport.authenticate('google', options)(req, res, next);
 });
 
