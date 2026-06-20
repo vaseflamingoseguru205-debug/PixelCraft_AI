@@ -253,13 +253,10 @@ app.use(async (req, res, next) => {
                 <div class="timer-clock" id="countdown">--:--:--</div>
             </div>
 
-            <!-- Appeal Link is hidden visually but triggered by JS -->
-            <a id="mailLink" style="display:none;" href="mailto:support.pixelcraft205@gmail.com?subject=Ban Appeal - ${encodeURIComponent(req.user.email)}&body=Hello PixelCraft AI Team,%0A%0AI would like to appeal my account hold.%0A%0AAccount Email: ${req.user.email}%0ABan Reason: ${encodeURIComponent(reason)}%0A%0AMy explanation:%0A"></a>
-            
-            <button class="btn" id="appealBtn" onclick="handleAppeal()">
+            <a href="mailto:support.pixelcraft205@gmail.com?subject=Account%20Appeal" class="btn" id="appealBtn" onclick="this.innerHTML='<span>Opening Mail Client... ✨</span>'; setTimeout(() => { this.innerHTML='<span>Request Appeal Review</span><svg width=\\'18\\' height=\\'18\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><path d=\\'M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z\\'/></svg>'; }, 4000);">
                 <span>Request Appeal Review</span>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-            </button>
+            </a>
 
             <div class="links">
                 <a href="/terms-conditions.html" target="_blank">Terms</a>
@@ -270,24 +267,6 @@ app.use(async (req, res, next) => {
     </div>
 
     <script>
-        // Interactive Button Logic
-        function handleAppeal() {
-            const btn = document.getElementById('appealBtn');
-            const mailLink = document.getElementById('mailLink');
-            
-            // Visual satisfying feedback
-            btn.classList.add('clicked');
-            btn.innerHTML = '<span>Opening Mail Client... ✨</span>';
-            
-            // Trigger actual email
-            setTimeout(() => { mailLink.click(); }, 300);
-            
-            // Reset button after a bit
-            setTimeout(() => {
-                btn.classList.remove('clicked');
-                btn.innerHTML = '<span>Request Appeal Review</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
-            }, 4000);
-        }
 
         // Countdown Timer Logic
         const banUntil = ${req.user.banUntil ? new Date(req.user.banUntil).getTime() : 0};
@@ -1019,21 +998,36 @@ app.post('/api/admin/ban', async (req, res) => {
         const untilDate = (durationStr === 'permanent' || !durationStr) ? 'Permanent' : user.banUntil.toLocaleDateString();
         const dur = durationStr ? durationStr.toUpperCase() : 'PERMANENT';
         const htmlBody = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ef4444; border-radius: 10px; overflow: hidden;">
-            <div style="background-color: #ef4444; color: white; padding: 20px; text-align: center;">
-                <h2 style="margin: 0; letter-spacing: 1px;">ACCOUNT SUSPENDED</h2>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ef4444; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <div style="background: linear-gradient(135deg, #7f1d1d, #ef4444); color: white; padding: 30px; text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 10px;">🛡️</div>
+                <h2 style="margin: 0; letter-spacing: 1px; font-size: 24px;">ACCOUNT SUSPENDED</h2>
+                <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.85;">Action taken by Automated Security System</p>
             </div>
-            <div style="padding: 30px; background-color: #111; color: #fff;">
-                <p>Dear ${user.name},</p>
-                <p>This is an automated notification from PixelCraft AI Security Systems.</p>
-                <p>Your account access has been revoked due to a violation of our Terms of Service.</p>
-                <div style="background-color: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0;">
-                    <p style="margin: 0;"><strong>Reason:</strong> ${user.banReason}</p>
-                    <p style="margin: 10px 0 0 0;"><strong>Ban Duration:</strong> ${dur}</p>
-                    <p style="margin: 10px 0 0 0;"><strong>Expiration:</strong> ${untilDate}</p>
+            <div style="padding: 35px; background-color: #0f0f12; color: #fff;">
+                <p style="font-size: 18px; font-weight: bold; color: #f87171;">Dear ${user.name},</p>
+                <p style="color: #cbd5e1; line-height: 1.7;">This is an automated notification. Your account access has been revoked due to a violation of our policies.</p>
+                
+                <div style="background: rgba(239, 68, 68, 0.08); border-left: 4px solid #ef4444; padding: 20px; margin: 25px 0; border-radius: 0 8px 8px 0;">
+                    <p style="margin: 0 0 8px 0; font-size: 14px;"><strong style="color: #ef4444;">Reason:</strong> <span style="color: #fecaca;">${user.banReason}</span></p>
+                    <p style="margin: 0 0 8px 0; font-size: 14px;"><strong style="color: #ef4444;">Duration:</strong> <span style="color: #fecaca;">${dur}</span></p>
+                    <p style="margin: 0; font-size: 14px;"><strong style="color: #ef4444;">Expiration:</strong> <span style="color: #fecaca;">${untilDate}</span></p>
                 </div>
-                <p>Any further attempts to bypass this suspension may result in a permanent hardware and IP ban.</p>
-                <p style="margin-top: 30px; font-size: 12px; color: #888;">PixelCraft AI Automated Enforcement Agent</p>
+                
+                <p style="color: #94a3b8; line-height: 1.7; font-size: 14px;">If you believe this action was taken in error, you may submit an appeal for review.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="mailto:support.pixelcraft205@gmail.com?subject=Account%20Appeal" style="background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; padding: 14px 35px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block;">
+                        ✉️ Submit Appeal
+                    </a>
+                </div>
+                
+                <p style="color: #64748b; text-align: center; font-size: 13px;">
+                    <a href="https://pixelcraft-ai-94y5.onrender.com/terms-conditions.html" style="color: #ef4444; text-decoration: none;">Terms & Conditions</a> | 
+                    <a href="https://pixelcraft-ai-94y5.onrender.com/privacy-policy.html" style="color: #ef4444; text-decoration: none;">Privacy Policy</a>
+                </p>
+                
+                <p style="margin-top: 30px; font-size: 12px; color: #475569; border-top: 1px solid #2a1111; padding-top: 15px; text-align: center;">PixelCraft AI Security — Ref: ${Date.now()}-${Math.floor(Math.random()*1000)}</p>
             </div>
         </div>`;
 
@@ -1097,7 +1091,7 @@ app.post('/api/admin/ban', async (req, res) => {
                     </a>
                 </div>
                 
-                <p style="margin-top: 30px; font-size: 12px; color: #475569; border-top: 1px solid #1e3a2f; padding-top: 15px;">PixelCraft AI Automated Security System — This is an automated notification. Please do not reply to this email.</p>
+                <p style="margin-top: 30px; font-size: 12px; color: #475569; border-top: 1px solid #1e3a2f; padding-top: 15px; text-align: center;">PixelCraft AI Security — Ref: ${Date.now()}-${Math.floor(Math.random()*1000)}</p>
             </div>
         </div>`;
         

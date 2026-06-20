@@ -247,6 +247,93 @@
         .btn-unban:hover { background: var(--success); color: #fff; box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
 
         /* Small Prompts */
+        .prompt-modal {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+            text-align: left;
+        }
+        .prompt-modal h3 {
+            margin: 0 0 10px 0;
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .prompt-modal select, .prompt-modal textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .prompt-modal select:focus, .prompt-modal textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+        .prompt-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .prompt-actions button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+        .btn-prompt-cancel {
+            background: transparent;
+            border: 1px solid var(--text-muted);
+            color: var(--text-muted);
+        }
+        .btn-prompt-cancel:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+        .btn-submit-ban {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+        .btn-submit-ban:hover {
+            background: var(--danger);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+        .btn-submit-warn {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+        .btn-submit-warn:hover {
+            background: var(--warning);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+        }
+
         /* Tabs */
         .modal-tabs { display: flex; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); }
         .tab-btn { flex: 1; padding: 14px 10px; background: transparent; border: none; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; border-bottom: 2px solid transparent; }
@@ -423,7 +510,10 @@
 <!-- Ban Prompt Modal -->
 <div class="modal-overlay" id="ban-prompt-overlay" style="z-index: 999999;">
     <div class="prompt-modal">
-        <h3 style="color:var(--danger)">Suspend Account</h3>
+        <h3 style="color:var(--danger)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Suspend Account
+        </h3>
         <p style="font-size:13px; color:var(--text-muted); margin-bottom: 15px;">An automated email will be sent notifying the user of this suspension.</p>
         
         <label style="font-size:12px; color:var(--accent);">Ban Duration:</label>
@@ -448,7 +538,10 @@
 <!-- Warn Prompt Modal -->
 <div class="modal-overlay" id="warn-prompt-overlay" style="z-index: 999999;">
     <div class="prompt-modal">
-        <h3 style="color:var(--warning)">Send Official Warning</h3>
+        <h3 style="color:var(--warning)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Send Official Warning
+        </h3>
         <p style="font-size:13px; color:var(--text-muted); margin-bottom: 15px;">An automated strict alert email will be sent to the user.</p>
 
         <label style="font-size:12px; color:var(--accent);">Warning Reason (Sent in Email):</label>
