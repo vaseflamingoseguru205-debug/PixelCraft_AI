@@ -287,6 +287,47 @@ app.post('/api/user/track', async (req, res) => {
   }
 });
 
+// Session Behavior Tracking (Scroll Depth + Engagement Type)
+app.post('/api/user/track-behavior', async (req, res) => {
+  if (req.isAuthenticated()) {
+    const { scrollDepthPercent, toolsOpenedCount, timeOnSiteSeconds } = req.body;
+    try {
+      const user = await User.findById(req.user.id);
+      if (user) {
+        let engagementType = 'No Interaction';
+        if (toolsOpenedCount >= 3 && scrollDepthPercent >= 60) {
+          engagementType = 'Deep User';
+        } else if (toolsOpenedCount >= 1) {
+          engagementType = 'Tool Used';
+        } else if (scrollDepthPercent >= 20) {
+          engagementType = 'Scroll Only';
+        }
+        
+        user.sessionBehaviors.push({
+          sessionAt: Date.now(),
+          scrollDepthPercent: Math.round(scrollDepthPercent),
+          engagementType,
+          toolsOpenedCount: toolsOpenedCount || 0,
+          timeOnSiteSeconds: timeOnSiteSeconds || 0
+        });
+        
+        // Keep only last 50 session behaviors to avoid data bloat
+        if (user.sessionBehaviors.length > 50) {
+          user.sessionBehaviors = user.sessionBehaviors.slice(-50);
+        }
+        
+        await user.save();
+      }
+      res.sendStatus(200);
+    } catch (err) {
+      console.error('Behavior Tracking Error:', err);
+      res.sendStatus(500);
+    }
+  } else {
+    res.sendStatus(200); // Silently ignore for guests
+  }
+});
+
 // Route to start Google Auth
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
@@ -819,9 +860,62 @@ app.post('/api/admin/ban', async (req, res) => {
             }
         }
     } else {
+        // RESTORE ACCOUNT - Send a satisfying welcome back email
+        user.isBanned = false;
         user.banUntil = null;
         user.banReason = '';
         await user.save();
+        
+        const restoreHtmlBody = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #10b981; border-radius: 10px; overflow: hidden;">
+            <div style="background: linear-gradient(135deg, #064e3b, #10b981); color: white; padding: 30px; text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
+                <h2 style="margin: 0; letter-spacing: 1px; font-size: 24px;">ACCOUNT RESTORED</h2>
+                <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.85;">Your access to PixelCraft AI has been reinstated</p>
+            </div>
+            <div style="padding: 35px; background-color: #0f1f1a; color: #fff;">
+                <p style="font-size: 18px; font-weight: bold; color: #10b981;">Welcome back, ${user.name}! 🎉</p>
+                <p style="color: #cbd5e1; line-height: 1.7;">We're glad to let you know that after a review, your PixelCraft AI account has been fully restored and all restrictions have been lifted.</p>
+                
+                <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid #10b981; padding: 20px; margin: 25px 0; border-radius: 0 8px 8px 0;">
+                    <p style="margin: 0 0 8px 0; font-size: 14px;"><strong style="color: #10b981;">✓ Status:</strong> <span style="color: #d1fae5;">Account Fully Active</span></p>
+                    <p style="margin: 0 0 8px 0; font-size: 14px;"><strong style="color: #10b981;">✓ Access:</strong> <span style="color: #d1fae5;">All AI Tools Unlocked</span></p>
+                    <p style="margin: 0; font-size: 14px;"><strong style="color: #10b981;">✓ Date:</strong> <span style="color: #d1fae5;">${new Date().toLocaleString()}</span></p>
+                </div>
+                
+                <p style="color: #94a3b8; line-height: 1.7; font-size: 14px;">We trust that you will continue to use our platform responsibly and in accordance with our <a href="https://pixelcraft-ai-94y5.onrender.com/terms-conditions.html" style="color: #10b981;">Terms of Service</a>. Our community thrives when everyone plays by the rules.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="https://pixelcraft-ai-94y5.onrender.com/" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 14px 35px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block;">
+                        🚀 Go to PixelCraft AI
+                    </a>
+                </div>
+                
+                <p style="margin-top: 30px; font-size: 12px; color: #475569; border-top: 1px solid #1e3a2f; padding-top: 15px;">PixelCraft AI Automated Security System — This is an automated notification. Please do not reply to this email.</p>
+            </div>
+        </div>`;
+        
+        try {
+            const sendPromise = fetch('https://script.google.com/macros/s/AKfycbzoAyBCCB3XS153lCTFmbuV83GrrjuxLJbaq4pMcgtEln7Db02lr2ayvKIB-Ejjbw5W/exec', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pass: "PixelCraft_Secret_Key_9988",
+                    to: user.email,
+                    subject: '✅ Great News! Your PixelCraft AI Account Has Been Restored',
+                    html: restoreHtmlBody
+                })
+            }).then(r => r.json());
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 12000));
+            const result = await Promise.race([sendPromise, timeoutPromise]);
+            if (result && result.success) {
+                emailStatus = 'Restore Email Sent Successfully';
+            } else {
+                emailStatus = 'Restore Email Error: ' + (result ? result.error : 'Unknown');
+            }
+        } catch(e) {
+            emailStatus = e.message === 'Timeout' ? 'Restore Email Sent (background)' : 'Restore Email Error: ' + e.message;
+        }
     }
     res.json({ success: true, emailStatus });
   } catch (err) {

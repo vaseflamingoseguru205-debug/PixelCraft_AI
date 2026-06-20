@@ -99,6 +99,13 @@ const UserSchema = new mongoose.Schema({
     toolName: String,
     usedAt: { type: Date, default: Date.now },
     durationSeconds: Number
+  }],
+  sessionBehaviors: [{
+    sessionAt: { type: Date, default: Date.now },
+    scrollDepthPercent: { type: Number, default: 0 },
+    engagementType: { type: String, default: 'Scroll Only' }, // 'No Interaction', 'Scroll Only', 'Tool Used', 'Deep User'
+    toolsOpenedCount: { type: Number, default: 0 },
+    timeOnSiteSeconds: { type: Number, default: 0 }
   }]
 });
 

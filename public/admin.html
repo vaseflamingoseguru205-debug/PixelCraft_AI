@@ -247,15 +247,34 @@
         .btn-unban:hover { background: var(--success); color: #fff; box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
 
         /* Small Prompts */
-        .prompt-modal { width: 90%; max-width: 400px; background: #0a0f1e; border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: 0 0 40px rgba(0,0,0,0.8); }
-        .prompt-modal h3 { margin-top: 0; color: #fff; }
-        .prompt-modal textarea, .prompt-modal select { width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-family: 'JetBrains Mono', monospace; margin-bottom: 15px; outline: none; }
-        .prompt-modal select { color: var(--accent); }
-        .prompt-actions { display: flex; gap: 10px; }
-        .btn-prompt-cancel { flex: 1; background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 10px; border-radius: 8px; cursor: pointer; }
-        .btn-prompt-submit { flex: 1; padding: 10px; border-radius: 8px; cursor: pointer; border: none; font-weight: bold; }
-        .btn-submit-ban { background: var(--danger); color: #fff; }
-        .btn-submit-warn { background: var(--warning); color: #fff; }
+        /* Tabs */
+        .modal-tabs { display: flex; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); }
+        .tab-btn { flex: 1; padding: 14px 10px; background: transparent; border: none; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(0,242,254,0.05); }
+        .tab-btn:hover { color: var(--accent); }
+        .tab-content { display: none; padding: 24px; overflow-y: auto; max-height: calc(90vh - 200px); }
+        .tab-content.active { display: block; }
+
+        /* Tool History List */
+        .tool-history-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--border); margin-bottom: 8px; transition: 0.2s; }
+        .tool-history-item:hover { border-color: var(--accent); background: rgba(0,242,254,0.03); }
+        .tool-name-badge { background: rgba(0,242,254,0.1); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+        .tool-meta { font-size: 12px; color: var(--text-muted); text-align: right; }
+        .tool-duration { color: var(--warning); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+        .tool-time { color: var(--text-muted); font-size: 11px; display: block; margin-top: 2px; }
+        
+        /* Behavior Cards */
+        .behavior-card { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; }
+        .behavior-badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+        .badge-deep { background: rgba(0,242,254,0.15); color: var(--accent); border: 1px solid var(--accent); }
+        .badge-tool { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid var(--success); }
+        .badge-scroll { background: rgba(245,158,11,0.15); color: var(--warning); border: 1px solid var(--warning); }
+        .badge-none { background: rgba(148,163,184,0.1); color: var(--text-muted); border: 1px solid rgba(148,163,184,0.3); }
+        .scroll-bar-wrap { flex: 1; }
+        .scroll-bar-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 5px; }
+        .scroll-bar-bg { height: 6px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+        .scroll-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #10b981, #00f2fe); transition: width 0.5s ease; }
+        .behavior-info { font-size: 11px; color: var(--text-muted); text-align: right; white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -333,38 +352,70 @@
             <button class="modal-close" id="modal-close">&times;</button>
         </div>
 
-        <div class="modal-body">
-            <!-- Left Column: Overview -->
-            <div>
+        <!-- Tabs -->
+        <div class="modal-tabs">
+            <button class="tab-btn active" onclick="switchTab('tab-overview', this)">📊 Overview</button>
+            <button class="tab-btn" onclick="switchTab('tab-tools', this)">🔧 Tool History</button>
+            <button class="tab-btn" onclick="switchTab('tab-behavior', this)">📈 Behavior</button>
+            <button class="tab-btn" onclick="switchTab('tab-sessions', this)">🕐 Sessions</button>
+            <button class="tab-btn" onclick="switchTab('tab-actions', this)">⚡ Actions</button>
+        </div>
+
+        <!-- Tab: Overview -->
+        <div class="tab-content active" id="tab-overview">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
                 <div class="data-group">
                     <div class="data-title">Account Overview</div>
-                    <div class="data-row"><span class="data-label">Account Created</span><span class="data-val val-highlight" id="m-created">2026-06-19</span></div>
+                    <div class="data-row"><span class="data-label">Account Created</span><span class="data-val val-highlight" id="m-created">-</span></div>
                     <div class="data-row"><span class="data-label">Total Sign-ins</span><span class="data-val" id="m-logins">0</span></div>
                     <div class="data-row"><span class="data-label">Total Logouts</span><span class="data-val" id="m-logouts">0</span></div>
-                    <div class="data-row"><span class="data-label">Tools Executed</span><span class="data-val" id="m-toolscount">0</span></div>
+                    <div class="data-row"><span class="data-label">Total Time on Site</span><span class="data-val" id="m-totaltime">0m</span></div>
+                    <div class="data-row">
+                        <span class="data-label">Tools Executed</span>
+                        <span class="data-val" id="m-toolscount" style="cursor:pointer; text-decoration:underline; color:var(--accent);" title="Click to see tool history">0</span>
+                    </div>
                 </div>
-
-                <div class="data-group" style="margin-top:20px;">
+                <div class="data-group">
                     <div class="data-title">Latest Known Vector</div>
                     <div class="data-row"><span class="data-label">IP Address</span><span class="data-val" id="m-ip">Unknown</span></div>
                     <div class="data-row"><span class="data-label">Device / OS</span><span class="data-val" id="m-device">Unknown</span></div>
-                    <div class="data-row"><span class="data-label">Location</span><span class="data-val" id="m-loc">Unknown</span></div>
+                    <div class="data-row"><span class="data-label">Browser</span><span class="data-val" id="m-browser">Unknown</span></div>
+                    <div class="data-row"><span class="data-label">📍 Location</span><span class="data-val" id="m-loc">Unknown</span></div>
                     <div class="data-row"><span class="data-label">ISP</span><span class="data-val" id="m-isp">Unknown</span></div>
                 </div>
-
-                <div id="action-buttons-container">
-                    <button id="btn-open-warn" class="btn-warn">SEND OFFICIAL WARNING</button>
-                    <button id="btn-open-ban" class="btn-ban">SUSPEND ACCOUNT</button>
-                </div>
             </div>
+        </div>
 
-            <!-- Right Column: Login History -->
-            <div class="data-group">
-                <div class="data-title">Complete Session History</div>
-                <div class="timeline" id="m-timeline">
-                    <!-- Dynamic timeline items -->
-                </div>
+        <!-- Tab: Tool History -->
+        <div class="tab-content" id="tab-tools">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <div class="data-title" style="margin:0;">Complete Tool Usage Log</div>
+                <span id="tool-summary-badge" style="font-size:12px; color:var(--text-muted);"></span>
             </div>
+            <div id="tool-history-list"></div>
+        </div>
+
+        <!-- Tab: Behavior -->
+        <div class="tab-content" id="tab-behavior">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <div class="data-title" style="margin:0;">Session Engagement Analysis</div>
+                <span id="behavior-summary-badge" style="font-size:12px; color:var(--text-muted);"></span>
+            </div>
+            <!-- Avg Scroll Stats -->
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px;" id="behavior-stats-row">
+            </div>
+            <div id="behavior-list"></div>
+        </div>
+
+        <!-- Tab: Sessions -->
+        <div class="tab-content" id="tab-sessions">
+            <div class="data-title" style="margin-bottom:16px;">Complete Session Login History</div>
+            <div class="timeline" id="m-timeline"></div>
+        </div>
+
+        <!-- Tab: Actions -->
+        <div class="tab-content" id="tab-actions">
+            <div id="action-buttons-container" style="max-width:400px; margin: 0 auto;"></div>
         </div>
     </div>
 </div>
@@ -429,6 +480,14 @@
     loginBtn.onclick = () => { if(passInput.value) fetchDashboardData(passInput.value); };
     passInput.onkeypress = (e) => { if(e.key === 'Enter') loginBtn.click(); };
 
+    // Tab switching
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+    }
+
     document.getElementById('logout-btn').onclick = () => {
         sessionStorage.removeItem('admin_pass');
         window.location.reload();
@@ -468,45 +527,137 @@
         if(!u) return;
         currentSelectedUser = u;
 
+        // Reset to first tab
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-overview').classList.add('active');
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+
+        // Header
         document.getElementById('m-avatar').src = u.avatar || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f2fe'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E`;
         document.getElementById('m-name').textContent = u.name || 'Unknown';
         document.getElementById('m-email').textContent = u.email || 'Unknown';
 
-        document.getElementById('m-created').textContent = new Date(u.createdAt).toLocaleDateString();
-        document.getElementById('m-logins').textContent = u.loginCount || 1;
-        document.getElementById('m-logouts').textContent = u.logoutCount || 0;
-        document.getElementById('m-toolscount').textContent = u.toolsUsedCount || 0;
-
-        document.getElementById('m-ip').textContent = u.lastLoginIp || 'Unknown';
-        document.getElementById('m-device').textContent = (u.deviceType || 'Unknown') + ' / ' + (u.os || 'Unknown');
-        document.getElementById('m-loc').textContent = (u.city || 'Unknown') + ', ' + (u.country || 'Unknown');
-        document.getElementById('m-isp').textContent = u.isp || 'Unknown';
-
+        // Status Badge
         const badge = document.getElementById('m-status-badge');
-        const actionContainer = document.getElementById('action-buttons-container');
-        
         if (u.isBanned) {
-            badge.textContent = "BANNED";
+            badge.textContent = "🚫 BANNED";
             badge.style.backgroundColor = "rgba(239, 68, 68, 0.2)";
             badge.style.color = "var(--danger)";
             badge.style.border = "1px solid var(--danger)";
-            
-            actionContainer.innerHTML = `<button id="btn-unban" class="btn-unban">RESTORE ACCOUNT (UNBAN)</button>`;
-            document.getElementById('btn-unban').onclick = () => submitBan(false);
         } else {
-            badge.textContent = "ACTIVE";
+            badge.textContent = "✅ ACTIVE";
             badge.style.backgroundColor = "rgba(16, 185, 129, 0.2)";
             badge.style.color = "var(--success)";
             badge.style.border = "1px solid var(--success)";
-            
-            actionContainer.innerHTML = `
-                <button id="btn-open-warn" class="btn-warn">SEND OFFICIAL WARNING</button>
-                <button id="btn-open-ban" class="btn-ban">SUSPEND ACCOUNT</button>
-            `;
-            document.getElementById('btn-open-warn').onclick = () => { document.getElementById('warn-prompt-overlay').classList.add('open'); };
-            document.getElementById('btn-open-ban').onclick = () => { document.getElementById('ban-prompt-overlay').classList.add('open'); };
         }
 
+        // TAB 1: Overview
+        document.getElementById('m-created').textContent = new Date(u.createdAt).toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' });
+        document.getElementById('m-logins').textContent = u.loginCount || 1;
+        document.getElementById('m-logouts').textContent = u.logoutCount || 0;
+        const totalMins = Math.round((u.totalTimeSpentSeconds || 0) / 60);
+        document.getElementById('m-totaltime').textContent = totalMins >= 60 ? `${Math.floor(totalMins/60)}h ${totalMins%60}m` : `${totalMins}m`;
+        
+        const toolCountEl = document.getElementById('m-toolscount');
+        toolCountEl.textContent = u.toolsUsedCount || 0;
+        toolCountEl.onclick = () => {
+            // Switch to tool history tab on click
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-tools').classList.add('active');
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        };
+
+        document.getElementById('m-ip').textContent = u.lastLoginIp || 'Unknown';
+        document.getElementById('m-device').textContent = (u.deviceType || 'Unknown') + ' / ' + (u.os || 'Unknown');
+        document.getElementById('m-browser').textContent = u.browser || 'Unknown';
+        document.getElementById('m-loc').textContent = (u.city || 'Unknown') + ', ' + (u.country || 'Unknown');
+        document.getElementById('m-isp').textContent = u.isp || 'Unknown';
+
+        // TAB 2: Tool History
+        const toolList = document.getElementById('tool-history-list');
+        toolList.innerHTML = '';
+        const toolHistory = u.toolUsageHistory || [];
+        document.getElementById('tool-summary-badge').textContent = `${toolHistory.length} sessions recorded`;
+        if (toolHistory.length === 0) {
+            toolList.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:40px; font-size:14px;">No tool usage recorded yet.</div>`;
+        } else {
+            // Show in chronological order (oldest first) with numbered steps
+            [...toolHistory].forEach((t, i) => {
+                const date = new Date(t.usedAt);
+                const durSec = t.durationSeconds || 0;
+                const durStr = durSec >= 60 ? `${Math.floor(durSec/60)}m ${durSec%60}s` : `${durSec}s`;
+                const item = document.createElement('div');
+                item.className = 'tool-history-item';
+                item.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span style="background:rgba(255,255,255,0.05); color:var(--text-muted); width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-family:'JetBrains Mono',monospace; flex-shrink:0;">${i+1}</span>
+                        <span class="tool-name-badge">${t.toolName}</span>
+                    </div>
+                    <div class="tool-meta">
+                        <span class="tool-duration">⏱ ${durStr}</span>
+                        <span class="tool-time">${date.toLocaleDateString()} ${date.toLocaleTimeString()}</span>
+                    </div>
+                `;
+                toolList.appendChild(item);
+            });
+        }
+
+        // TAB 3: Behavior / Scroll Depth
+        const behaviorList = document.getElementById('behavior-list');
+        behaviorList.innerHTML = '';
+        const statsRow = document.getElementById('behavior-stats-row');
+        statsRow.innerHTML = '';
+        const behaviors = u.sessionBehaviors || [];
+        document.getElementById('behavior-summary-badge').textContent = `${behaviors.length} sessions tracked`;
+        
+        if (behaviors.length > 0) {
+            const avgScroll = Math.round(behaviors.reduce((s,b) => s + b.scrollDepthPercent, 0) / behaviors.length);
+            const avgTools = (behaviors.reduce((s,b) => s + b.toolsOpenedCount, 0) / behaviors.length).toFixed(1);
+            const deepCount = behaviors.filter(b => b.engagementType === 'Deep User').length;
+            
+            const statCards = [
+                { label: 'Avg Scroll Depth', value: avgScroll + '%', color: '#10b981' },
+                { label: 'Avg Tools/Session', value: avgTools, color: '#00f2fe' },
+                { label: 'Deep Sessions', value: deepCount, color: '#f59e0b' }
+            ];
+            statCards.forEach(sc => {
+                statsRow.innerHTML += `<div style="background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:10px; padding:16px; text-align:center;">
+                    <div style="font-size:24px; font-weight:700; color:${sc.color}; font-family:'JetBrains Mono',monospace;">${sc.value}</div>
+                    <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">${sc.label}</div>
+                </div>`;
+            });
+        }
+
+        if (behaviors.length === 0) {
+            behaviorList.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:40px; font-size:14px;">No behavior data recorded yet. Data will appear after user's next visit.</div>`;
+        } else {
+            const sortedBehaviors = [...behaviors].sort((a,b) => new Date(b.sessionAt) - new Date(a.sessionAt));
+            sortedBehaviors.forEach(b => {
+                const badgeClass = b.engagementType === 'Deep User' ? 'badge-deep' : b.engagementType === 'Tool Used' ? 'badge-tool' : b.engagementType === 'Scroll Only' ? 'badge-scroll' : 'badge-none';
+                const timeStr = new Date(b.sessionAt).toLocaleDateString() + ' ' + new Date(b.sessionAt).toLocaleTimeString();
+                const timeSecs = b.timeOnSiteSeconds || 0;
+                const timeOnSite = timeSecs >= 60 ? `${Math.floor(timeSecs/60)}m ${timeSecs%60}s` : `${timeSecs}s`;
+                const card = document.createElement('div');
+                card.className = 'behavior-card';
+                card.innerHTML = `
+                    <span class="behavior-badge ${badgeClass}">${b.engagementType || 'Unknown'}</span>
+                    <div class="scroll-bar-wrap">
+                        <div class="scroll-bar-label"><span>Scroll Depth</span><span>${b.scrollDepthPercent || 0}%</span></div>
+                        <div class="scroll-bar-bg"><div class="scroll-bar-fill" style="width:${b.scrollDepthPercent || 0}%;"></div></div>
+                    </div>
+                    <div class="behavior-info">
+                        <div>🔧 ${b.toolsOpenedCount || 0} tools</div>
+                        <div>⏱ ${timeOnSite}</div>
+                        <div style="margin-top:4px; font-size:10px;">${timeStr}</div>
+                    </div>
+                `;
+                behaviorList.appendChild(card);
+            });
+        }
+
+        // TAB 4: Sessions Timeline
         const timeline = document.getElementById('m-timeline');
         timeline.innerHTML = '';
         if (u.loginHistory && u.loginHistory.length > 0) {
@@ -516,15 +667,35 @@
                 const item = document.createElement('div');
                 item.className = 'timeline-item';
                 item.innerHTML = `
-                    <div class="time-date">${dateObj.toLocaleDateString()} ${dateObj.toLocaleTimeString()}</div>
+                    <div class="time-date">${dateObj.toLocaleDateString('en-IN')} ${dateObj.toLocaleTimeString()}</div>
                     <div class="time-details">
                         <span><b style="color:var(--accent);">IP:</b> ${session.ip || 'Unknown'} | <b style="color:var(--accent);">ISP:</b> ${session.isp || 'Unknown'}</span>
-                        <span><b style="color:var(--accent);">Loc:</b> ${session.city || 'Unknown'}, ${session.country || 'Unknown'}</span>
-                        <span><b style="color:var(--accent);">Sys:</b> ${session.deviceType || 'Unknown'} / ${session.os || 'Unknown'}</span>
+                        <span><b style="color:var(--accent);">📍 Loc:</b> ${session.city || 'Unknown'}, ${session.country || 'Unknown'}</span>
+                        <span><b style="color:var(--accent);">Sys:</b> ${session.deviceType || 'Unknown'} / ${session.os || 'Unknown'} / ${session.browser || 'Unknown'}</span>
                     </div>
                 `;
                 timeline.appendChild(item);
             });
+        } else {
+            timeline.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:30px; font-size:14px;">No session history yet.</div>`;
+        }
+
+        // TAB 5: Actions
+        const actionContainer = document.getElementById('action-buttons-container');
+        if (u.isBanned) {
+            actionContainer.innerHTML = `
+                <p style="color:var(--text-muted); font-size:14px; text-align:center; margin-bottom:20px;">This account is currently suspended. Restoring will send them a welcome-back email.</p>
+                <button id="btn-unban" class="btn-unban">✅ RESTORE ACCOUNT & SEND EMAIL</button>
+            `;
+            document.getElementById('btn-unban').onclick = () => submitBan(false);
+        } else {
+            actionContainer.innerHTML = `
+                <p style="color:var(--text-muted); font-size:14px; text-align:center; margin-bottom:20px;">This account is active. You can send a warning or suspend access.</p>
+                <button id="btn-open-warn" class="btn-warn">⚠️ SEND OFFICIAL WARNING</button>
+                <button id="btn-open-ban" class="btn-ban">🚫 SUSPEND ACCOUNT</button>
+            `;
+            document.getElementById('btn-open-warn').onclick = () => { document.getElementById('warn-prompt-overlay').classList.add('open'); };
+            document.getElementById('btn-open-ban').onclick = () => { document.getElementById('ban-prompt-overlay').classList.add('open'); };
         }
 
         modalOverlay.classList.add('open');

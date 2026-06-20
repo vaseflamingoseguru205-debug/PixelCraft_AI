@@ -241,11 +241,29 @@ window.addEventListener('appinstalled', () => {
 (function() {
   const pageEnterTime = Date.now();
   let toolName = 'Home';
+  let maxScrollDepth = 0;
+  let toolsOpenedThisSession = 0;
   
   if (window.location.pathname.length > 1) {
     const path = window.location.pathname.substring(1).replace('.html', '').replace('-', ' ');
     toolName = path.charAt(0).toUpperCase() + path.slice(1);
   }
+
+  // Track max scroll depth
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    if (docHeight > 0) {
+      const scrollPct = (scrollTop / docHeight) * 100;
+      if (scrollPct > maxScrollDepth) maxScrollDepth = scrollPct;
+    }
+  }, { passive: true });
+
+  // Track tool opens (button clicks on tool cards/links)
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('a[href*="/tools/"], .tool-card, [data-tool], .use-tool-btn');
+    if (el) toolsOpenedThisSession++;
+  }, { passive: true });
 
   function sendTelemetry() {
     const durationSeconds = Math.floor((Date.now() - pageEnterTime) / 1000);
@@ -264,13 +282,34 @@ window.addEventListener('appinstalled', () => {
     }
   }
 
+  function sendBehavior() {
+    const timeOnSite = Math.floor((Date.now() - pageEnterTime) / 1000);
+    const behaviorPayload = JSON.stringify({
+      scrollDepthPercent: Math.round(Math.min(maxScrollDepth, 100)),
+      toolsOpenedCount: toolsOpenedThisSession,
+      timeOnSiteSeconds: timeOnSite
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/user/track-behavior', new Blob([behaviorPayload], { type: 'application/json' }));
+    } else {
+      fetch('/api/user/track-behavior', {
+        method: 'POST',
+        body: behaviorPayload,
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true
+      }).catch(() => {});
+    }
+  }
+
   window.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
       sendTelemetry();
+      sendBehavior();
     }
   });
 
   window.addEventListener('beforeunload', () => {
     sendTelemetry();
+    sendBehavior();
   });
 })();
