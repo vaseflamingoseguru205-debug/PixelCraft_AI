@@ -93,8 +93,12 @@ app.use(async (req, res, next) => {
                     return res.status(403).json({ error: "Your account is suspended." });
                 }
                 
-                if (req.path === '/admin.html') {
-                    return next(); // Let admin.html load
+                if (req.path === '/admin.html' || 
+                    req.path === '/terms-conditions.html' || 
+                    req.path === '/privacy-policy.html' || 
+                    req.path === '/contact-us.html' || 
+                    req.path === '/disclaimer.html') {
+                    return next(); 
                 }
 
                 const untilStr = req.user.banUntil ? req.user.banUntil.toLocaleString() : 'Permanent';
@@ -104,310 +108,208 @@ app.use(async (req, res, next) => {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Account Suspended — PixelCraft AI</title>
+    <title>Account Paused — PixelCraft AI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
-            background-color: #020810;
-            color: #e2e8f0;
+            background-color: #09090b;
+            color: #e4e4e7;
             font-family: 'Outfit', sans-serif;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            background-image:
-                radial-gradient(ellipse at 50% 0%, rgba(239,68,68,0.12) 0%, transparent 60%),
-                linear-gradient(rgba(239,68,68,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(239,68,68,0.03) 1px, transparent 1px);
-            background-size: 100% 100%, 40px 40px, 40px 40px;
+            overflow: hidden;
+            background-image: radial-gradient(circle at center, rgba(99, 102, 241, 0.08) 0%, transparent 60%);
         }
-
-        .container {
-            width: 100%;
-            max-width: 620px;
-        }
-
-        /* Top Warning Bar */
-        .warn-bar {
-            background: rgba(239,68,68,0.15);
-            border: 1px solid rgba(239,68,68,0.4);
-            border-radius: 8px;
-            padding: 10px 20px;
-            text-align: center;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            color: #ef4444;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-            animation: pulse-bar 2s ease-in-out infinite;
-        }
-        @keyframes pulse-bar {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
-        /* Main Card */
+        .container { width: 100%; max-width: 440px; padding: 20px; }
+        
         .card {
-            background: rgba(15, 8, 20, 0.95);
-            border: 1px solid rgba(239,68,68,0.35);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 0 60px rgba(239,68,68,0.12), 0 0 0 1px rgba(239,68,68,0.08) inset;
-        }
-
-        /* Header */
-        .card-header {
-            background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(100,10,10,0.3));
-            border-bottom: 1px solid rgba(239,68,68,0.25);
-            padding: 36px 36px 28px;
+            background: rgba(24, 24, 27, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 32px 28px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .card-header::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(239,68,68,0.06) 0%, transparent 60%);
-            animation: rotate-glow 8s linear infinite;
-        }
-        @keyframes rotate-glow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .icon-wrap {
-            width: 72px; height: 72px;
-            background: rgba(239,68,68,0.1);
-            border: 2px solid rgba(239,68,68,0.4);
-            border-radius: 20px;
+        .icon-box {
+            width: 64px; height: 64px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+            border-radius: 18px;
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 32px;
-            box-shadow: 0 0 20px rgba(239,68,68,0.2);
-            position: relative; z-index: 1;
-        }
-
-        .card-header h1 {
             font-size: 28px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: #ef4444;
-            text-shadow: 0 0 20px rgba(239,68,68,0.5);
-            position: relative; z-index: 1;
-            margin-bottom: 8px;
-        }
-        .card-header p {
-            font-size: 14px;
-            color: #94a3b8;
-            position: relative; z-index: 1;
-            line-height: 1.6;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
         }
 
-        /* Body */
-        .card-body { padding: 28px 32px; }
+        h1 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 8px; letter-spacing: 0.5px; }
+        p { font-size: 14px; color: #a1a1aa; line-height: 1.5; margin-bottom: 24px; }
 
-        /* Details Box */
-        .details-box {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(239,68,68,0.2);
-            border-left: 4px solid #ef4444;
-            border-radius: 10px;
-            padding: 18px 20px;
+        .details {
+            background: rgba(0,0,0,0.3);
+            border-radius: 14px;
+            padding: 16px;
             margin-bottom: 20px;
+            text-align: left;
+            border: 1px solid rgba(255,255,255,0.04);
         }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            font-size: 14px;
-        }
-        .detail-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .detail-label { color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; margin-top: 1px; }
-        .detail-val { color: #e2e8f0; text-align: right; font-weight: 600; }
-        .detail-val.red { color: #ef4444; }
-        .detail-val.yellow { color: #f59e0b; }
-
-        /* Countdown */
-        .countdown-wrap {
-            background: rgba(239,68,68,0.05);
-            border: 1px solid rgba(239,68,68,0.2);
-            border-radius: 10px;
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            text-align: center;
-            display: ${req.user.banUntil && req.user.banUntil > Date.now() ? 'block' : 'none'};
-        }
-        .countdown-label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
-        .countdown-timer { font-size: 28px; font-weight: 700; color: #ef4444; font-family: 'JetBrains Mono', monospace; letter-spacing: 2px; }
-        .countdown-sub { font-size: 11px; color: #475569; margin-top: 6px; }
-
-        /* Warning Notice */
-        .notice-box {
-            background: rgba(245,158,11,0.05);
-            border: 1px solid rgba(245,158,11,0.2);
-            border-radius: 10px;
-            padding: 14px 18px;
-            margin-bottom: 20px;
+        .detail-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 6px 0;
             font-size: 13px;
-            color: #94a3b8;
-            line-height: 1.7;
         }
-        .notice-box b { color: #f59e0b; }
+        .detail-item:not(:last-child) { border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .detail-label { color: #71717a; font-weight: 500; }
+        .detail-value { color: #e4e4e7; font-weight: 600; text-align: right; max-width: 65%; word-break: break-all; }
+        .highlight { color: #a855f7; }
 
-        /* Buttons */
-        .btn-appeal {
-            display: block;
+        /* Compact Timer */
+        .timer-box {
+            display: ${req.user.banUntil && req.user.banUntil > Date.now() ? 'flex' : 'none'};
+            align-items: center; justify-content: space-between;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+        }
+        .timer-text { font-size: 12px; color: #a1a1aa; text-align: left; line-height: 1.3; }
+        .timer-clock { font-size: 18px; font-weight: 700; color: #818cf8; font-variant-numeric: tabular-nums; }
+
+        /* Interactive Button */
+        .btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
             width: 100%;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: #fff;
+            border: none;
             padding: 14px;
-            background: transparent;
-            border: 1px solid rgba(239,68,68,0.5);
-            color: #ef4444;
-            border-radius: 10px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             text-decoration: none;
-            text-align: center;
-            transition: 0.3s;
-            margin-bottom: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
         }
-        .btn-appeal:hover {
-            background: rgba(239,68,68,0.1);
-            box-shadow: 0 0 20px rgba(239,68,68,0.15);
+        .btn::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(255,255,255,0.2), transparent);
+            opacity: 0; transition: opacity 0.3s;
         }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(99, 102, 241, 0.35); }
+        .btn:hover::after { opacity: 1; }
+        .btn:active { transform: translateY(1px) scale(0.98); }
+        .btn.clicked { background: #10b981; pointer-events: none; }
 
-        /* Links Footer */
-        .links-row {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            margin-top: 4px;
+        .links {
+            margin-top: 20px;
+            display: flex; justify-content: center; gap: 16px;
         }
-        .links-row a {
-            color: #475569;
-            font-size: 12px;
-            text-decoration: none;
-            transition: 0.2s;
-            font-family: 'JetBrains Mono', monospace;
+        .links a {
+            color: #71717a; font-size: 12px; text-decoration: none; transition: color 0.2s;
         }
-        .links-row a:hover { color: #94a3b8; }
-
-        /* Footer */
-        .card-footer {
-            background: rgba(0,0,0,0.3);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            padding: 14px 32px;
-            text-align: center;
-            font-size: 11px;
-            color: #334155;
-            font-family: 'JetBrains Mono', monospace;
-            letter-spacing: 1px;
-        }
+        .links a:hover { color: #e4e4e7; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="warn-bar">⚠ &nbsp; SECURITY ENFORCEMENT ACTIVE &nbsp; ⚠</div>
-
         <div class="card">
-            <div class="card-header">
-                <div class="icon-wrap">🚫</div>
-                <h1>Account Suspended</h1>
-                <p>Your access to PixelCraft AI has been revoked by our automated enforcement system due to a violation of our platform policies.</p>
-            </div>
-
-            <div class="card-body">
-                <!-- Details -->
-                <div class="details-box">
-                    <div class="detail-row">
-                        <span class="detail-label">Account</span>
-                        <span class="detail-val">${req.user.email}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Reason</span>
-                        <span class="detail-val red">${reason}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Status</span>
-                        <span class="detail-val red">${req.user.banUntil && req.user.banUntil > Date.now() ? 'Temporary Suspension' : 'Permanent Ban'}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Expires</span>
-                        <span class="detail-val yellow">${untilStr}</span>
-                    </div>
+            <div class="icon-box">🛡️</div>
+            <h1>Account Paused</h1>
+            <p>Your access has been temporarily restricted due to policy enforcement. Don't worry, you can appeal this.</p>
+            
+            <div class="details">
+                <div class="detail-item">
+                    <span class="detail-label">Account</span>
+                    <span class="detail-value">${req.user.email}</span>
                 </div>
-
-                <!-- Countdown Timer (only for temp bans) -->
-                <div class="countdown-wrap" id="countdown-wrap">
-                    <div class="countdown-label">Time Remaining Until Auto-Restore</div>
-                    <div class="countdown-timer" id="countdown">--:--:--</div>
-                    <div class="countdown-sub">Your account will automatically be restored when the timer reaches zero.</div>
+                <div class="detail-item">
+                    <span class="detail-label">Reason</span>
+                    <span class="detail-value">${reason}</span>
                 </div>
-
-                <!-- Warning Notice -->
-                <div class="notice-box">
-                    <b>⚠ Important Notice:</b> Any attempt to bypass this suspension using alternate accounts, VPNs, or proxy servers will result in a <b>permanent hardware-level ban</b> with no possibility of appeal. Our systems actively monitor for such activity.<br><br>
-                    If you believe this suspension was issued in error, you may submit an appeal by contacting our support team below.
-                </div>
-
-                <!-- Appeal Button -->
-                <a href="mailto:support.pixelcraft205@gmail.com?subject=Ban Appeal - ${encodeURIComponent(req.user.email)}&body=Hello PixelCraft AI Team,%0A%0AI would like to appeal my account suspension.%0A%0AAccount Email: ${req.user.email}%0ABan Reason: ${encodeURIComponent(reason)}%0A%0AMy explanation:%0A" class="btn-appeal">
-                    📧 &nbsp; Submit Appeal via Email
-                </a>
-
-                <!-- Policy Links -->
-                <div class="links-row">
-                    <a href="/terms-conditions.html" target="_blank">Terms & Conditions</a>
-                    <a href="/privacy-policy.html" target="_blank">Privacy Policy</a>
-                    <a href="/contact-us.html" target="_blank">Contact Us</a>
-                    <a href="/disclaimer.html" target="_blank">Disclaimer</a>
+                <div class="detail-item">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value highlight">${req.user.banUntil && req.user.banUntil > Date.now() ? 'Temp Hold' : 'Indefinite Hold'}</span>
                 </div>
             </div>
 
-            <div class="card-footer">
-                PIXELCRAFT AI &nbsp;·&nbsp; AUTOMATED SECURITY SYSTEM &nbsp;·&nbsp; REF: ${req.user._id ? req.user._id.toString().slice(-8).toUpperCase() : 'N/A'}
+            <div class="timer-box">
+                <div class="timer-text">Auto-restores in<br>Wait or appeal below</div>
+                <div class="timer-clock" id="countdown">--:--:--</div>
+            </div>
+
+            <!-- Appeal Link is hidden visually but triggered by JS -->
+            <a id="mailLink" style="display:none;" href="mailto:support.pixelcraft205@gmail.com?subject=Ban Appeal - ${encodeURIComponent(req.user.email)}&body=Hello PixelCraft AI Team,%0A%0AI would like to appeal my account hold.%0A%0AAccount Email: ${req.user.email}%0ABan Reason: ${encodeURIComponent(reason)}%0A%0AMy explanation:%0A"></a>
+            
+            <button class="btn" id="appealBtn" onclick="handleAppeal()">
+                <span>Request Appeal Review</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+
+            <div class="links">
+                <a href="/terms-conditions.html" target="_blank">Terms</a>
+                <a href="/privacy-policy.html" target="_blank">Privacy</a>
+                <a href="/contact-us.html" target="_blank">Support</a>
             </div>
         </div>
     </div>
 
     <script>
-        // Countdown timer for temporary bans
+        // Interactive Button Logic
+        function handleAppeal() {
+            const btn = document.getElementById('appealBtn');
+            const mailLink = document.getElementById('mailLink');
+            
+            // Visual satisfying feedback
+            btn.classList.add('clicked');
+            btn.innerHTML = '<span>Opening Mail Client... ✨</span>';
+            
+            // Trigger actual email
+            setTimeout(() => { mailLink.click(); }, 300);
+            
+            // Reset button after a bit
+            setTimeout(() => {
+                btn.classList.remove('clicked');
+                btn.innerHTML = '<span>Request Appeal Review</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+            }, 4000);
+        }
+
+        // Countdown Timer Logic
         const banUntil = ${req.user.banUntil ? new Date(req.user.banUntil).getTime() : 0};
         if (banUntil > Date.now()) {
             function updateCountdown() {
                 const now = Date.now();
                 const diff = banUntil - now;
                 if (diff <= 0) {
-                    document.getElementById('countdown').textContent = 'EXPIRED — Refresh Page';
+                    document.getElementById('countdown').textContent = 'Ready!';
+                    setTimeout(() => window.location.reload(), 2000);
                     return;
                 }
                 const d = Math.floor(diff / 86400000);
                 const h = Math.floor((diff % 86400000) / 3600000);
                 const m = Math.floor((diff % 3600000) / 60000);
                 const s = Math.floor((diff % 60000) / 1000);
-                const parts = [];
-                if (d > 0) parts.push(d + 'd');
-                parts.push(String(h).padStart(2,'0') + 'h');
-                parts.push(String(m).padStart(2,'0') + 'm');
-                parts.push(String(s).padStart(2,'0') + 's');
-                document.getElementById('countdown').textContent = parts.join(' : ');
+                
+                let str = '';
+                if (d > 0) { str = d + 'd ' + String(h).padStart(2,'0') + 'h'; }
+                else { str = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0'); }
+                
+                document.getElementById('countdown').textContent = str;
             }
             updateCountdown();
             setInterval(updateCountdown, 1000);
