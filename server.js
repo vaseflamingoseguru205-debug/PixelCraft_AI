@@ -802,7 +802,7 @@ app.post('/api/admin/ban', async (req, res) => {
                 })
             }).then(r => r.json());
             
-            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 4000));
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 12000));
             const result = await Promise.race([sendPromise, timeoutPromise]);
             
             if (result && result.success) {
@@ -872,7 +872,7 @@ app.post('/api/admin/warn', async (req, res) => {
             })
         }).then(r => r.json());
         
-        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 4000));
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 12000));
         const result = await Promise.race([sendPromise, timeoutPromise]);
         
         if (result && result.success) {
