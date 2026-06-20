@@ -444,6 +444,10 @@
             <span><div class="pulse"></div> UPLINK SECURE // LIVE TRACKING</span>
         </div>
         <div style="display:flex; gap:15px; align-items:center;">
+            <div style="display:flex; align-items:center; gap:8px; background:rgba(0,0,0,0.4); padding: 8px 12px; border-radius:8px; border:1px solid var(--border);">
+                <span style="font-size:12px; color:var(--text-main); text-transform:uppercase; font-family:'JetBrains Mono',monospace;">Require Login For Tools</span>
+                <button id="toggle-tools-login" style="background:var(--success); color:#fff; border:none; border-radius:12px; padding:4px 12px; font-size:11px; cursor:pointer; font-weight:bold; transition:0.3s;">ON</button>
+            </div>
             <button class="btn-primary" id="open-deploy-btn" style="width:auto; padding: 10px 20px; font-size: 13px;">Deployment Hub</button>
             <button class="btn-logout" id="logout-btn">Terminate Session</button>
         </div>
@@ -662,6 +666,58 @@
         window.location.reload();
     };
 
+    // Tools Login Toggle Logic
+    const toggleToolsBtn = document.getElementById('toggle-tools-login');
+    let toolsLoginRequired = true;
+
+    async function fetchSettings() {
+        try {
+            const res = await fetch('/api/admin/settings', {
+                headers: { 'x-admin-password': currentPassword }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                toolsLoginRequired = data.requireLoginForTools;
+                updateToggleBtnUI();
+            }
+        } catch (e) { console.error('Failed to load settings', e); }
+    }
+
+    function updateToggleBtnUI() {
+        if (toolsLoginRequired) {
+            toggleToolsBtn.textContent = 'ON';
+            toggleToolsBtn.style.background = 'var(--success)';
+        } else {
+            toggleToolsBtn.textContent = 'OFF';
+            toggleToolsBtn.style.background = 'var(--danger)';
+        }
+    }
+
+    toggleToolsBtn.onclick = async () => {
+        const newState = !toolsLoginRequired;
+        toggleToolsBtn.textContent = '...';
+        try {
+            const res = await fetch('/api/admin/settings', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-admin-password': currentPassword 
+                },
+                body: JSON.stringify({ requireLoginForTools: newState })
+            });
+            if (res.ok) {
+                toolsLoginRequired = newState;
+                updateToggleBtnUI();
+            } else {
+                updateToggleBtnUI(); // Revert on failure
+                alert('Failed to update setting.');
+            }
+        } catch(e) {
+            console.error(e);
+            updateToggleBtnUI();
+        }
+    };
+
     function closeModal() { modalOverlay.classList.remove('open'); }
     modalCloseBtn.onclick = closeModal;
     modalOverlay.onclick = (e) => { if(e.target === modalOverlay) closeModal(); };
@@ -687,6 +743,7 @@
             loginView.style.display = 'none';
             dashboard.style.display = 'block';
             processData(usersData);
+            fetchSettings();
         } catch(e) {
             errorMsg.textContent = e.message;
             errorMsg.style.display = 'block';

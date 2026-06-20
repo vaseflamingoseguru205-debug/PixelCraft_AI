@@ -686,19 +686,38 @@ app.post('/api/generate-image', async (req, res) => {
   }
 });
 
+let appSettings = { requireLoginForTools: true };
+try {
+  appSettings = JSON.parse(fs.readFileSync(path.join(__dirname, 'settings.json')));
+} catch(e) {}
+
+// API to get settings
+app.get('/api/admin/settings', requireAdminAuth, (req, res) => {
+  res.json(appSettings);
+});
+
+// API to update settings
+app.post('/api/admin/settings', requireAdminAuth, (req, res) => {
+  if (req.body.requireLoginForTools !== undefined) {
+    appSettings.requireLoginForTools = req.body.requireLoginForTools;
+    fs.writeFileSync(path.join(__dirname, 'settings.json'), JSON.stringify(appSettings));
+  }
+  res.json({ success: true, settings: appSettings });
+});
+
 // Middleware to Protect the /tools/ folder (Requires Sign-In to use tools)
-/*
 app.use('/tools', (req, res, next) => {
+  if (!appSettings.requireLoginForTools) {
+    return next();
+  }
   if (req.isAuthenticated()) {
     // Allow tool access
     return next();
   }
   // If not logged in and they try to visit a tool, redirect directly to Google Sign-In
-  // We store the original URL in session to return them back after login
-  req.session.returnTo = req.originalUrl;
+  req.session.returnTo = '/tools' + req.url;
   res.redirect('/auth/google');
 });
-*/
 
 // AI Audio/SFX Generation Route (Using Hugging Face AudioLDM2)
 app.post('/api/generate-sfx', async (req, res) => {
