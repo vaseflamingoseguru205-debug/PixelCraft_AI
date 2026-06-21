@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Data Breach Scanner - PixelCraft AI</title>
+  <meta name="description" content="Securely check if your password has been exposed in a data breach using military-grade SHA-1 hashing. 100% private, your password never leaves your browser."/>
+  <meta property="og:title" content="Password Data Breach Scanner - PixelCraft AI" />
+  <meta property="og:description" content="Securely check if your password has been exposed in a data breach. 100% private."/>
+  <meta property="og:image" content="https://pixelcraft-ai-94y5.onrender.com/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/tools.css">
+  
+  <style>
+    .scanner-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    
+    .scanner-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .scanner-header svg {
+      width: 48px;
+      height: 48px;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+    
+    .input-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      padding: 16px;
+      padding-right: 50px;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: white;
+      font-size: 16px;
+      font-family: monospace;
+      transition: all 0.3s;
+      box-sizing: border-box;
+    }
+    
+    input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+      outline: none;
+    }
+    
+    .toggle-visibility {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    
+    .scan-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary-color), #2563EB);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .scan-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+    
+    .scan-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .result-box {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 12px;
+      display: none;
+      text-align: center;
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .result-box.safe {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10B981;
+    }
+    
+    .result-box.pwned {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #EF4444;
+    }
+    
+    .result-box h3 { margin-top: 0; margin-bottom: 10px; }
+    .result-box p { margin: 0; color: var(--text-secondary); font-size: 14px; }
+    
+    .privacy-notice {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">PixelCraft <span>AI</span></a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/tools/phishing-scanner.html">Phishing Scanner</a></li>
+        <li><a href="/login.html" class="nav-auth-btn" id="nav-auth-btn">Log In</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="tool-main">
+    <div class="scanner-container">
+      <div class="scanner-header">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M12 8v4"/>
+          <path d="M12 16h.01"/>
+        </svg>
+        <h1>Data Breach Scanner</h1>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;">Check if your password has been compromised in any known global data breaches.</p>
+      </div>
+
+      <div class="input-group">
+        <input type="password" id="password-input" placeholder="Enter password to scan...">
+        <button type="button" class="toggle-visibility" id="toggle-btn" aria-label="Toggle visibility">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </button>
+      </div>
+
+      <button id="scan-btn" class="scan-btn">Initiate Deep Scan</button>
+
+      <div class="result-box" id="result-box">
+        <h3 id="result-title"></h3>
+        <p id="result-desc"></p>
+      </div>
+
+      <div class="privacy-notice">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; color:#10B981;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <div>
+          <strong>100% Privacy Guaranteed.</strong> Your password never leaves your browser. We convert your password into a cryptographic SHA-1 hash and only send the first 5 characters to the global breach database (k-Anonymity model). The server cannot reverse-engineer your password.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Visibility toggle
+    const pwdInput = document.getElementById('password-input');
+    const toggleBtn = document.getElementById('toggle-btn');
+    toggleBtn.addEventListener('click', () => {
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+      } else {
+        pwdInput.type = 'password';
+      }
+    });
+
+    // SHA-1 hashing function (Web Crypto API)
+    async function sha1(str) {
+      const buffer = new TextEncoder("utf-8").encode(str);
+      const hash = await crypto.subtle.digest("SHA-1", buffer);
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+    }
+
+    const scanBtn = document.getElementById('scan-btn');
+    const resultBox = document.getElementById('result-box');
+    const resultTitle = document.getElementById('result-title');
+    const resultDesc = document.getElementById('result-desc');
+
+    scanBtn.addEventListener('click', async () => {
+      const pwd = pwdInput.value;
+      if (!pwd) return;
+
+      scanBtn.disabled = true;
+      scanBtn.innerText = 'Scanning Dark Web Databases...';
+      resultBox.style.display = 'none';
+      resultBox.className = 'result-box';
+
+      try {
+        // Hash password
+        const hash = await sha1(pwd);
+        const prefix = hash.substring(0, 5);
+        const suffix = hash.substring(5);
+
+        // Fetch matching hashes from API
+        const res = await fetch(\`https://api.pwnedpasswords.com/range/\${prefix}\`);
+        if (!res.ok) throw new Error('API Error');
+        const data = await res.text();
+
+        // Check if our suffix is in the returned list
+        const lines = data.split('\\n');
+        let pwnedCount = 0;
+        
+        for (let line of lines) {
+          if (line.trim() === '') continue;
+          const [hashSuffix, count] = line.split(':');
+          if (hashSuffix === suffix) {
+            pwnedCount = parseInt(count);
+            break;
+          }
+        }
+
+        resultBox.style.display = 'block';
+        if (pwnedCount > 0) {
+          resultBox.classList.add('pwned');
+          resultTitle.innerText = 'CRITICAL ALERT: Password Compromised';
+          resultDesc.innerText = \`This password has been exposed in data breaches \${pwnedCount.toLocaleString()} times. Do not use this password for any accounts.\`;
+        } else {
+          resultBox.classList.add('safe');
+          resultTitle.innerText = 'SAFE: No Breaches Found';
+          resultDesc.innerText = 'This password was not found in any known data breach databases. It is safe to use.';
+        }
+
+      } catch (err) {
+        alert('Scan failed. Please try again later.');
+      } finally {
+        scanBtn.disabled = false;
+        scanBtn.innerText = 'Initiate Deep Scan';
+      }
+    });
+  </script>
+  <script src="/js/utils.js"></script>
+</body>
+</html>

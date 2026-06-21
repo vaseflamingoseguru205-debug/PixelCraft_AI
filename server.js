@@ -721,9 +721,8 @@ app.use('/tools', (req, res, next) => {
     // Allow tool access
     return next();
   }
-  // If not logged in and they try to visit a premium tool, redirect to Google Sign-In
-  req.session.returnTo = '/tools' + req.url;
-  res.redirect('/auth/google');
+  // If not logged in and they try to visit a premium tool, redirect to login page
+  res.redirect('/login.html?returnTo=' + encodeURIComponent('/tools' + req.url));
 });
 
 // AI Audio/SFX Generation Route (Using Hugging Face AudioLDM2)
