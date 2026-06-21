@@ -705,16 +705,23 @@ app.post('/api/admin/settings', requireAdminAuth, (req, res) => {
   res.json({ success: true, settings: appSettings });
 });
 
-// Middleware to Protect the /tools/ folder (Requires Sign-In to use tools)
+// Middleware to Protect the Specific Premium Tools (Requires Sign-In to use tools)
 app.use('/tools', (req, res, next) => {
   if (!appSettings.requireLoginForTools) {
     return next();
   }
+  
+  // Only protect the Decoy Steganography and Phishing Scanner tools
+  const isPremiumTool = req.url.includes('secret-image.html') || req.url.includes('phishing-scanner.html');
+  if (!isPremiumTool) {
+    return next();
+  }
+
   if (req.isAuthenticated()) {
     // Allow tool access
     return next();
   }
-  // If not logged in and they try to visit a tool, redirect directly to Google Sign-In
+  // If not logged in and they try to visit a premium tool, redirect to Google Sign-In
   req.session.returnTo = '/tools' + req.url;
   res.redirect('/auth/google');
 });
