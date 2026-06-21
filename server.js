@@ -686,7 +686,7 @@ app.post('/api/generate-image', async (req, res) => {
   }
 });
 
-let appSettings = { requireLoginForTools: true };
+let appSettings = { requireLoginForTools: false };
 try {
   appSettings = JSON.parse(fs.readFileSync(path.join(__dirname, 'settings.json')));
 } catch(e) {}
