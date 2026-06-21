@@ -122,7 +122,7 @@
 
   <style>
     .premium-login-btn-container {
-      margin-top: 15px; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;
+      margin-top: auto; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;
       display: none; /* Hidden by default, toggled via JS */
     }
     .google-btn-premium-wrapper {
@@ -359,7 +359,7 @@
           <!-- Clickable overlay for the entire card -->
           <a href="tools/secret-image.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></a>
           
-          <div style="position: relative; z-index: 2; pointer-events: none;">
+          <div style="position: relative; z-index: 2; pointer-events: none; flex-grow: 1;">
             <div class="tool-badge most-used-badge">🔥 MOST USED</div>
             <div class="tool-icon icon-blue" style="font-size: 3rem; text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);">🕵️‍♂️</div>
             <h3 style="color: #38bdf8; font-size: 1.3rem;">Decoy Steganography (Secret Message Hider &amp; Viewer)</h3>
@@ -369,6 +369,7 @@
           </div>
           
           <div class="premium-login-btn-container" data-tool="/tools/secret-image.html"></div>
+          <div class="tool-arrow default-launch-btn" style="font-weight: bold; position: relative; z-index: 2; pointer-events: none; margin-top: auto;">Launch Tool →</div>
         </div>
 
         <style>
@@ -394,13 +395,14 @@
         <!-- NEW TOP 3 TOOLS -->
         <div class="tool-card" data-cat="ai" style="position: relative; padding-bottom: 20px;">
           <a href="tools/phishing-scanner.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></a>
-          <div style="position: relative; z-index: 2; pointer-events: none;">
+          <div style="position: relative; z-index: 2; pointer-events: none; flex-grow: 1;">
             <div class="tool-badge" style="background: #eab308; color: black; font-weight: bold;">NEW</div>
             <div class="tool-icon icon-blue">🔍</div>
-            <h3>Phishing Scanner</h3>
+            <h3 style="color: #38bdf8; font-size: 1.3rem;">Phishing &amp; Malware Link Scanner</h3>
             <p>AI-powered heuristic scanner. Proactively detects homograph attacks, typosquatting & hidden malware. Fast & secure. All processing happens locally.</p>
           </div>
           <div class="premium-login-btn-container" data-tool="/tools/phishing-scanner.html"></div>
+          <div class="tool-arrow default-launch-btn" style="font-weight: bold; position: relative; z-index: 2; pointer-events: none; margin-top: auto;">Launch Tool →</div>
         </div>
 
         <a href="tools/pdf-to-link.html" class="tool-card" data-cat="convert">
@@ -1483,6 +1485,8 @@
           // Record User Login in Analytics
           gtag("event", "login", { method: "Google" });
         } else if (data.requireLoginForTools) {
+          // Hide standard launch buttons for premium tools
+          document.querySelectorAll('.default-launch-btn').forEach(btn => btn.style.display = 'none');
           // Inject premium Google Sign-In buttons into specific tools
           document.querySelectorAll('.premium-login-btn-container').forEach(container => {
             const targetUrl = container.getAttribute('data-tool');
