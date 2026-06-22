@@ -164,6 +164,22 @@
   <canvas id="processingCanvas" style="display:none;"></canvas>
 
   <script>
+    // FRONTEND ACCESS CONTROL (COMING SOON BLOCK)
+    async function checkAccess() {
+        try {
+            const res = await fetch('/api/auth/status');
+            const data = await res.json();
+            const allowed = ['support.pixelcraft205@gmail.com', 'vaseflamingoseguru205@gmail.com'];
+            if (!data.authenticated || !allowed.includes(data.user.email)) {
+                alert("Tool is currently in Early Access (Coming Soon). Only developers can view this page.");
+                window.location.href = "/index.html";
+            }
+        } catch(e) {
+            window.location.href = "/index.html";
+        }
+    }
+    checkAccess();
+
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('fileInput');
     const preview = document.getElementById('preview');
@@ -187,6 +203,7 @@
     // The API will fail with 401 if they aren't logged in.
 
     uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('dragenter', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
     uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
     uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
     uploadArea.addEventListener('drop', (e) => {
