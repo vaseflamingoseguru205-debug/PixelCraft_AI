@@ -488,6 +488,28 @@
             </table>
         </div>
     </div>
+
+    <!-- Forensic Logs Table -->
+    <div class="glass-panel" style="margin-top: 20px;">
+        <h3 style="margin-top:0; margin-bottom:20px; color:var(--warning); font-size: 20px; text-transform: uppercase; letter-spacing: 1px;">Forensic Session Logs (Fingerprint Wiper)</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Session ID</th>
+                        <th>Timestamp</th>
+                        <th>Entity (Email)</th>
+                        <th>IP Address</th>
+                        <th>Action</th>
+                        <th>Legal Consent</th>
+                    </tr>
+                </thead>
+                <tbody id="forensic-tbody">
+                    <!-- Dynamic -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <!-- Big Window Modal -->
@@ -744,12 +766,50 @@
             dashboard.style.display = 'block';
             processData(usersData);
             fetchSettings();
+            fetchForensicLogs(password);
         } catch(e) {
             errorMsg.textContent = e.message;
             errorMsg.style.display = 'block';
             sessionStorage.removeItem('admin_pass');
             loginBtn.textContent = 'Initialize Link';
         }
+    }
+
+    async function fetchForensicLogs(password) {
+        try {
+            const res = await fetch('/api/admin/forensic-logs', {
+                method: 'GET',
+                headers: { 'x-admin-password': password }
+            });
+            if (res.ok) {
+                const logs = await res.json();
+                renderForensicLogs(logs);
+            }
+        } catch(e) {
+            console.error('Failed to fetch forensic logs:', e);
+        }
+    }
+
+    function renderForensicLogs(logs) {
+        const tbody = document.getElementById('forensic-tbody');
+        tbody.innerHTML = '';
+        if (logs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">No forensic logs found.</td></tr>';
+            return;
+        }
+
+        logs.forEach(log => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="color:var(--accent); font-family:'JetBrains Mono',monospace;">${log.sessionId}</td>
+                <td>${new Date(log.timestamp).toLocaleString()}</td>
+                <td style="color:#fff;">${log.email}</td>
+                <td style="color:#cbd5e1; font-family:'JetBrains Mono',monospace;">${log.ipAddress}</td>
+                <td><span style="background:rgba(245,158,11,0.15); color:var(--warning); padding:2px 8px; border-radius:4px; font-size:11px;">${log.action}</span></td>
+                <td>${log.legalConsentGranted ? '<span style="color:var(--success);">TRUE</span>' : '<span style="color:var(--danger);">FALSE</span>'}</td>
+            `;
+            tbody.appendChild(tr);
+        });
     }
 
     function openUserModal(index) {

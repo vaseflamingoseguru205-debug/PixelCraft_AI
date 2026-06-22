@@ -498,7 +498,6 @@ app.post('/api/admin/file/deploy', requireAdminAuth, (req, res) => {
 
 // Admin Panel Route
 app.post('/api/admin/users', requireAdminAuth, async (req, res) => {
-
   try {
     const users = await User.find({}).sort({ createdAt: -1 });
     res.json(users);
@@ -1310,6 +1309,55 @@ app.post('/api/admin/delete-user', requireAdminAuth, async (req, res) => {
   }
 });
 
+
+// Require the new model
+const ForensicLog = require('./models/ForensicLog');
+
+// Forensic Logger API (Used by Digital Fingerprint Wiper)
+app.post('/api/forensic/log', async (req, res) => {
+  if (!req.isAuthenticated() || !req.user) {
+    return res.status(401).json({ error: 'Unauthorized. Login required to use Anonymizer.' });
+  }
+
+  // ONLY ALLOW ADMIN EMAILS FOR "COMING SOON" TESTING
+  const allowedTestingEmails = ['support.pixelcraft205@gmail.com', 'vaseflamingoseguru205@gmail.com'];
+  if (!allowedTestingEmails.includes(req.user.email)) {
+    return res.status(403).json({ error: 'Tool is currently in Early Access (Coming Soon). Only developers can test this right now.' });
+  }
+
+  const { sessionId, action, legalConsentGranted } = req.body;
+
+  if (!legalConsentGranted) {
+    return res.status(400).json({ error: 'Legal consent is mandatory.' });
+  }
+
+  try {
+    const newLog = new ForensicLog({
+      userId: req.user._id,
+      email: req.user.email,
+      ipAddress: req.ip || req.connection.remoteAddress,
+      sessionId: sessionId,
+      action: action || 'Fingerprint Wipe & Anonymize',
+      legalConsentGranted: true
+    });
+    
+    await newLog.save();
+    res.json({ success: true, message: 'Forensic session logged securely.' });
+  } catch (err) {
+    console.error("Forensic Log Error:", err);
+    res.status(500).json({ error: 'Failed to log session. Security protocol halted.' });
+  }
+});
+
+// Admin Route to get Forensic Logs
+app.get('/api/admin/forensic-logs', requireAdminAuth, async (req, res) => {
+  try {
+    const logs = await ForensicLog.find().sort({ timestamp: -1 }).limit(100);
+    res.json(logs);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch forensic logs' });
+  }
+});
 
 // Serve all static files (HTML, CSS, JS) from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));

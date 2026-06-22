@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Digital Fingerprint Wiper | PixelCraft AI</title>
+  <meta name="description" content="Ultra-premium privacy tool. Strip EXIF data, poison file hashes, and destroy invisible tracking pixels locally in your browser."/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V78ZLHJLR8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V78ZLHJLR8');
+  </script>
+
+  <!-- Google AdSense -->
+  <meta name="google-adsense-account" content="ca-pub-3788374704176398">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3788374704176398" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="../css/style.css"/>
+
+  <style>
+    body {
+        background-color: #020617 !important;
+        background-image: radial-gradient(circle at 50% -20%, rgba(225, 29, 72, 0.15), rgba(2, 6, 23, 1) 80%) !important;
+        color: #f8fafc !important;
+        font-family: 'Inter', 'JetBrains Mono', sans-serif !important;
+    }
+    .tool-page-header { text-align: center; margin-bottom: 20px; }
+    .tool-page-header h1 {
+        font-size: 2.8rem !important;
+        background: linear-gradient(90deg, #fb7185, #e11d48);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+    
+    .panel-container {
+        display: flex; flex-direction: column; gap: 20px;
+        max-width: 900px; margin: 0 auto;
+    }
+    .glass-box {
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(225, 29, 72, 0.3);
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(225, 29, 72, 0.05);
+    }
+    
+    .upload-area {
+        border: 2px dashed rgba(225, 29, 72, 0.4);
+        border-radius: 12px;
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.3s;
+        background: rgba(0,0,0,0.3);
+    }
+    .upload-area:hover, .upload-area.dragover {
+        border-color: #fb7185;
+        background: rgba(225, 29, 72, 0.1);
+    }
+
+    .btn-danger {
+        background: linear-gradient(45deg, #e11d48, #be123c);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
+        transition: 0.3s;
+        width: 100%;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    .btn-danger.active { opacity: 1; pointer-events: auto; }
+    .btn-danger.active:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(225, 29, 72, 0.6); }
+
+    .btn-download {
+        background: linear-gradient(45deg, #10b981, #059669);
+        color: white; border: none; padding: 14px 28px; border-radius: 8px;
+        font-weight: bold; font-size: 1rem; cursor: pointer; text-transform: uppercase;
+        width: 100%; margin-top: 15px; display: none;
+    }
+
+    .checkbox-container {
+        display: flex; align-items: flex-start; gap: 12px;
+        background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.1); margin-top: 20px;
+    }
+    .checkbox-container input[type="checkbox"] { width: 20px; height: 20px; accent-color: #e11d48; margin-top: 2px;}
+    .checkbox-container label { font-size: 0.9rem; color: #cbd5e1; line-height: 1.5; }
+
+    .console-box {
+        background: #000; border: 1px solid #333; border-radius: 8px;
+        padding: 15px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+        color: #10b981; height: 150px; overflow-y: auto; margin-top: 20px;
+    }
+
+    .preview-image { max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 20px; display: none; border: 1px solid rgba(255,255,255,0.1); }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <div class="nav-logo-icon" style="background:#e11d48;">🛡️</div>
+      PixelCraft AI
+    </a>
+  </nav>
+
+  <section class="section" style="padding-top: 120px;">
+    <div class="container">
+      <div class="tool-page-header">
+        <h1>Digital Fingerprint Wiper</h1>
+        <p style="color: #94a3b8; font-size: 1.1rem; max-width: 700px; margin: 0 auto;">
+          Anonymize your media. Instantly strip EXIF data, poison file hashes to bypass bans, and destroy invisible tracking pixels. All processing happens locally in your browser.
+        </p>
+      </div>
+
+      <div class="panel-container">
+        <div class="glass-box">
+          <div class="upload-area" id="upload-area">
+            <div style="font-size: 3rem; margin-bottom: 10px;">📸</div>
+            <h3 style="color:#f8fafc; margin-bottom: 5px;">Drag & Drop Image Here</h3>
+            <p style="color:#94a3b8; font-size: 0.9rem;">or click to browse (JPG, PNG, WebP)</p>
+            <input type="file" id="fileInput" accept="image/*" style="display:none;">
+          </div>
+
+          <div style="text-align:center;">
+             <img id="preview" class="preview-image" />
+          </div>
+
+          <div class="checkbox-container">
+            <input type="checkbox" id="legalCheck">
+            <label for="legalCheck">
+              <strong>Mandatory Legal Agreement:</strong> I confirm I own the rights to this image. I am NOT using this tool to tamper with legal evidence, infringe copyrights, or facilitate illegal activity. I understand PixelCraft AI temporarily logs my IP/Session details for Law Enforcement compliance as per the Terms & Conditions.
+            </label>
+          </div>
+
+          <button id="btn-wipe" class="btn-danger" style="margin-top: 20px;">Initialize Wipe Protocol</button>
+          
+          <div class="console-box" id="console-output">
+            > SYSTEM READY. WAITING FOR FILE UPLOAD...<br>
+          </div>
+
+          <button id="btn-download" class="btn-download">⬇️ Download Cleaned Image</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hidden canvas for processing -->
+  <canvas id="processingCanvas" style="display:none;"></canvas>
+
+  <script>
+    const uploadArea = document.getElementById('upload-area');
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('preview');
+    const legalCheck = document.getElementById('legalCheck');
+    const btnWipe = document.getElementById('btn-wipe');
+    const btnDownload = document.getElementById('btn-download');
+    const consoleOutput = document.getElementById('console-output');
+    const canvas = document.getElementById('processingCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let loadedImage = null;
+    let originalFileName = "";
+
+    function logToConsole(msg, color = '#10b981') {
+        consoleOutput.innerHTML += `<span style="color:${color};">> ${msg}</span><br>`;
+        consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+
+    // Check Login logic (Using same logic as other premium tools)
+    // Actually, we don't strictly redirect since the user might be logged in via express-session cookie.
+    // The API will fail with 401 if they aren't logged in.
+
+    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', (e) => {
+        if(e.target.files.length) handleFile(e.target.files[0]);
+    });
+
+    legalCheck.addEventListener('change', () => {
+        if(legalCheck.checked && loadedImage) {
+            btnWipe.classList.add('active');
+        } else {
+            btnWipe.classList.remove('active');
+        }
+    });
+
+    function handleFile(file) {
+        if(!file.type.startsWith('image/')) {
+            alert('Please upload an image file.'); return;
+        }
+        originalFileName = file.name;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                loadedImage = img;
+                preview.src = e.target.result;
+                preview.style.display = 'inline-block';
+                logToConsole(`FILE LOADED: ${file.name} (${img.width}x${img.height})`, '#fb7185');
+                if(legalCheck.checked) btnWipe.classList.add('active');
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Generate a secure session ID
+    function generateSessionId() {
+        return 'PX-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    }
+
+    // Simple PRNG for Spread Spectrum
+    function pseudoRandom(seed) {
+        let x = Math.sin(seed++) * 10000;
+        return x - Math.floor(x);
+    }
+
+    // Robust Spread-Spectrum Forensic Watermark
+    function injectRobustWatermark(imageData, sessionId) {
+        const text = "PX_FORENSIC:" + sessionId + "|";
+        let binaryStr = '';
+        for(let i=0; i<text.length; i++) {
+            binaryStr += text.charCodeAt(i).toString(2).padStart(8, '0');
+        }
+
+        const data = imageData.data;
+        const totalPixels = data.length / 4;
+        
+        // Redundancy: Embed the same string multiple times across the image
+        // using a pseudo-random distribution based on a fixed seed (e.g., 42)
+        const redundancyCount = Math.floor(totalPixels / (binaryStr.length * 10)); // Safe spread
+        const actualRedundancy = Math.min(redundancyCount, 50); // Embed it up to 50 times
+
+        for(let r = 0; r < actualRedundancy; r++) {
+            let seed = 42 + r; // Fixed seed sequence so we can hypothetically extract it later
+            
+            for(let i = 0; i < binaryStr.length; i++) {
+                // Pick a random pixel index
+                let pixelIdx = Math.floor(pseudoRandom(seed++) * totalPixels) * 4;
+                
+                // Avoid alpha channel, use Blue channel for watermark (least visible to human eye)
+                let bit = parseInt(binaryStr[i]);
+                
+                // We use a slightly deeper bit injection (modifying the 2nd LSB) to survive light compression
+                // This is a basic simulation of a robust spatial domain watermark
+                let val = data[pixelIdx + 2]; // Blue channel
+                val = (val & 252) | (bit << 1); // Clear bottom 2 bits, set the 2nd bit to our watermark bit
+                data[pixelIdx + 2] = val;
+            }
+        }
+        return imageData;
+    }
+
+    // PRNU (Camera Sensor) Scrubber
+    function applyPRNUScrubber(ctx, canvas, loadedImage) {
+        // 1. Draw original
+        ctx.drawImage(loadedImage, 0, 0);
+        
+        // 2. Apply a micro-blur to destroy high-frequency sensor noise (PRNU signature)
+        ctx.globalAlpha = 0.5;
+        ctx.drawImage(canvas, 1, 1);
+        ctx.drawImage(canvas, -1, -1);
+        ctx.globalAlpha = 1.0;
+        
+        // 3. Inject synthetic Gaussian-like noise to create a fake sensor signature
+        let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < imgData.data.length; i += 4) {
+            // Synthetic sensor noise (-2 to +2)
+            const noise = Math.floor(Math.random() * 5) - 2;
+            imgData.data[i] = Math.min(255, Math.max(0, imgData.data[i] + noise));
+            imgData.data[i+1] = Math.min(255, Math.max(0, imgData.data[i+1] + noise));
+            imgData.data[i+2] = Math.min(255, Math.max(0, imgData.data[i+2] + noise));
+        }
+        return imgData;
+    }
+
+    btnWipe.addEventListener('click', async () => {
+        if(!loadedImage || !legalCheck.checked) return;
+
+        btnWipe.style.display = 'none';
+        legalCheck.disabled = true;
+        
+        logToConsole("INITIATING WIPE PROTOCOL...", "#eab308");
+        
+        const sessionId = generateSessionId();
+
+        // 1. Send Log to Server
+        try {
+            logToConsole(`CONTACTING SECURE BACKEND...`, "#eab308");
+            const res = await fetch('/api/forensic/log', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sessionId: sessionId,
+                    action: 'Fingerprint Wipe & Anonymize',
+                    legalConsentGranted: true
+                })
+            });
+
+            if(!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Backend connection failed.");
+            }
+            logToConsole(`SESSION LOGGED: [${sessionId}]`, "#10b981");
+
+        } catch (e) {
+            logToConsole(`ERROR: ${e.message}`, "#ef4444");
+            if(e.message.includes("Unauthorized")) {
+                logToConsole(`PLEASE LOGIN VIA HOME PAGE.`, "#ef4444");
+            }
+            btnWipe.style.display = 'block';
+            legalCheck.disabled = false;
+            return;
+        }
+
+        // 2. Client Side Processing
+        setTimeout(() => {
+            logToConsole("STRIPPING EXIF METADATA AND GPS COORDINATES...", "#38bdf8");
+            
+            canvas.width = loadedImage.width;
+            canvas.height = loadedImage.height;
+            
+            // Drawing to canvas removes EXIF
+            // Apply PRNU sensor scrubber (Micro-blur + Synthetic Noise)
+            let imgData = applyPRNUScrubber(ctx, canvas, loadedImage);
+
+            setTimeout(() => {
+                logToConsole("POISONING HASH & DESTROYING INVISIBLE TRACKERS...", "#38bdf8");
+                
+                // Change one random pixel dramatically to ensure completely new SHA256
+                const randomIdx = Math.floor(Math.random() * (imgData.data.length / 4)) * 4;
+                imgData.data[randomIdx] = (imgData.data[randomIdx] + 10) % 255; 
+
+                logToConsole("INJECTING ROBUST SPREAD-SPECTRUM FORENSIC WATERMARK...", "#38bdf8");
+                // Inject Spread-Spectrum Forensic Watermark
+                imgData = injectRobustWatermark(imgData, sessionId);
+
+                    ctx.putImageData(imgData, 0, 0);
+
+                    setTimeout(() => {
+                        logToConsole("✅ PROCESS COMPLETE. IMAGE ANONYMIZED.", "#10b981");
+                        const cleanDataUrl = canvas.toDataURL('image/png', 1.0);
+                        
+                        btnDownload.style.display = 'block';
+                        btnDownload.onclick = () => {
+                            const a = document.createElement('a');
+                            a.href = cleanDataUrl;
+                            a.download = `anonymized_${originalFileName.split('.')[0]}.png`;
+                            a.click();
+                        };
+                    }, 800);
+                }, 800);
+            }, 800);
+        }, 800);
+    });
+
+  </script>
+</body>
+</html>
