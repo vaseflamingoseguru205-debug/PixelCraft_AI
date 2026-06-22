@@ -229,7 +229,7 @@
 
     function handleFile(file) {
         if(!file.type.startsWith('image/')) {
-            alert('Please upload an image file.'); return;
+            alert('Please upload an image file (JPG, PNG, WebP).'); return;
         }
         originalFileName = file.name;
         const reader = new FileReader();
@@ -237,11 +237,32 @@
             const img = new Image();
             img.onload = () => {
                 loadedImage = img;
+                // Hide upload area, show preview
+                uploadArea.style.display = 'none';
                 preview.src = e.target.result;
                 preview.style.display = 'inline-block';
+                // Show change image button
+                let changeBtn = document.getElementById('change-img-btn');
+                if(!changeBtn) {
+                    changeBtn = document.createElement('button');
+                    changeBtn.id = 'change-img-btn';
+                    changeBtn.textContent = '🔄 Change Image';
+                    changeBtn.style.cssText = 'margin-top:10px; background:transparent; color:#94a3b8; border:1px solid #475569; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.85rem;';
+                    changeBtn.onclick = () => {
+                        uploadArea.style.display = '';
+                        preview.style.display = 'none';
+                        preview.src = '';
+                        loadedImage = null;
+                        changeBtn.remove();
+                        btnWipe.classList.remove('active');
+                        logToConsole('IMAGE CLEARED. Upload a new file.', '#94a3b8');
+                    };
+                    preview.parentNode.insertBefore(changeBtn, preview.nextSibling);
+                }
                 logToConsole(`FILE LOADED: ${file.name} (${img.width}x${img.height})`, '#fb7185');
                 if(legalCheck.checked) btnWipe.classList.add('active');
             };
+            img.onerror = () => alert('Could not load this image. Please try another file.');
             img.src = e.target.result;
         };
         reader.readAsDataURL(file);
