@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Audio Steganography | PixelCraft AI</title>
-  <meta name="description" content="Hide secret messages inside audio files using LSB and AES-256 encryption."/>
+  <title>Audio & Video Steganography | PixelCraft AI</title>
+  <meta name="description" content="Hide secret messages inside audio and video files using LSB, Payload Injection, and AES-256 encryption."/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="../css/style.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -15,7 +15,7 @@
         color: #f4f4f5 !important;
         font-family: 'Inter', sans-serif !important;
     }
-    .tool-page-header { text-align: center; margin-bottom: 40px; }
+    .tool-page-header { text-align: center; margin-bottom: 20px; }
     .tool-page-header h1 {
         font-size: 2.5rem !important;
         background: linear-gradient(to right, #ffffff, #a1a1aa);
@@ -23,6 +23,22 @@
         -webkit-text-fill-color: transparent;
         margin-bottom: 12px;
     }
+    
+    /* MASTER MODE SWITCH */
+    .mode-switch {
+        display: flex; justify-content: center; margin-bottom: 30px; gap: 15px;
+    }
+    .mode-btn {
+        background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
+        color: #a1a1aa; padding: 12px 30px; border-radius: 30px; cursor: pointer;
+        font-weight: 600; font-size: 1.1rem; transition: 0.3s;
+        display: flex; align-items: center; gap: 10px;
+    }
+    .mode-btn.active {
+        background: rgba(56, 189, 248, 0.15); border-color: #38bdf8; color: #fff;
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+    }
+
     .tool-workspace {
         background: rgba(24, 24, 27, 0.6) !important;
         backdrop-filter: blur(24px) !important;
@@ -31,6 +47,7 @@
         padding: 40px !important;
         max-width: 850px;
         margin: 0 auto;
+        position: relative;
     }
     .tabs-container {
         display: flex; gap: 12px; background: rgba(0,0,0,0.3) !important;
@@ -48,6 +65,26 @@
     }
     .control-group { margin-bottom: 24px; text-align: left; }
     .control-group label { display: block; color: #e4e4e7 !important; font-weight: 500 !important; margin-bottom: 10px !important; }
+    
+    .input-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    
+    .real-section {
+        background: rgba(56, 189, 248, 0.05);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        padding: 20px;
+        border-radius: 16px;
+    }
+    .fake-section {
+        background: rgba(239, 68, 68, 0.05);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        padding: 20px;
+        border-radius: 16px;
+    }
+
     input[type="password"], textarea {
         width: 100%; background: rgba(0,0,0,0.3) !important; border: 1px solid rgba(255,255,255,0.08) !important;
         border-radius: 12px !important; color: #fff !important; padding: 16px !important; box-sizing: border-box;
@@ -60,12 +97,26 @@
     }
     .btn-glow:hover { transform: translateY(-2px); box-shadow: 0 15px 30px -5px rgba(59, 130, 246, 0.6) !important; }
     #visualizer { width: 100%; height: 100px; background: rgba(0,0,0,0.5); border-radius: 12px; margin-bottom: 20px; display: none; }
+    #video-player { width: 100%; max-height: 250px; background: #000; border-radius: 12px; margin-bottom: 20px; display: none; }
     
+    .loading-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(9, 9, 11, 0.9); border-radius: 24px; z-index: 100;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        display: none;
+    }
+    .spinner {
+        width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1);
+        border-left-color: #38bdf8; border-radius: 50%; animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
     @media (max-width: 768px) {
         .tool-workspace { padding: 20px !important; border-radius: 16px !important; }
         .tool-page-header h1 { font-size: 2rem !important; }
-        .tabs-container { padding: 4px !important; margin-bottom: 20px !important; }
-        .tab-btn { padding: 12px !important; font-size: 0.95rem !important; }
+        .mode-switch { flex-direction: column; padding: 0 20px; }
+        .input-grid { grid-template-columns: 1fr; gap: 15px; }
         .file-drop-area { padding: 40px 15px !important; }
         .btn-glow { padding: 14px 20px !important; font-size: 1rem !important; }
         input[type="password"], textarea { padding: 12px !important; }
@@ -81,47 +132,93 @@
   </nav>
 
   <div class="tool-page-header" style="margin-top: 100px;">
-    <h1>Audio Steganography</h1>
-    <p>Hide secret messages in audio files with AES-256 and Seeded Bit-Scattering.</p>
+    <h1>Audio & Video Steganography</h1>
+    <p>Hide highly classified data in media files with military-grade encryption.</p>
+  </div>
+
+  <div class="mode-switch">
+      <button class="mode-btn active" id="mode-audio">🎧 Audio Mode (LSB Scattering)</button>
+      <button class="mode-btn" id="mode-video">🎥 Video Mode (Payload Injection)</button>
   </div>
 
   <div class="tool-workspace">
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <h3 style="color: #38bdf8;">Processing File...</h3>
+        <p style="color: #a1a1aa; font-size: 0.9rem;" id="loading-subtext">This may take a few seconds.</p>
+    </div>
+
     <div class="tabs-container">
       <button class="tab-btn active" id="tab-encode">Hide Message (Encode)</button>
       <button class="tab-btn" id="tab-decode">Extract Message (Decode)</button>
     </div>
 
-    <!-- AUDIO UPLOAD -->
-    <div class="file-drop-area" id="drop-area">
-      <div class="tool-icon" style="font-size: 3rem; margin-bottom: 10px;">🎧</div>
-      <h3>Drag & Drop Audio File Here</h3>
-      <p style="color: #a1a1aa; font-size: 0.9rem; margin-top: 8px;">Supports WAV, MP3, M4A (Output will be WAV)</p>
-      <input type="file" id="audio-input" accept="audio/*" style="display: none;">
-      <button class="btn btn-outline" style="margin-top: 15px; padding: 10px 20px; border-radius: 8px; border: 1px solid #38bdf8; background: transparent; color: #38bdf8; cursor: pointer;" onclick="document.getElementById('audio-input').click()">Browse Files</button>
-      <div id="file-name-display" style="margin-top: 10px; color: #38bdf8; font-weight: bold;"></div>
+    <!-- AUDIO MODULE -->
+    <div id="audio-module">
+        <div class="file-drop-area" id="drop-area-audio" onclick="document.getElementById('audio-input').click()">
+          <div class="tool-icon" style="font-size: 3rem; margin-bottom: 10px;">🎧</div>
+          <h3>Upload Audio File</h3>
+          <p style="color: #a1a1aa; font-size: 0.9rem; margin-top: 8px;">Supports WAV, MP3, M4A (Output will be lossless WAV)</p>
+          <input type="file" id="audio-input" accept="audio/*" style="display: none;">
+          <button class="btn btn-outline" style="margin-top: 15px; padding: 10px 20px; border-radius: 8px; border: 1px solid #38bdf8; background: transparent; color: #38bdf8;">Browse Files</button>
+          <div id="audio-name-display" style="margin-top: 10px; color: #38bdf8; font-weight: bold;"></div>
+        </div>
+        <canvas id="visualizer"></canvas>
+        <audio id="audio-player" controls style="display: none; width: 100%; margin-top: 15px; border-radius: 12px; outline: none; background: #09090b;"></audio>
     </div>
 
-    <canvas id="visualizer"></canvas>
+    <!-- VIDEO MODULE -->
+    <div id="video-module" style="display: none;">
+        <div class="file-drop-area" id="drop-area-video" onclick="document.getElementById('video-input').click()">
+          <div class="tool-icon" style="font-size: 3rem; margin-bottom: 10px;">🎥</div>
+          <h3>Upload Video File</h3>
+          <p style="color: #a1a1aa; font-size: 0.9rem; margin-top: 8px;">Supports MP4, MKV, AVI, WebM (Maintains Compression)</p>
+          <input type="file" id="video-input" accept="video/*" style="display: none;">
+          <button class="btn btn-outline" style="margin-top: 15px; padding: 10px 20px; border-radius: 8px; border: 1px solid #ef4444; background: transparent; color: #ef4444;">Browse Files</button>
+          <div id="video-name-display" style="margin-top: 10px; color: #ef4444; font-weight: bold;"></div>
+        </div>
+        <video id="video-player" controls></video>
+    </div>
 
-    <!-- ENCODE SECTION -->
+    <!-- ENCODE SECTION (Shared) -->
     <div id="encode-section" style="margin-top: 30px;">
-      <div class="control-group">
-        <label>Secret Message to Hide</label>
-        <textarea id="secret-msg" rows="4" placeholder="Enter your highly classified text here..."></textarea>
+      
+      <div class="input-grid">
+          <div class="real-section">
+            <div class="control-group">
+                <label style="color: #38bdf8 !important;">Real Secret Message</label>
+                <textarea id="real-msg" rows="3" placeholder="Enter your highly classified text..."></textarea>
+            </div>
+            <div class="control-group" style="margin-bottom: 0;">
+                <label style="color: #38bdf8 !important;">Real AES-256 Password</label>
+                <input type="password" id="real-password" placeholder="e.g. MasterKey123">
+            </div>
+          </div>
+
+          <div class="fake-section">
+            <div class="control-group">
+                <label style="color: #ef4444 !important;">Fake Message (Optional Decoy)</label>
+                <textarea id="fake-msg" rows="3" placeholder="Enter a harmless decoy message..."></textarea>
+            </div>
+            <div class="control-group" style="margin-bottom: 0;">
+                <label style="color: #ef4444 !important;">Fake AES-256 Password</label>
+                <input type="password" id="fake-password" placeholder="e.g. FakeKey456">
+            </div>
+          </div>
       </div>
-      <div class="control-group">
-        <label>AES-256 Password (Real or Decoy)</label>
-        <input type="password" id="enc-password" placeholder="e.g. MasterKey123">
-        <p style="font-size: 0.8rem; color: #a1a1aa; margin-top: 8px;">Use different passwords to hide multiple messages in the same file (Plausible Deniability).</p>
-      </div>
-      <button class="btn-glow" id="btn-encode">Encrypt & Hide Message</button>
+
+      <p style="font-size: 0.85rem; color: #a1a1aa; margin: 20px 0; text-align: center;">
+        If both are filled, the tool will mathematically prevent collision and embed BOTH messages.
+      </p>
+      <button class="btn-glow" id="btn-encode">Encrypt & Hide Message(s)</button>
     </div>
 
-    <!-- DECODE SECTION -->
+    <!-- DECODE SECTION (Shared) -->
     <div id="decode-section" style="margin-top: 30px; display: none;">
       <div class="control-group">
         <label>Decryption Password</label>
-        <input type="password" id="dec-password" placeholder="Enter password to extract...">
+        <input type="password" id="dec-password" placeholder="Enter Real or Fake password to extract...">
+        <p style="font-size: 0.8rem; color: #a1a1aa; margin-top: 8px;">The tool will automatically detect if this is the Real or Fake password.</p>
       </div>
       <button class="btn-glow" id="btn-decode">Extract Secret</button>
       
@@ -133,7 +230,27 @@
   </div>
 
   <script>
-    // PRNG for Seeded Bit-Scattering
+    let currentMode = 'audio'; // 'audio' or 'video'
+
+    // Master Mode Switch
+    document.getElementById('mode-audio').onclick = () => {
+        currentMode = 'audio';
+        document.getElementById('mode-audio').classList.add('active');
+        document.getElementById('mode-video').classList.remove('active');
+        document.getElementById('audio-module').style.display = 'block';
+        document.getElementById('video-module').style.display = 'none';
+        document.getElementById('btn-encode').style.background = 'linear-gradient(135deg, #3b82f6, #8b5cf6)';
+    };
+    document.getElementById('mode-video').onclick = () => {
+        currentMode = 'video';
+        document.getElementById('mode-video').classList.add('active');
+        document.getElementById('mode-audio').classList.remove('active');
+        document.getElementById('video-module').style.display = 'block';
+        document.getElementById('audio-module').style.display = 'none';
+        document.getElementById('btn-encode').style.background = 'linear-gradient(135deg, #ef4444, #f97316)';
+    };
+
+    // PRNG for Audio LSB
     function mulberry32(a) {
         return function() {
           var t = a += 0x6D2B79F5;
@@ -150,6 +267,7 @@
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let loadedAudioBuffer = null;
+    let loadedVideoFile = null;
 
     // Tabs
     document.getElementById('tab-encode').onclick = () => {
@@ -165,18 +283,62 @@
       document.getElementById('encode-section').style.display = 'none';
     };
 
-    // File Upload
+    // Loading State
+    function showLoading(text, subtext = "This may take a few seconds.") {
+        const overlay = document.getElementById('loading-overlay');
+        overlay.querySelector('h3').innerText = text;
+        document.getElementById('loading-subtext').innerText = subtext;
+        overlay.style.display = 'flex';
+    }
+    function hideLoading() {
+        document.getElementById('loading-overlay').style.display = 'none';
+    }
+
+    // Convert Utils
+    function strToBytes(str) { return new TextEncoder().encode(str); }
+    function bytesToStr(bytes) { return new TextDecoder().decode(new Uint8Array(bytes)); }
+    function writeString(view, offset, string) {
+      for(let i=0; i<string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
+    }
+
+    /* =======================================================
+       AUDIO MODULE LOGIC
+       ======================================================= */
     document.getElementById('audio-input').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if(!file) return;
-      document.getElementById('file-name-display').innerText = file.name;
+      document.getElementById('audio-name-display').innerText = file.name;
       
+      const audioPlayer = document.getElementById('audio-player');
+      audioPlayer.src = URL.createObjectURL(file);
+      audioPlayer.style.display = 'block';
+      
+      showLoading("Decoding Audio File...");
       const reader = new FileReader();
-      reader.onload = async (ev) => {
+      reader.onload = (ev) => {
         const arrayBuffer = ev.target.result;
-        loadedAudioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-        simulateVisualizer();
+        
+        const successCallback = (buffer) => {
+            loadedAudioBuffer = buffer;
+            hideLoading();
+            simulateVisualizer();
+        };
+        const errorCallback = (err) => {
+            console.error("Audio Decode Error:", err);
+            hideLoading();
+            alert("Error decoding audio! Please ensure it is a valid audio file.");
+            document.getElementById('audio-name-display').innerText = "";
+            loadedAudioBuffer = null;
+        };
+
+        try {
+            const decodePromise = audioCtx.decodeAudioData(arrayBuffer, successCallback, errorCallback);
+            if (decodePromise !== undefined) decodePromise.catch(errorCallback);
+        } catch (e) {
+            errorCallback(e);
+        }
       };
+      reader.onerror = () => { hideLoading(); alert("Error reading file."); };
       reader.readAsArrayBuffer(file);
     });
 
@@ -188,6 +350,7 @@
       let h = canvas.height = canvas.offsetHeight;
       let t = 0;
       function draw() {
+        if(!loadedAudioBuffer || currentMode !== 'audio') return;
         ctx.fillStyle = 'rgba(0,0,0,0.2)';
         ctx.fillRect(0,0,w,h);
         ctx.beginPath();
@@ -205,145 +368,49 @@
       draw();
     }
 
-    // Convert string to bytes
-    function strToBytes(str) {
-      return new TextEncoder().encode(str);
-    }
-    // Convert bytes to string
-    function bytesToStr(bytes) {
-      return new TextDecoder().decode(new Uint8Array(bytes));
-    }
-
-    // Encode
-    document.getElementById('btn-encode').onclick = () => {
-      if(!loadedAudioBuffer) return alert("Please upload an audio file first!");
-      const msg = document.getElementById('secret-msg').value;
-      const pass = document.getElementById('enc-password').value;
-      if(!msg || !pass) return alert("Message and password required!");
-
-      // 1. AES Encrypt
-      const encrypted = CryptoJS.AES.encrypt(msg, pass).toString();
-      // Add Magic Header 'PXC|' and payload length
-      const payload = "PXC|" + encrypted.length + "|" + encrypted;
-      const bytes = strToBytes(payload);
-      
-      // Get bits
-      const bits = [];
-      for(let i=0; i<bytes.length; i++){
-        for(let j=7; j>=0; j--){
-          bits.push((bytes[i] >> j) & 1);
-        }
-      }
-
-      // Convert AudioBuffer to WAV Int16 format
-      const numOfChan = loadedAudioBuffer.numberOfChannels;
-      const length = loadedAudioBuffer.length * numOfChan * 2;
-      const buffer = new ArrayBuffer(44 + length);
-      const view = new DataView(buffer);
-      const channels = [];
-      for(let i=0; i<numOfChan; i++) channels.push(loadedAudioBuffer.getChannelData(i));
-
-      // WAV Header
-      writeString(view, 0, 'RIFF');
-      view.setUint32(4, 36 + length, true);
-      writeString(view, 8, 'WAVE');
-      writeString(view, 12, 'fmt ');
-      view.setUint32(16, 16, true);
-      view.setUint16(20, 1, true);
-      view.setUint16(22, numOfChan, true);
-      view.setUint32(24, loadedAudioBuffer.sampleRate, true);
-      view.setUint32(28, loadedAudioBuffer.sampleRate * 2 * numOfChan, true);
-      view.setUint16(32, numOfChan * 2, true);
-      view.setUint16(34, 16, true);
-      writeString(view, 36, 'data');
-      view.setUint32(40, length, true);
-
-      // Write PCM data
-      let offset = 44;
-      for(let i=0; i<loadedAudioBuffer.length; i++){
-        for(let channel=0; channel<numOfChan; channel++){
-          let sample = Math.max(-1, Math.min(1, channels[channel][i]));
-          sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
-          view.setInt16(offset, sample, true);
-          offset += 2;
-        }
-      }
-
-      // 2. Scattered Encoding
-      const totalSamples = length / 2;
-      if(bits.length > totalSamples) return alert("Audio too short for this message!");
-
-      const prng = mulberry32(hashString(pass));
-      const usedIndices = new Set();
-      const indices = [];
-      while(indices.length < bits.length) {
-        let idx = Math.floor(prng() * totalSamples);
-        if(!usedIndices.has(idx)) {
-          usedIndices.add(idx);
-          indices.push(idx);
-        }
-      }
-
-      // Hide bits in LSB
-      for(let i=0; i<bits.length; i++){
-        let sampleOffset = 44 + (indices[i] * 2);
-        let sample = view.getInt16(sampleOffset, true);
-        sample = (sample & ~1) | bits[i];
-        view.setInt16(sampleOffset, sample, true);
-      }
-
-      // Download
-      const blob = new Blob([view], { type: 'audio/wav' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'secret_audio.wav';
-      a.click();
-    };
-
-    // Decode
-    document.getElementById('btn-decode').onclick = () => {
-      if(!loadedAudioBuffer) return alert("Please upload an audio file first!");
-      const pass = document.getElementById('dec-password').value;
-      if(!pass) return alert("Password required!");
-
-      const file = document.getElementById('audio-input').files[0];
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const buffer = ev.target.result;
-        const view = new DataView(buffer);
-        const totalSamples = (view.byteLength - 44) / 2;
-
-        const prng = mulberry32(hashString(pass));
+    function encodeBitsToWAV(view, totalSamples, bits, password, isOdd) {
+        const prng = mulberry32(hashString(password));
         const usedIndices = new Set();
-        
-        // We extract a chunk (e.g. 100000 bits) and look for Magic Header
-        const extractBits = Math.min(totalSamples, 100000); 
+        const availableSlots = Math.floor(totalSamples / 2);
+        if(bits.length > availableSlots) throw new Error("Audio too short for this message length!");
+
+        const indices = [];
+        while(indices.length < bits.length) {
+            let idx = Math.floor(prng() * availableSlots);
+            if(!usedIndices.has(idx)) {
+                usedIndices.add(idx);
+                indices.push(idx);
+            }
+        }
+        for(let i=0; i<bits.length; i++){
+            let actualIndex = (indices[i] * 2) + (isOdd ? 1 : 0);
+            let sampleOffset = 44 + (actualIndex * 2);
+            let sample = view.getInt16(sampleOffset, true);
+            sample = (sample & ~1) | bits[i];
+            view.setInt16(sampleOffset, sample, true);
+        }
+    }
+
+    function attemptAudioDecode(view, totalSamples, password, isOdd) {
+        const prng = mulberry32(hashString(password));
+        const usedIndices = new Set();
+        const availableSlots = Math.floor(totalSamples / 2);
+        const extractBits = Math.min(availableSlots, 50000); 
         const indices = [];
         while(indices.length < extractBits) {
-          let idx = Math.floor(prng() * totalSamples);
-          if(!usedIndices.has(idx)) {
-            usedIndices.add(idx);
-            indices.push(idx);
-          }
+          let idx = Math.floor(prng() * availableSlots);
+          if(!usedIndices.has(idx)) { usedIndices.add(idx); indices.push(idx); }
         }
 
         const extractedBytes = [];
-        let currentByte = 0;
-        let bitCount = 0;
-
+        let currentByte = 0; let bitCount = 0;
         for(let i=0; i<indices.length; i++){
-          let sampleOffset = 44 + (indices[i] * 2);
+          let actualIndex = (indices[i] * 2) + (isOdd ? 1 : 0);
+          let sampleOffset = 44 + (actualIndex * 2);
           let sample = view.getInt16(sampleOffset, true);
-          let lsb = sample & 1;
-          
-          currentByte = (currentByte << 1) | lsb;
+          currentByte = (currentByte << 1) | (sample & 1);
           bitCount++;
-          if(bitCount === 8){
-            extractedBytes.push(currentByte);
-            currentByte = 0;
-            bitCount = 0;
-          }
+          if(bitCount === 8){ extractedBytes.push(currentByte); currentByte = 0; bitCount = 0; }
         }
 
         const rawStr = bytesToStr(extractedBytes);
@@ -354,30 +421,244 @@
           if(parts.length >= 3) {
             const payloadLen = parseInt(parts[1]);
             const encryptedMsg = targetStr.substring(4 + parts[1].length + 1, 4 + parts[1].length + 1 + payloadLen);
-            
             try {
-              const decrypted = CryptoJS.AES.decrypt(encryptedMsg, pass).toString(CryptoJS.enc.Utf8);
-              if(decrypted){
-                document.getElementById('extracted-msg').value = decrypted;
-              } else {
-                document.getElementById('extracted-msg').value = "Failed to decrypt. Wrong password or decoy password has no payload here.";
-              }
-            } catch(e){
-              document.getElementById('extracted-msg').value = "Failed to decrypt.";
-            }
-            return;
+              const decrypted = CryptoJS.AES.decrypt(encryptedMsg, password).toString(CryptoJS.enc.Utf8);
+              if(decrypted) return decrypted;
+            } catch(e){ }
           }
         }
-        document.getElementById('extracted-msg').value = "No secret found with this password. (Magic header missing)";
-      };
-      reader.readAsArrayBuffer(file);
+        return null;
+    }
+
+    /* =======================================================
+       VIDEO MODULE LOGIC
+       ======================================================= */
+    document.getElementById('video-input').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if(!file) return;
+      loadedVideoFile = file;
+      document.getElementById('video-name-display').innerText = file.name;
+      
+      const player = document.getElementById('video-player');
+      player.src = URL.createObjectURL(file);
+      player.style.display = 'block';
+    });
+
+    async function handleVideoEncode(realMsg, realPass, fakeMsg, fakePass) {
+        showLoading("Injecting Payload into Video...", "Lightning Fast File Structure Steganography.");
+        
+        // Structure: PXC_VID|RealPassHash|RealEncrypted|FakePassHash|FakeEncrypted|PXC_VID
+        // If fake is empty, Fake Encrypted is empty.
+        
+        let encReal = CryptoJS.AES.encrypt(realMsg, realPass).toString();
+        let hashReal = CryptoJS.MD5(realPass).toString(); // Use MD5 purely as identifier tag, not security
+        
+        let encFake = "NONE";
+        let hashFake = "NONE";
+        if(fakeMsg && fakePass) {
+            encFake = CryptoJS.AES.encrypt(fakeMsg, fakePass).toString();
+            hashFake = CryptoJS.MD5(fakePass).toString();
+        }
+
+        const payloadStr = `PXC_VID|${hashReal}|${encReal}|${hashFake}|${encFake}|PXC_VID`;
+        const payloadBytes = strToBytes(payloadStr);
+
+        // Read video file as ArrayBuffer
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const origBuffer = e.target.result;
+            // Create new buffer: original + payload
+            const newBuffer = new Uint8Array(origBuffer.byteLength + payloadBytes.byteLength);
+            newBuffer.set(new Uint8Array(origBuffer), 0);
+            newBuffer.set(payloadBytes, origBuffer.byteLength);
+
+            const blob = new Blob([newBuffer], { type: loadedVideoFile.type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'secret_' + loadedVideoFile.name;
+            a.click();
+            hideLoading();
+        };
+        reader.readAsArrayBuffer(loadedVideoFile);
+    }
+
+    async function handleVideoDecode(pass) {
+        showLoading("Extracting Video Payload...");
+        const targetHash = CryptoJS.MD5(pass).toString();
+
+        const file = document.getElementById('video-input').files[0];
+        
+        // We only need to read the last 1MB (or end of file) to find the payload
+        const readSize = Math.min(file.size, 1024 * 1024); // 1MB
+        const start = file.size - readSize;
+        const blob = file.slice(start, file.size);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const buffer = new Uint8Array(e.target.result);
+            const text = bytesToStr(buffer);
+            
+            const lastPXC = text.lastIndexOf("|PXC_VID");
+            if (lastPXC !== -1) {
+                // Find the first PXC_VID before the last one
+                const firstPXC = text.lastIndexOf("PXC_VID|", lastPXC - 1);
+                if (firstPXC !== -1) {
+                    const payloadStr = text.substring(firstPXC, lastPXC + 8);
+                    const parts = payloadStr.split('|');
+                    if (parts.length === 6) {
+                        const hashR = parts[1];
+                        const encR = parts[2];
+                        const hashF = parts[3];
+                        const encF = parts[4];
+
+                        let encryptedTarget = null;
+                        if (targetHash === hashR) encryptedTarget = encR;
+                        else if (targetHash === hashF) encryptedTarget = encF;
+
+                        if (encryptedTarget && encryptedTarget !== "NONE") {
+                            try {
+                                const decrypted = CryptoJS.AES.decrypt(encryptedTarget, pass).toString(CryptoJS.enc.Utf8);
+                                if(decrypted) {
+                                    document.getElementById('extracted-msg').value = decrypted;
+                                    document.getElementById('extracted-msg').style.color = '#4ade80';
+                                    hideLoading();
+                                    return;
+                                }
+                            } catch(err) {}
+                        }
+                    }
+                }
+            }
+            
+            document.getElementById('extracted-msg').value = "No secret found. Wrong password, or file does not contain a message.";
+            document.getElementById('extracted-msg').style.color = '#ef4444';
+            hideLoading();
+        };
+        reader.readAsArrayBuffer(blob);
+    }
+
+    /* =======================================================
+       SHARED BUTTON HANDLERS
+       ======================================================= */
+    document.getElementById('btn-encode').onclick = () => {
+        const realMsg = document.getElementById('real-msg').value;
+        const realPass = document.getElementById('real-password').value;
+        const fakeMsg = document.getElementById('fake-msg').value;
+        const fakePass = document.getElementById('fake-password').value;
+
+        if(!realMsg || !realPass) return alert("Real Message and Real Password are required!");
+
+        if (currentMode === 'audio') {
+            if(!loadedAudioBuffer) return alert("Please upload an audio file first!");
+            showLoading("Encrypting & Encoding Audio...");
+            setTimeout(() => {
+                try {
+                    const numOfChan = loadedAudioBuffer.numberOfChannels;
+                    const length = loadedAudioBuffer.length * numOfChan * 2;
+                    const buffer = new ArrayBuffer(44 + length);
+                    const view = new DataView(buffer);
+                    const channels = [];
+                    for(let i=0; i<numOfChan; i++) channels.push(loadedAudioBuffer.getChannelData(i));
+
+                    writeString(view, 0, 'RIFF');
+                    view.setUint32(4, 36 + length, true);
+                    writeString(view, 8, 'WAVE');
+                    writeString(view, 12, 'fmt ');
+                    view.setUint32(16, 16, true);
+                    view.setUint16(20, 1, true);
+                    view.setUint16(22, numOfChan, true);
+                    view.setUint32(24, loadedAudioBuffer.sampleRate, true);
+                    view.setUint32(28, loadedAudioBuffer.sampleRate * 2 * numOfChan, true);
+                    view.setUint16(32, numOfChan * 2, true);
+                    view.setUint16(34, 16, true);
+                    writeString(view, 36, 'data');
+                    view.setUint32(40, length, true);
+
+                    let offset = 44;
+                    for(let i=0; i<loadedAudioBuffer.length; i++){
+                        for(let channel=0; channel<numOfChan; channel++){
+                            let sample = Math.max(-1, Math.min(1, channels[channel][i]));
+                            sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+                            view.setInt16(offset, sample, true);
+                            offset += 2;
+                        }
+                    }
+
+                    const totalSamples = length / 2;
+
+                    // 1. Real Msg (Even)
+                    const encReal = CryptoJS.AES.encrypt(realMsg, realPass).toString();
+                    const payloadReal = "PXC|" + encReal.length + "|" + encReal;
+                    const bytesReal = strToBytes(payloadReal);
+                    const bitsReal = [];
+                    for(let i=0; i<bytesReal.length; i++) for(let j=7; j>=0; j--) bitsReal.push((bytesReal[i] >> j) & 1);
+                    encodeBitsToWAV(view, totalSamples, bitsReal, realPass, false);
+
+                    // 2. Fake Msg (Odd)
+                    if (fakeMsg && fakePass) {
+                        const encFake = CryptoJS.AES.encrypt(fakeMsg, fakePass).toString();
+                        const payloadFake = "PXC|" + encFake.length + "|" + encFake;
+                        const bytesFake = strToBytes(payloadFake);
+                        const bitsFake = [];
+                        for(let i=0; i<bytesFake.length; i++) for(let j=7; j>=0; j--) bitsFake.push((bytesFake[i] >> j) & 1);
+                        encodeBitsToWAV(view, totalSamples, bitsFake, fakePass, true);
+                    }
+
+                    const blob = new Blob([view], { type: 'audio/wav' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'secret_audio.wav';
+                    a.click();
+                    hideLoading();
+                } catch(err) {
+                    hideLoading();
+                    alert(err.message || "Encoding error.");
+                }
+            }, 500);
+        } else {
+            if(!loadedVideoFile) return alert("Please upload a video file first!");
+            handleVideoEncode(realMsg, realPass, fakeMsg, fakePass);
+        }
     };
 
-    function writeString(view, offset, string) {
-      for(let i=0; i<string.length; i++) {
-        view.setUint8(offset + i, string.charCodeAt(i));
+    document.getElementById('btn-decode').onclick = () => {
+      const pass = document.getElementById('dec-password').value;
+      if(!pass) return alert("Password required!");
+
+      if (currentMode === 'audio') {
+          const file = document.getElementById('audio-input').files[0];
+          if(!file) return alert("Please upload audio file!");
+          showLoading("Extracting Audio Secret...");
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            setTimeout(() => {
+                try {
+                    const view = new DataView(ev.target.result);
+                    const totalSamples = (view.byteLength - 44) / 2;
+
+                    let decoded = attemptAudioDecode(view, totalSamples, pass, false);
+                    if(!decoded) decoded = attemptAudioDecode(view, totalSamples, pass, true);
+
+                    if(decoded) {
+                        document.getElementById('extracted-msg').value = decoded;
+                        document.getElementById('extracted-msg').style.color = '#4ade80';
+                    } else {
+                        document.getElementById('extracted-msg').value = "No secret found or wrong password.";
+                        document.getElementById('extracted-msg').style.color = '#ef4444';
+                    }
+                    hideLoading();
+                } catch(e) { hideLoading(); alert("Error reading file."); }
+            }, 500);
+          };
+          reader.readAsArrayBuffer(file);
+      } else {
+          const file = document.getElementById('video-input').files[0];
+          if(!file) return alert("Please upload video file!");
+          handleVideoDecode(pass);
       }
-    }
+    };
   </script>
 </body>
 </html>
