@@ -150,6 +150,29 @@
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+    /* Safe Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .tools-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 0;
+      }
+      .tool-card {
+        padding: 12px;
+      }
+      .tool-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 6px;
+      }
+      .tool-card p {
+        font-size: 0.85rem;
+        margin-bottom: 10px;
+      }
+      .launch-btn, .default-launch-btn, .google-btn-premium {
+        padding: 8px;
+        font-size: 0.85rem;
+      }
+    }
   </style>
 </head>
 
@@ -1488,10 +1511,13 @@
             const targetUrl = container.getAttribute('data-tool');
             container.style.display = 'block';
             container.innerHTML = `
-              <div class="google-btn-premium-wrapper">
-                <a href="/login.html?returnTo=${encodeURIComponent(targetUrl)}" class="google-btn-premium" style="position: relative; z-index: 20; background: #2563eb; color: white;">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20px" height="20px" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                  Require Sign In
+              <div style="color: #ef4444; font-size: 0.8rem; margin-bottom: 6px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 4px; position: relative; z-index: 20;">
+                <span>🔒</span> Require Sign in
+              </div>
+              <div class="google-btn-premium-wrapper" style="position: relative; padding: 2px; border-radius: 8px; background: linear-gradient(45deg, #4285F4, #34A853, #FBBC05, #EA4335);">
+                <a href="/login.html?returnTo=${encodeURIComponent(targetUrl)}" class="google-btn-premium" style="position: relative; z-index: 20; background: white; color: #3c4043; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 15px; border-radius: 6px; text-decoration: none; width: 100%; transition: background 0.2s; box-sizing: border-box;">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="20" height="20" alt="Google">
+                  Sign in with Google
                 </a>
               </div>
             `;

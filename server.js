@@ -406,7 +406,7 @@ passport.use(new GoogleStrategy({
 // Admin Authorization Middleware (2-Step Verification)
 const requireAdminAuth = (req, res, next) => {
   // Try to get password from body (POST) or headers (GET)
-  const password = req.body.password || req.headers['x-admin-password'];
+  const password = (req.body && req.body.password) || req.headers['x-admin-password'];
   const expectedPassword = (process.env.ADMIN_PASSWORD || 'PxlCrft_Admin_8x9vZapL2qWkmN5jR_cF1yT').replace(/["']/g, "").trim();
 
   // Check Access Key only
@@ -1310,14 +1310,6 @@ app.post('/api/admin/delete-user', requireAdminAuth, async (req, res) => {
   }
 });
 
-
-// Protect the tools directory
-app.use('/tools', (req, res, next) => {
-  if (!req.isAuthenticated()) {
-    return res.redirect('/login.html');
-  }
-  next();
-});
 
 // Serve all static files (HTML, CSS, JS) from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
