@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Audio Steganography | PixelCraft AI</title>
+  <meta name="description" content="Hide secret messages inside audio files using LSB and AES-256 encryption."/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+  <style>
+    body {
+        background-color: #09090b !important;
+        background-image: radial-gradient(circle at 50% -10%, rgba(59, 130, 246, 0.12), rgba(9, 9, 11, 1) 70%) !important;
+        color: #f4f4f5 !important;
+        font-family: 'Inter', sans-serif !important;
+    }
+    .tool-page-header { text-align: center; margin-bottom: 40px; }
+    .tool-page-header h1 {
+        font-size: 2.5rem !important;
+        background: linear-gradient(to right, #ffffff, #a1a1aa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 12px;
+    }
+    .tool-workspace {
+        background: rgba(24, 24, 27, 0.6) !important;
+        backdrop-filter: blur(24px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.06) !important;
+        border-radius: 24px !important;
+        padding: 40px !important;
+        max-width: 850px;
+        margin: 0 auto;
+    }
+    .tabs-container {
+        display: flex; gap: 12px; background: rgba(0,0,0,0.3) !important;
+        padding: 8px !important; border-radius: 16px !important; margin-bottom: 32px !important;
+    }
+    .tab-btn {
+        flex: 1; padding: 16px !important; background: transparent !important; border: none !important;
+        color: #a1a1aa !important; font-weight: 600 !important; border-radius: 12px !important; cursor: pointer;
+        transition: 0.3s;
+    }
+    .tab-btn.active { background: rgba(255,255,255,0.08) !important; color: #fff !important; }
+    .file-drop-area {
+        background: rgba(0,0,0,0.2) !important; border: 2px dashed rgba(255,255,255,0.1) !important;
+        border-radius: 20px !important; padding: 60px 20px !important; text-align: center; cursor: pointer;
+    }
+    .control-group { margin-bottom: 24px; text-align: left; }
+    .control-group label { display: block; color: #e4e4e7 !important; font-weight: 500 !important; margin-bottom: 10px !important; }
+    input[type="password"], textarea {
+        width: 100%; background: rgba(0,0,0,0.3) !important; border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 12px !important; color: #fff !important; padding: 16px !important; box-sizing: border-box;
+    }
+    .btn-glow {
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6) !important; color: #fff !important;
+        padding: 16px 32px !important; font-weight: 600 !important; font-size: 1.1rem !important;
+        border-radius: 12px !important; border: none !important; cursor: pointer; width: 100%;
+        box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4) !important; transition: 0.3s;
+    }
+    .btn-glow:hover { transform: translateY(-2px); box-shadow: 0 15px 30px -5px rgba(59, 130, 246, 0.6) !important; }
+    #visualizer { width: 100%; height: 100px; background: rgba(0,0,0,0.5); border-radius: 12px; margin-bottom: 20px; display: none; }
+    
+    @media (max-width: 768px) {
+        .tool-workspace { padding: 20px !important; border-radius: 16px !important; }
+        .tool-page-header h1 { font-size: 2rem !important; }
+        .tabs-container { padding: 4px !important; margin-bottom: 20px !important; }
+        .tab-btn { padding: 12px !important; font-size: 0.95rem !important; }
+        .file-drop-area { padding: 40px 15px !important; }
+        .btn-glow { padding: 14px 20px !important; font-size: 1rem !important; }
+        input[type="password"], textarea { padding: 12px !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">PixelCraft <span>AI</span></a>
+    </div>
+  </nav>
+
+  <div class="tool-page-header" style="margin-top: 100px;">
+    <h1>Audio Steganography</h1>
+    <p>Hide secret messages in audio files with AES-256 and Seeded Bit-Scattering.</p>
+  </div>
+
+  <div class="tool-workspace">
+    <div class="tabs-container">
+      <button class="tab-btn active" id="tab-encode">Hide Message (Encode)</button>
+      <button class="tab-btn" id="tab-decode">Extract Message (Decode)</button>
+    </div>
+
+    <!-- AUDIO UPLOAD -->
+    <div class="file-drop-area" id="drop-area">
+      <div class="tool-icon" style="font-size: 3rem; margin-bottom: 10px;">🎧</div>
+      <h3>Drag & Drop Audio File Here</h3>
+      <p style="color: #a1a1aa; font-size: 0.9rem; margin-top: 8px;">Supports WAV, MP3, M4A (Output will be WAV)</p>
+      <input type="file" id="audio-input" accept="audio/*" style="display: none;">
+      <button class="btn btn-outline" style="margin-top: 15px; padding: 10px 20px; border-radius: 8px; border: 1px solid #38bdf8; background: transparent; color: #38bdf8; cursor: pointer;" onclick="document.getElementById('audio-input').click()">Browse Files</button>
+      <div id="file-name-display" style="margin-top: 10px; color: #38bdf8; font-weight: bold;"></div>
+    </div>
+
+    <canvas id="visualizer"></canvas>
+
+    <!-- ENCODE SECTION -->
+    <div id="encode-section" style="margin-top: 30px;">
+      <div class="control-group">
+        <label>Secret Message to Hide</label>
+        <textarea id="secret-msg" rows="4" placeholder="Enter your highly classified text here..."></textarea>
+      </div>
+      <div class="control-group">
+        <label>AES-256 Password (Real or Decoy)</label>
+        <input type="password" id="enc-password" placeholder="e.g. MasterKey123">
+        <p style="font-size: 0.8rem; color: #a1a1aa; margin-top: 8px;">Use different passwords to hide multiple messages in the same file (Plausible Deniability).</p>
+      </div>
+      <button class="btn-glow" id="btn-encode">Encrypt & Hide Message</button>
+    </div>
+
+    <!-- DECODE SECTION -->
+    <div id="decode-section" style="margin-top: 30px; display: none;">
+      <div class="control-group">
+        <label>Decryption Password</label>
+        <input type="password" id="dec-password" placeholder="Enter password to extract...">
+      </div>
+      <button class="btn-glow" id="btn-decode">Extract Secret</button>
+      
+      <div class="control-group" style="margin-top: 24px;">
+        <label>Extracted Message</label>
+        <textarea id="extracted-msg" rows="4" readonly placeholder="Decoded message will appear here..." style="background: rgba(0,0,0,0.5) !important; color: #4ade80 !important; font-family: monospace;"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // PRNG for Seeded Bit-Scattering
+    function mulberry32(a) {
+        return function() {
+          var t = a += 0x6D2B79F5;
+          t = Math.imul(t ^ t >>> 15, t | 1);
+          t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+          return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        }
+    }
+    function hashString(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) hash = Math.imul(31, hash) + str.charCodeAt(i) | 0;
+        return hash;
+    }
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let loadedAudioBuffer = null;
+
+    // Tabs
+    document.getElementById('tab-encode').onclick = () => {
+      document.getElementById('tab-encode').classList.add('active');
+      document.getElementById('tab-decode').classList.remove('active');
+      document.getElementById('encode-section').style.display = 'block';
+      document.getElementById('decode-section').style.display = 'none';
+    };
+    document.getElementById('tab-decode').onclick = () => {
+      document.getElementById('tab-decode').classList.add('active');
+      document.getElementById('tab-encode').classList.remove('active');
+      document.getElementById('decode-section').style.display = 'block';
+      document.getElementById('encode-section').style.display = 'none';
+    };
+
+    // File Upload
+    document.getElementById('audio-input').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if(!file) return;
+      document.getElementById('file-name-display').innerText = file.name;
+      
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const arrayBuffer = ev.target.result;
+        loadedAudioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        simulateVisualizer();
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    function simulateVisualizer() {
+      const canvas = document.getElementById('visualizer');
+      canvas.style.display = 'block';
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = canvas.offsetWidth;
+      let h = canvas.height = canvas.offsetHeight;
+      let t = 0;
+      function draw() {
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        ctx.fillRect(0,0,w,h);
+        ctx.beginPath();
+        ctx.moveTo(0, h/2);
+        for(let i=0; i<w; i++) {
+          let y = h/2 + Math.sin(i*0.05 + t)*20 + Math.sin(i*0.1 - t)*10;
+          ctx.lineTo(i, y);
+        }
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        t += 0.1;
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    // Convert string to bytes
+    function strToBytes(str) {
+      return new TextEncoder().encode(str);
+    }
+    // Convert bytes to string
+    function bytesToStr(bytes) {
+      return new TextDecoder().decode(new Uint8Array(bytes));
+    }
+
+    // Encode
+    document.getElementById('btn-encode').onclick = () => {
+      if(!loadedAudioBuffer) return alert("Please upload an audio file first!");
+      const msg = document.getElementById('secret-msg').value;
+      const pass = document.getElementById('enc-password').value;
+      if(!msg || !pass) return alert("Message and password required!");
+
+      // 1. AES Encrypt
+      const encrypted = CryptoJS.AES.encrypt(msg, pass).toString();
+      // Add Magic Header 'PXC|' and payload length
+      const payload = "PXC|" + encrypted.length + "|" + encrypted;
+      const bytes = strToBytes(payload);
+      
+      // Get bits
+      const bits = [];
+      for(let i=0; i<bytes.length; i++){
+        for(let j=7; j>=0; j--){
+          bits.push((bytes[i] >> j) & 1);
+        }
+      }
+
+      // Convert AudioBuffer to WAV Int16 format
+      const numOfChan = loadedAudioBuffer.numberOfChannels;
+      const length = loadedAudioBuffer.length * numOfChan * 2;
+      const buffer = new ArrayBuffer(44 + length);
+      const view = new DataView(buffer);
+      const channels = [];
+      for(let i=0; i<numOfChan; i++) channels.push(loadedAudioBuffer.getChannelData(i));
+
+      // WAV Header
+      writeString(view, 0, 'RIFF');
+      view.setUint32(4, 36 + length, true);
+      writeString(view, 8, 'WAVE');
+      writeString(view, 12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, numOfChan, true);
+      view.setUint32(24, loadedAudioBuffer.sampleRate, true);
+      view.setUint32(28, loadedAudioBuffer.sampleRate * 2 * numOfChan, true);
+      view.setUint16(32, numOfChan * 2, true);
+      view.setUint16(34, 16, true);
+      writeString(view, 36, 'data');
+      view.setUint32(40, length, true);
+
+      // Write PCM data
+      let offset = 44;
+      for(let i=0; i<loadedAudioBuffer.length; i++){
+        for(let channel=0; channel<numOfChan; channel++){
+          let sample = Math.max(-1, Math.min(1, channels[channel][i]));
+          sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+          view.setInt16(offset, sample, true);
+          offset += 2;
+        }
+      }
+
+      // 2. Scattered Encoding
+      const totalSamples = length / 2;
+      if(bits.length > totalSamples) return alert("Audio too short for this message!");
+
+      const prng = mulberry32(hashString(pass));
+      const usedIndices = new Set();
+      const indices = [];
+      while(indices.length < bits.length) {
+        let idx = Math.floor(prng() * totalSamples);
+        if(!usedIndices.has(idx)) {
+          usedIndices.add(idx);
+          indices.push(idx);
+        }
+      }
+
+      // Hide bits in LSB
+      for(let i=0; i<bits.length; i++){
+        let sampleOffset = 44 + (indices[i] * 2);
+        let sample = view.getInt16(sampleOffset, true);
+        sample = (sample & ~1) | bits[i];
+        view.setInt16(sampleOffset, sample, true);
+      }
+
+      // Download
+      const blob = new Blob([view], { type: 'audio/wav' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'secret_audio.wav';
+      a.click();
+    };
+
+    // Decode
+    document.getElementById('btn-decode').onclick = () => {
+      if(!loadedAudioBuffer) return alert("Please upload an audio file first!");
+      const pass = document.getElementById('dec-password').value;
+      if(!pass) return alert("Password required!");
+
+      const file = document.getElementById('audio-input').files[0];
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const buffer = ev.target.result;
+        const view = new DataView(buffer);
+        const totalSamples = (view.byteLength - 44) / 2;
+
+        const prng = mulberry32(hashString(pass));
+        const usedIndices = new Set();
+        
+        // We extract a chunk (e.g. 100000 bits) and look for Magic Header
+        const extractBits = Math.min(totalSamples, 100000); 
+        const indices = [];
+        while(indices.length < extractBits) {
+          let idx = Math.floor(prng() * totalSamples);
+          if(!usedIndices.has(idx)) {
+            usedIndices.add(idx);
+            indices.push(idx);
+          }
+        }
+
+        const extractedBytes = [];
+        let currentByte = 0;
+        let bitCount = 0;
+
+        for(let i=0; i<indices.length; i++){
+          let sampleOffset = 44 + (indices[i] * 2);
+          let sample = view.getInt16(sampleOffset, true);
+          let lsb = sample & 1;
+          
+          currentByte = (currentByte << 1) | lsb;
+          bitCount++;
+          if(bitCount === 8){
+            extractedBytes.push(currentByte);
+            currentByte = 0;
+            bitCount = 0;
+          }
+        }
+
+        const rawStr = bytesToStr(extractedBytes);
+        const pxcIndex = rawStr.indexOf("PXC|");
+        if(pxcIndex !== -1){
+          const targetStr = rawStr.substring(pxcIndex);
+          const parts = targetStr.split('|');
+          if(parts.length >= 3) {
+            const payloadLen = parseInt(parts[1]);
+            const encryptedMsg = targetStr.substring(4 + parts[1].length + 1, 4 + parts[1].length + 1 + payloadLen);
+            
+            try {
+              const decrypted = CryptoJS.AES.decrypt(encryptedMsg, pass).toString(CryptoJS.enc.Utf8);
+              if(decrypted){
+                document.getElementById('extracted-msg').value = decrypted;
+              } else {
+                document.getElementById('extracted-msg').value = "Failed to decrypt. Wrong password or decoy password has no payload here.";
+              }
+            } catch(e){
+              document.getElementById('extracted-msg').value = "Failed to decrypt.";
+            }
+            return;
+          }
+        }
+        document.getElementById('extracted-msg').value = "No secret found with this password. (Magic header missing)";
+      };
+      reader.readAsArrayBuffer(file);
+    };
+
+    function writeString(view, offset, string) {
+      for(let i=0; i<string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    }
+  </script>
+</body>
+</html>
