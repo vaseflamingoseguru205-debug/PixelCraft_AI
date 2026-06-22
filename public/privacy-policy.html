@@ -136,8 +136,14 @@
         <p>Third-party ad servers or ad networks use technologies like cookies, JavaScript, or Web Beacons that are used in their respective advertisements and links that appear on PixelCraft AI, which are sent directly to users' browser. They automatically receive your IP address when this occurs. These technologies are used to measure the effectiveness of their advertising campaigns and/or to personalize the advertising content that you see on websites that you visit.</p>
         <p>In addition to advertising networks, we utilize third-party AI service providers (such as Hugging Face APIs) to process advanced generation requests. These providers have strict policies against storing or claiming ownership of your immediate transient processing data. Note that PixelCraft AI has no access to or control over these cookies and data logs that are used by third-party advertisers or external APIs.</p>
 
-        <h2>5. Data Security & Storage</h2>
-        <p>The security of your data is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. Most of our tools run entirely client-side (in your browser using WebAssembly), meaning your images never leave your local device. In the specific cases where data touches our servers, we rely on industry-standard encryption, rapid data expiration, and secure cloud infrastructures (MongoDB, Render, Google Cloud) to protect your personal information.</p>
+        <h2>5. Data Security, Steganography & Local Processing</h2>
+        <p>The security of your data is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. However, we have architected PixelCraft AI to prioritize extreme privacy. <strong>Most of our tools run entirely client-side (in your browser using WebAssembly or local JavaScript APIs), meaning your images, audio files, and videos never leave your local device.</strong></p>
+        <p>Specifically, for our <strong>Encryption and Steganography Tools</strong> (e.g., Audio & Video Steganography, Secret Image Steganography):</p>
+        <ul>
+          <li><strong>Zero Uploads:</strong> Files selected for encryption or decryption are processed locally in your browser's memory. They are never uploaded to our servers.</li>
+          <li><strong>Zero Key Retention:</strong> Passwords, passphrases, and decrypted secret messages are processed transiently and are wiped from memory as soon as the browser tab is closed or refreshed. We do not log, transmit, or retain your cryptographic keys.</li>
+        </ul>
+        <p>In the specific cases where data touches our servers (such as contacting our backend APIs for generative AI), we rely on industry-standard encryption, rapid data expiration, and secure cloud infrastructures (MongoDB, Render, Google Cloud) to protect your personal information.</p>
 
         <h2>6. Your Data Rights & GDPR compliance</h2>
         <p>We want to ensure you are fully aware of all of your data protection rights. Every user is entitled to the following:</p>
