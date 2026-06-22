@@ -130,11 +130,11 @@
 
       <div class="panel-container">
         <div class="glass-box">
-          <div class="upload-area" id="upload-area">
+          <div class="upload-area" id="upload-area" onclick="document.getElementById('fileInput').click()">
             <div style="font-size: 3rem; margin-bottom: 10px;">📸</div>
             <h3 style="color:#f8fafc; margin-bottom: 5px;">Drag & Drop Image Here</h3>
             <p style="color:#94a3b8; font-size: 0.9rem;">or click to browse (JPG, PNG, WebP)</p>
-            <input type="file" id="fileInput" accept="image/*" style="display:none;">
+            <input type="file" id="fileInput" accept="image/*" style="display:none;" onclick="event.stopPropagation()">
           </div>
 
           <div style="text-align:center;">
@@ -206,9 +206,7 @@
     window.addEventListener('dragover', (e) => e.preventDefault());
     window.addEventListener('drop', (e) => e.preventDefault());
 
-    uploadArea.addEventListener('click', (e) => {
-        if(e.target !== fileInput) fileInput.click();
-    });
+
     uploadArea.addEventListener('dragenter', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
     uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
     uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
