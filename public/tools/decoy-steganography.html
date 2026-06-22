@@ -23,8 +23,23 @@
   
   <link rel="stylesheet" href="../css/style.css"/>
 
-  <!-- CryptoJS for AES Encryption -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script>
+    // FRONTEND ACCESS CONTROL
+    async function checkAuth() {
+        try {
+            const res = await fetch('/api/auth/status');
+            const data = await res.json();
+            if (!data.authenticated) {
+                alert("This is a premium tool. Please login via the home page.");
+                window.location.href = "/index.html";
+            }
+        } catch(e) {
+            window.location.href = "/index.html";
+        }
+    }
+    checkAuth();
+  </script>
 
   <style>
     /* Subtle Elegant Accents for Decoy Tool */

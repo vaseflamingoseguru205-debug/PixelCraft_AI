@@ -202,6 +202,10 @@
     // Actually, we don't strictly redirect since the user might be logged in via express-session cookie.
     // The API will fail with 401 if they aren't logged in.
 
+    // Prevent global drag-and-drop from opening the file in the browser tab
+    window.addEventListener('dragover', (e) => e.preventDefault());
+    window.addEventListener('drop', (e) => e.preventDefault());
+
     uploadArea.addEventListener('click', () => fileInput.click());
     uploadArea.addEventListener('dragenter', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
     uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
