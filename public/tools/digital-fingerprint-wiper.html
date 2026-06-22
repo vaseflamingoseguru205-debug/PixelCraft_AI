@@ -206,7 +206,9 @@
     window.addEventListener('dragover', (e) => e.preventDefault());
     window.addEventListener('drop', (e) => e.preventDefault());
 
-    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('click', (e) => {
+        if(e.target !== fileInput) fileInput.click();
+    });
     uploadArea.addEventListener('dragenter', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
     uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
     uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
