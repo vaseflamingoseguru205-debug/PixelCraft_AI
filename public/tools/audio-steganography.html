@@ -404,7 +404,7 @@
         const blocksY = Math.floor(height / blockSize);
         const totalBlocks = blocksX * blocksY;
         
-        const PAYLOAD_BITS = 4096;
+        const PAYLOAD_BITS = 384;
         let binaryStr = '';
         for(let i=0; i<text.length; i++) binaryStr += text.charCodeAt(i).toString(2).padStart(8, '0');
         while(binaryStr.length < PAYLOAD_BITS) binaryStr += '0';
@@ -623,7 +623,13 @@
 
         if (textPayload.length > 512) {
             textPayload = textPayload.substring(0, 512);
-            showToast("Messages very long. Truncated to fit within spatial block limits.", "warning");
+            showToast("Messages very long. Truncated to fit within limits.", "warning");
+        }
+        
+        // Split payload into 16-char chunks for Temporal-Spatial encoding
+        const chunks = [];
+        for(let i=0; i<textPayload.length; i+=16) {
+            chunks.push(textPayload.substring(i, i+16));
         }
 
         const player = document.getElementById('video-player');
@@ -687,10 +693,14 @@
                 }
                 ctx.drawImage(player, 0, 0, canvas.width, canvas.height);
                 
-                // Only run heavy QIM logic on the first 5 seconds to reduce CPU lag
-                if (player.currentTime < 5.0) {
+                // Temporal-Spatial QIM: Embed chunks chronologically
+                const chunkIndex = Math.floor(player.currentTime / 0.5); // 0.5s per chunk
+                if (chunkIndex < chunks.length) {
+                    const chunkString = chunks[chunkIndex];
+                    // Format: PX:SESSION|Cidx|CHUNK
+                    const framePayload = "PX:" + sessionId + "|C" + chunkIndex.toString(36) + "|" + chunkString;
                     let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    injectRobustBlockWatermark(imgData, textPayload);
+                    injectRobustBlockWatermark(imgData, framePayload);
                     ctx.putImageData(imgData, 0, 0);
                 }
                 
@@ -711,28 +721,19 @@
     }
 
     async function handleVideoDecode(pass) {
-        showLoading("Extracting Video Payload...", "Scanning frames for Spatial Watermark.", true);
+        showLoading("Extracting Video Payload...", "Scanning frames for Temporal-Spatial Watermarks.", true);
         const player = document.getElementById('video-player');
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         
-        const doSeek = () => {
-            canvas.width = player.videoWidth;
-            canvas.height = player.videoHeight;
-            // Seek to 1 second in to capture a stable frame
-            player.currentTime = 1;
-        };
-        if (player.readyState >= 2) {
-            doSeek();
-        } else {
-            player.onloadeddata = doSeek;
-        }
+        let currentChunk = 0;
+        let extractedPayload = "";
+        let maxChunks = 35; // maximum possible 512/16 = 32
         
-        player.onseeked = () => {
+        const processSeek = () => {
             ctx.drawImage(player, 0, 0, canvas.width, canvas.height);
             let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             
-            // Extract QIM exactly as in admin.html
             const data = imgData.data;
             const width = imgData.width;
             const height = imgData.height;
@@ -740,7 +741,7 @@
             const blocksX = Math.floor(width / blockSize);
             const blocksY = Math.floor(height / blockSize);
             const totalBlocks = blocksX * blocksY;
-            const maxBits = 4096; 
+            const maxBits = 384; 
             const redundancyCount = Math.min(Math.floor(totalBlocks / maxBits), 25); 
             const qStep = 32;
             
@@ -786,10 +787,43 @@
                 if (byteStr.length === 8) exText += String.fromCharCode(parseInt(byteStr, 2));
             }
             
+            // Try to match the Temporal Chunk
+            const match = /PX:PX-VID-[A-Z0-9]{9}\|C([0-9a-z]+)\|(.{1,16})/.exec(exText);
+            if (match) {
+                const idx = parseInt(match[1], 36);
+                if (idx === currentChunk) {
+                    extractedPayload += match[2].replace(/\0/g, ''); // remove padding null bytes
+                    currentChunk++;
+                    if (currentChunk < maxChunks && (currentChunk * 0.5 + 0.25) < player.duration) {
+                        player.currentTime = currentChunk * 0.5 + 0.25;
+                        return; // Wait for next seeked event!
+                    }
+                }
+            }
+            
+            finishDecode();
+        };
+
+        const doSeek = () => {
+            canvas.width = player.videoWidth;
+            canvas.height = player.videoHeight;
+            player.onseeked = processSeek;
+            player.currentTime = 0.25; // Target middle of the first 0.5s chunk window
+        };
+        
+        if (player.readyState >= 2) {
+            doSeek();
+        } else {
+            player.onloadeddata = doSeek;
+        }
+        
+        function finishDecode() {
+            player.onseeked = null; // Clean up listener
             hideLoading();
             
             // Decrypt Logic
             let decodedMessage = null;
+            const exText = extractedPayload;
             const pxcIndex = exText.indexOf("PXC|");
             if(pxcIndex !== -1){
                 const parts = exText.substring(pxcIndex).split('|');
