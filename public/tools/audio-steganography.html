@@ -412,7 +412,7 @@
         
         if(totalBlocks < PAYLOAD_BITS) return; 
         const redundancyCount = Math.min(Math.floor(totalBlocks / PAYLOAD_BITS), 25); 
-        const qStep = 16;
+        const qStep = 32;
         
         let seed = 1337;
         function prng() { let x = Math.sin(seed++) * 10000; return x - Math.floor(x); }
@@ -523,8 +523,8 @@
     function encodeSpreadSpectrumToAudio(audioBuffer, bits, password) {
         const prng = mulberry32(hashString(password));
         const channelData = audioBuffer.getChannelData(0);
-        const sequenceLength = 100; // Spread each bit over 100 samples
-        const alpha = 0.005; // Amplitude of the hidden sequence (inaudible noise)
+        const sequenceLength = 200; // Spread each bit over 200 samples
+        const alpha = 0.025; // Amplitude of the hidden sequence (inaudible noise)
         
         // Generate pseudo-random noise sequence
         const pnSequence = new Float32Array(sequenceLength);
@@ -545,7 +545,7 @@
     function attemptSpreadSpectrumDecode(audioBuffer, password) {
         const prng = mulberry32(hashString(password));
         const channelData = audioBuffer.getChannelData(0);
-        const sequenceLength = 100;
+        const sequenceLength = 200;
         
         const pnSequence = new Float32Array(sequenceLength);
         for(let i=0; i<sequenceLength; i++) pnSequence[i] = (prng() > 0.5 ? 1 : -1);
@@ -718,7 +718,7 @@
             const totalBlocks = blocksX * blocksY;
             const maxBits = 4096; 
             const redundancyCount = Math.min(Math.floor(totalBlocks / maxBits), 25); 
-            const qStep = 16;
+            const qStep = 32;
             
             let seed = 1337;
             function prng() { let x = Math.sin(seed++) * 10000; return x - Math.floor(x); }

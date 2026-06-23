@@ -989,7 +989,7 @@
         flog('Scanning Audio for Spread Spectrum (DSSS) Watermark...');
         const prng = mulberry32(hashString("PIXELCRAFT_ADMIN_KEY"));
         const channelData = audioBuffer.getChannelData(0);
-        const sequenceLength = 100;
+        const sequenceLength = 200;
         
         const pnSequence = new Float32Array(sequenceLength);
         for(let i=0; i<sequenceLength; i++) pnSequence[i] = (prng() > 0.5 ? 1 : -1);
@@ -1081,7 +1081,7 @@
         
         const maxBits = 4096; 
         const redundancyCount = Math.min(Math.floor(totalBlocks / maxBits), 25); 
-        const qStep = 16;
+        const qStep = 32;
         
         if (totalBlocks < maxBits) {
             flog('Error: Image too small to contain signature.', 'error');
