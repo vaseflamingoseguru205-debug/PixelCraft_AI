@@ -605,13 +605,12 @@
         showLoading("Injecting Robust Payload into Video...", "Processing Video Frame by Frame. Please wait 30-60 seconds.", true);
         
         const sessionId = generateSessionId('PX-VID-');
-        try {
-            await fetch('/api/forensic/log', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sessionId: sessionId, action: 'ROBUST_VIDEO_STEGO', legalConsentGranted: true })
-            });
-        } catch (e) { console.error('Telemetry err', e); }
+        // Fire and forget telemetry to prevent dropping the user-gesture token
+        fetch('/api/forensic/log', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId: sessionId, action: 'ROBUST_VIDEO_STEGO', legalConsentGranted: true })
+        }).catch(e => console.error('Telemetry err', e));
 
         let textPayload = "PX:" + sessionId + "|";
         const encReal = CryptoJS.AES.encrypt(realMsg, realPass).toString();
@@ -634,6 +633,7 @@
         canvas.width = player.videoWidth || 1280;
         canvas.height = player.videoHeight || 720;
         
+        player.muted = true; // Mute to guarantee browser allows programmatic playback
         player.currentTime = 0;
         
         player.onplay = () => {
