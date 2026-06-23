@@ -631,32 +631,52 @@
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         
-        // Setup MediaRecorder
-        const stream = canvas.captureStream(30); 
-        const recordedChunks = [];
-        let mediaRecorder;
-        try {
-            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8' });
-        } catch(e) {
-            mediaRecorder = new MediaRecorder(stream);
-        }
+        canvas.width = player.videoWidth || 1280;
+        canvas.height = player.videoHeight || 720;
         
-        mediaRecorder.ondataavailable = (e) => { if(e.data.size > 0) recordedChunks.push(e.data); };
+        player.currentTime = 0;
         
-        mediaRecorder.onstop = () => {
-            const blob = new Blob(recordedChunks, { type: 'video/webm' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'secure_stego_video.webm';
-            a.click();
-            hideLoading();
-            player.pause();
-        };
-
         player.onplay = () => {
-            canvas.width = player.videoWidth;
-            canvas.height = player.videoHeight;
+            // Draw first frame to ensure canvas isn't blank before captureStream
+            ctx.drawImage(player, 0, 0, canvas.width, canvas.height);
+            
+            // Setup MediaRecorder
+            const stream = canvas.captureStream(30); 
+            
+            // Capture audio track from original video
+            if (player.captureStream) {
+                const audioStream = player.captureStream();
+                if (audioStream.getAudioTracks().length > 0) {
+                    stream.addTrack(audioStream.getAudioTracks()[0]);
+                }
+            } else if (player.mozCaptureStream) {
+                const audioStream = player.mozCaptureStream();
+                if (audioStream.getAudioTracks().length > 0) {
+                    stream.addTrack(audioStream.getAudioTracks()[0]);
+                }
+            }
+            
+            const recordedChunks = [];
+            let mediaRecorder;
+            try {
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8' });
+            } catch(e) {
+                mediaRecorder = new MediaRecorder(stream);
+            }
+            
+            mediaRecorder.ondataavailable = (e) => { if(e.data.size > 0) recordedChunks.push(e.data); };
+            
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'secure_stego_video.webm';
+                a.click();
+                hideLoading();
+                player.pause();
+            };
+
             mediaRecorder.start();
             
             function processFrame() {
@@ -674,7 +694,8 @@
                     ctx.putImageData(imgData, 0, 0);
                 }
                 
-                const percent = (player.currentTime / Math.min(player.duration, 30)) * 100;
+                const duration = player.duration && !isNaN(player.duration) ? player.duration : 30;
+                const percent = (player.currentTime / Math.min(duration, 30)) * 100;
                 updateProgress(percent);
                 
                 requestAnimationFrame(processFrame);
@@ -682,8 +703,11 @@
             processFrame();
         };
         
-        player.currentTime = 0;
-        player.play();
+        player.play().catch(e => {
+            console.error("Video play failed:", e);
+            hideLoading();
+            alert("Video playback failed. Please ensure the video format is supported.");
+        });
     }
 
     async function handleVideoDecode(pass) {
