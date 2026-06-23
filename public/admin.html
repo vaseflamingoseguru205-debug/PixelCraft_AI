@@ -371,6 +371,15 @@
         .scroll-bar-bg { height: 6px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
         .scroll-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #10b981, #00f2fe); transition: width 0.5s ease; }
         .behavior-info { font-size: 11px; color: var(--text-muted); text-align: right; white-space: nowrap; }
+
+        /* Forensic Extractor Styles */
+        .forensic-dropzone { border: 2px dashed rgba(245, 158, 11, 0.4); padding: 40px; text-align: center; cursor: pointer; margin: 20px 0; color: var(--text-muted); border-radius: 12px; transition: 0.3s; background: rgba(0,0,0,0.2); }
+        .forensic-dropzone:hover { border-color: var(--warning); color: var(--warning); background: rgba(245, 158, 11, 0.05); }
+        .forensic-terminal { background: #050505; border: 1px solid var(--border); padding: 15px; height: 300px; overflow-y: auto; margin-top: 20px; color: #e2e8f0; font-size: 0.9rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace;}
+        .forensic-terminal .sys { color: var(--accent); }
+        .forensic-terminal .success { color: var(--success); font-weight: bold; }
+        .forensic-terminal .error { color: var(--danger); }
+        .forensic-preview { max-width: 100%; max-height: 250px; display: none; margin: 10px auto; border-radius: 8px; border: 1px solid var(--border); }
     </style>
     <!-- CodeMirror -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
@@ -448,6 +457,7 @@
                 <span style="font-size:12px; color:var(--text-main); text-transform:uppercase; font-family:'JetBrains Mono',monospace;">Require Login For Tools</span>
                 <button id="toggle-tools-login" style="background:var(--success); color:#fff; border:none; border-radius:12px; padding:4px 12px; font-size:11px; cursor:pointer; font-weight:bold; transition:0.3s;">ON</button>
             </div>
+            <button class="btn-primary" id="open-forensics-btn" style="width:auto; padding: 10px 20px; font-size: 13px; border-color: var(--warning); color: var(--warning);">Forensics Hub</button>
             <button class="btn-primary" id="open-deploy-btn" style="width:auto; padding: 10px 20px; font-size: 13px;">Deployment Hub</button>
             <button class="btn-logout" id="logout-btn">Terminate Session</button>
         </div>
@@ -488,26 +498,58 @@
             </table>
         </div>
     </div>
+</div>
 
-    <!-- Forensic Logs Table -->
-    <div class="glass-panel" style="margin-top: 20px;">
-        <h3 style="margin-top:0; margin-bottom:20px; color:var(--warning); font-size: 20px; text-transform: uppercase; letter-spacing: 1px;">Forensic Session Logs (Fingerprint Wiper)</h3>
-        <div style="overflow-x: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Session ID</th>
-                        <th>Timestamp</th>
-                        <th>Entity (Email)</th>
-                        <th>IP Address</th>
-                        <th>Action</th>
-                        <th>Legal Consent</th>
-                    </tr>
-                </thead>
-                <tbody id="forensic-tbody">
-                    <!-- Dynamic -->
-                </tbody>
-            </table>
+<!-- Forensics Hub Modal -->
+<div class="modal-overlay" id="forensics-modal-overlay">
+    <div class="user-modal" id="forensics-modal" style="max-width: 1200px; height: 85vh;">
+        <div class="modal-header">
+            <div class="modal-user-info">
+                <div>
+                    <h2 class="modal-name" style="color: var(--warning);">Digital Forensics Hub</h2>
+                    <p class="modal-email">Track sessions and blindly extract QIM Spatial Watermarks.</p>
+                </div>
+            </div>
+            <button class="modal-close" id="forensics-modal-close">&times;</button>
+        </div>
+        
+        <div class="modal-tabs">
+            <button class="tab-btn active" id="tab-btn-extractor" onclick="switchForensicTab('tab-extractor', this)">🔍 QIM Extractor</button>
+            <button class="tab-btn" id="tab-btn-logs" onclick="switchForensicTab('tab-flogs', this)">📜 Forensic Logs</button>
+        </div>
+
+        <!-- Forensics Tab: Extractor -->
+        <div class="tab-content active" id="tab-extractor" style="display: block;">
+            <div class="forensic-dropzone" id="forensic-dropzone">Click or Drop Compressed Image Here to Extract Session ID</div>
+            <input type="file" id="forensic-fileInput" accept="image/*" style="display: none;">
+            <img id="forensic-previewImg" class="forensic-preview" src="">
+            <canvas id="forensic-hiddenCanvas" style="display: none;"></canvas>
+            
+            <div class="forensic-terminal" id="forensic-terminal">
+                <div class="sys">> FORENSIC DECODER BOOT SEQUENCE INITIATED...</div>
+                <div class="sys">> WAITING FOR MEDIA UPLOAD.</div>
+            </div>
+        </div>
+
+        <!-- Forensics Tab: Logs -->
+        <div class="tab-content" id="tab-flogs" style="display: none;">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>Timestamp</th>
+                            <th>Entity (Email)</th>
+                            <th>IP Address</th>
+                            <th>Action</th>
+                            <th>Legal Consent</th>
+                        </tr>
+                    </thead>
+                    <tbody id="forensic-tbody">
+                        <!-- Dynamic -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -772,6 +814,170 @@
             errorMsg.style.display = 'block';
             sessionStorage.removeItem('admin_pass');
             loginBtn.textContent = 'Initialize Link';
+        }
+    }
+
+    // Forensics Hub Logic
+    const openForensicsBtn = document.getElementById('open-forensics-btn');
+    const forensicsModalOverlay = document.getElementById('forensics-modal-overlay');
+    const forensicsModalClose = document.getElementById('forensics-modal-close');
+
+    openForensicsBtn.addEventListener('click', () => {
+        forensicsModalOverlay.classList.add('open');
+    });
+
+    forensicsModalClose.addEventListener('click', () => {
+        forensicsModalOverlay.classList.remove('open');
+    });
+
+    function switchForensicTab(tabId, btn) {
+        document.getElementById('tab-extractor').style.display = 'none';
+        document.getElementById('tab-flogs').style.display = 'none';
+        document.getElementById('tab-btn-extractor').classList.remove('active');
+        document.getElementById('tab-btn-logs').classList.remove('active');
+
+        document.getElementById(tabId).style.display = 'block';
+        btn.classList.add('active');
+    }
+
+    // Extractor Logic
+    const fDropzone = document.getElementById('forensic-dropzone');
+    const fFileInput = document.getElementById('forensic-fileInput');
+    const fTerminal = document.getElementById('forensic-terminal');
+    const fPreviewImg = document.getElementById('forensic-previewImg');
+    const fHiddenCanvas = document.getElementById('forensic-hiddenCanvas');
+    const fCtx = fHiddenCanvas.getContext('2d', { willReadFrequently: true });
+
+    function flog(msg, type = '') {
+      const div = document.createElement('div');
+      div.textContent = '> ' + msg;
+      if (type) div.className = type;
+      fTerminal.appendChild(div);
+      fTerminal.scrollTop = fTerminal.scrollHeight;
+    }
+
+    fDropzone.addEventListener('click', () => fFileInput.click());
+    
+    fFileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) processForensicImage(e.target.files[0]);
+    });
+
+    function processForensicImage(file) {
+        flog(`Loading file: ${file.name}...`, 'sys');
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                fPreviewImg.src = img.src;
+                fPreviewImg.style.display = 'block';
+                flog(`Image loaded [${img.width}x${img.height}]`);
+                extractQIMWatermark(img);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function extractQIMWatermark(img) {
+        fHiddenCanvas.width = img.width;
+        fHiddenCanvas.height = img.height;
+        fCtx.drawImage(img, 0, 0);
+        const imageData = fCtx.getImageData(0, 0, img.width, img.height);
+        const data = imageData.data;
+        const width = imageData.width;
+        const height = imageData.height;
+        
+        flog('Scanning Blue-channel QIM blocks...');
+        
+        const blockSize = 8;
+        const blocksX = Math.floor(width / blockSize);
+        const blocksY = Math.floor(height / blockSize);
+        const totalBlocks = blocksX * blocksY;
+        
+        const maxBits = 250; 
+        const redundancyCount = 25; 
+        const qStep = 16;
+        
+        if (totalBlocks < maxBits) {
+            flog('Error: Image too small to contain signature.', 'error');
+            return;
+        }
+
+        let seed = 1337;
+        function random() {
+            let x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+        }
+        
+        let blockIndices = new Uint32Array(totalBlocks);
+        for(let i=0; i<totalBlocks; i++) blockIndices[i] = i;
+        for(let i = totalBlocks - 1; i > 0; i--) {
+            const j = Math.floor(random() * (i + 1));
+            const temp = blockIndices[i];
+            blockIndices[i] = blockIndices[j];
+            blockIndices[j] = temp;
+        }
+        
+        let bitVotes = new Int32Array(maxBits);
+        let blockPtr = 0;
+        
+        for(let r = 0; r < redundancyCount; r++) {
+            for(let i = 0; i < maxBits; i++) {
+                if (blockPtr >= totalBlocks) break;
+                const blockIndex = blockIndices[blockPtr++];
+                
+                const bx = blockIndex % blocksX;
+                const by = Math.floor(blockIndex / blocksX);
+                const startX = bx * blockSize;
+                const startY = by * blockSize;
+                
+                let sum = 0;
+                let count = 0;
+                for(let y = startY; y < startY + blockSize; y++) {
+                    for(let x = startX; x < startX + blockSize; x++) {
+                        sum += data[(y * width + x) * 4 + 2];
+                        count++;
+                    }
+                }
+                const avg = sum / count;
+                
+                const val0 = Math.round(avg / qStep) * qStep;
+                const val1 = Math.round((avg - qStep/2)/qStep)*qStep + qStep/2;
+                
+                const dist0 = Math.abs(avg - val0);
+                const dist1 = Math.abs(avg - val1);
+                
+                if (dist1 < dist0) {
+                    bitVotes[i]++;
+                } else {
+                    bitVotes[i]--;
+                }
+            }
+        }
+        
+        flog('Resolving majority votes...');
+        let binaryStr = '';
+        for(let i=0; i<maxBits; i++) {
+            binaryStr += (bitVotes[i] > 0) ? '1' : '0';
+        }
+        
+        let text = '';
+        for(let i=0; i<binaryStr.length; i+=8) {
+            const byteStr = binaryStr.substr(i, 8);
+            if (byteStr.length === 8) {
+                text += String.fromCharCode(parseInt(byteStr, 2));
+            }
+        }
+        
+        flog('Raw Decoded Buffer: ' + text.replace(/[^a-zA-Z0-9:|_\-]/g, '?'));
+        
+        const match = /PX-[A-Z0-9]{9}/.exec(text);
+        if (match) {
+            flog('=======================================', 'success');
+            flog(`[CRITICAL MATCH] FORENSIC ID FOUND: ${match[0]}`, 'success');
+            flog('=======================================', 'success');
+        } else {
+            flog('No valid Forensic ID found. Image may be clean or too heavily degraded.', 'error');
         }
     }
 
