@@ -165,6 +165,7 @@
 
   <script>
     // FRONTEND ACCESS CONTROL (COMING SOON BLOCK)
+    // *** DISABLED FOR LOCAL TESTING - Re-enable before production deploy ***
     async function checkAccess() {
         try {
             const res = await fetch('/api/auth/status');
@@ -178,7 +179,7 @@
             window.location.href = "/index.html";
         }
     }
-    checkAccess();
+    // checkAccess();  // <-- COMMENTED OUT FOR LOCAL TESTING
 
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('fileInput');
