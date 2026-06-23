@@ -410,12 +410,27 @@
           <div class="tool-arrow default-launch-btn" style="font-weight: bold; position: relative; z-index: 2; pointer-events: none; margin-top: auto;">Launch Tool →</div>
         </div>
 
-        <!-- DIGITAL FINGERPRINT WIPER: HIDDEN (Under Development - Local Testing) -->
+        <!-- DIGITAL FINGERPRINT WIPER -->
+        <div class="tool-card premium-floating-card gray-pulse-anim" data-cat="security" style="position: relative; padding-bottom: 20px; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);">
+          <a href="/tools/digital-fingerprint-wiper.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></a>
+          <div style="position: relative; z-index: 2; pointer-events: none; flex-grow: 1;">
+            <div class="tool-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.5);">V2.0 ROBUST</div>
+            <div class="tool-icon icon-blue" style="font-size: 2.8rem; text-shadow: 0 0 15px rgba(16, 185, 129, 0.4); margin-top: 25px;">🛡️</div>
+            <h3 style="color: #34d399; font-size: 1.3rem;">Digital Privacy & Metadata Wiper</h3>
+            <p style="font-size: 0.95rem; color: #cbd5e1; font-weight: 400; line-height: 1.6;">
+              Wipes EXIF metadata and destroys invisible Camera Sensor Signatures (PRNU). Prepares your media for safe, anonymous sharing across all platforms.
+            </p>
+          </div>
+          
+          <div class="premium-login-btn-container" data-tool="/tools/digital-fingerprint-wiper.html"></div>
+          <div class="tool-arrow default-launch-btn" style="font-weight: bold; position: relative; z-index: 2; pointer-events: none; margin-top: auto; color: #34d399;">Launch Tool →</div>
+        </div>
+
         <style>
           @keyframes grayPulse {
-            0% { box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.4); border-color: #475569; }
-            50% { box-shadow: 0 0 10px 0 rgba(148, 163, 184, 0.6); border-color: #94a3b8; color: #cbd5e1; }
-            100% { box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.4); border-color: #475569; }
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 10px 0 rgba(16, 185, 129, 0.4); border-color: #34d399; color: #cbd5e1; }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); }
           }
           .gray-pulse-anim {
             animation: grayPulse 2s infinite;
