@@ -515,7 +515,9 @@
         
         <div class="modal-tabs">
             <button class="tab-btn active" id="tab-btn-extractor" onclick="switchForensicTab('tab-extractor', this)">🔍 QIM Extractor</button>
-            <button class="tab-btn" id="tab-btn-logs" onclick="switchForensicTab('tab-flogs', this)">📜 Forensic Logs</button>
+            <button class="tab-btn" id="tab-btn-logs" onclick="switchForensicTab('tab-flogs', this)">📜 Fingerprint Logs</button>
+            <button class="tab-btn" id="tab-btn-avlogs" onclick="switchForensicTab('tab-avlogs', this)">🎧 Audio/Video Logs</button>
+            <button class="tab-btn" id="tab-btn-decoylogs" onclick="switchForensicTab('tab-decoylogs', this)">🎭 Decoy Stego Logs</button>
         </div>
 
         <!-- Forensics Tab: Extractor -->
@@ -528,7 +530,7 @@
             <canvas id="forensic-hiddenCanvas" style="display: none;"></canvas>
             
             <div class="forensic-terminal" id="forensic-terminal">
-                <div class="sys">> FORENSIC DECODER BOOT SEQUENCE INITIATED...</div>
+                <div class="sys">> PIXELCRAFT AI FORENSIC DECODER BOOT SEQUENCE INITIATED...</div>
                 <div class="sys">> WAITING FOR MEDIA UPLOAD.</div>
             </div>
         </div>
@@ -548,6 +550,48 @@
                         </tr>
                     </thead>
                     <tbody id="forensic-tbody">
+                        <!-- Dynamic -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Forensics Tab: AV Logs -->
+        <div class="tab-content" id="tab-avlogs" style="display: none;">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>Timestamp</th>
+                            <th>Entity (Email)</th>
+                            <th>IP Address</th>
+                            <th>Action</th>
+                            <th>Legal Consent</th>
+                        </tr>
+                    </thead>
+                    <tbody id="avlogs-tbody">
+                        <!-- Dynamic -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Forensics Tab: Decoy Logs -->
+        <div class="tab-content" id="tab-decoylogs" style="display: none;">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>Timestamp</th>
+                            <th>Entity (Email)</th>
+                            <th>IP Address</th>
+                            <th>Action</th>
+                            <th>Legal Consent</th>
+                        </tr>
+                    </thead>
+                    <tbody id="decoylogs-tbody">
                         <!-- Dynamic -->
                     </tbody>
                 </table>
@@ -1021,12 +1065,22 @@
     }
 
     function renderForensicLogs(logs) {
-        const tbody = document.getElementById('forensic-tbody');
-        tbody.innerHTML = '';
+        const tbodyF = document.getElementById('forensic-tbody');
+        const tbodyAV = document.getElementById('avlogs-tbody');
+        const tbodyD = document.getElementById('decoylogs-tbody');
+        
+        tbodyF.innerHTML = '';
+        tbodyAV.innerHTML = '';
+        tbodyD.innerHTML = '';
+        
         if (logs.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">No forensic logs found.</td></tr>';
+            tbodyF.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">No forensic logs found.</td></tr>';
+            tbodyAV.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">No AV logs found.</td></tr>';
+            tbodyD.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">No Decoy logs found.</td></tr>';
             return;
         }
+
+        let fCount=0, avCount=0, dCount=0;
 
         logs.forEach(log => {
             const tr = document.createElement('tr');
@@ -1038,8 +1092,22 @@
                 <td><span style="background:rgba(245,158,11,0.15); color:var(--warning); padding:2px 8px; border-radius:4px; font-size:11px;">${log.action}</span></td>
                 <td>${log.legalConsentGranted ? '<span style="color:var(--success);">TRUE</span>' : '<span style="color:var(--danger);">FALSE</span>'}</td>
             `;
-            tbody.appendChild(tr);
+            if (log.action === 'ROBUST_AUDIO_STEGO' || log.action === 'ROBUST_VIDEO_STEGO') {
+                tbodyAV.appendChild(tr);
+                avCount++;
+            } else if (log.action === 'DECOY_IMAGE_STEGO') {
+                tbodyD.appendChild(tr);
+                dCount++;
+            } else {
+                // Default fallback to fingerprint wipe logs (DIGITAL_WIPER_STEGO)
+                tbodyF.appendChild(tr);
+                fCount++;
+            }
         });
+
+        if(fCount === 0) tbodyF.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">No fingerprint logs found.</td></tr>';
+        if(avCount === 0) tbodyAV.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">No AV logs found.</td></tr>';
+        if(dCount === 0) tbodyD.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">No Decoy logs found.</td></tr>';
     }
 
     function openUserModal(index) {

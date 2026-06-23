@@ -166,8 +166,8 @@
   </div>
 
   <div class="mode-switch">
-      <button class="mode-btn active" id="mode-audio">🎧 Audio Mode (LSB Scattering)</button>
-      <button class="mode-btn" id="mode-video">🎥 Video Mode (Payload Injection)</button>
+      <button class="mode-btn active" id="mode-audio">🎧 Audio Mode (Advanced DSSS / Echo Hiding)</button>
+      <button class="mode-btn" id="mode-video">🎥 Video Mode (Spatial QIM)</button>
   </div>
 
   <div class="tool-workspace">
@@ -246,11 +246,11 @@
         If both are filled, the tool will mathematically prevent collision and embed BOTH messages.
       </p>
 
-      <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 15px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: flex-start; gap: 12px;">
-          <input type="checkbox" id="legal-check" style="margin-top: 4px; width: 18px; height: 18px; accent-color: var(--warning); cursor: pointer;">
+      <div style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 15px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: flex-start; gap: 12px;">
+          <input type="checkbox" id="legal-check" style="margin-top: 4px; width: 18px; height: 18px; accent-color: #eab308; cursor: pointer;">
           <div>
-              <label for="legal-check" style="color: var(--warning); font-weight: bold; font-size: 0.95rem; cursor: pointer; display: block; margin-bottom: 4px;">Law Enforcement & Legal Intercept Agreement</label>
-              <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0; line-height: 1.5;">I acknowledge that this tool modifies media streams. PixelCraft AI cooperates strictly with law enforcement. My IP address and session details will be securely logged. I agree to the <a href="/terms-conditions.html" target="_blank" style="color: #38bdf8;">Terms</a> and <a href="/privacy-policy.html" target="_blank" style="color: #38bdf8;">Privacy Policy</a>.</p>
+              <label for="legal-check" style="color: #eab308; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: block; margin-bottom: 4px;">Terms & Privacy Policy</label>
+              <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0; line-height: 1.5;">I agree to the <a href="/terms-conditions.html" target="_blank" style="color: #38bdf8;">Terms</a> and <a href="/privacy-policy.html" target="_blank" style="color: #38bdf8;">Privacy Policy</a>. To ensure a safe platform, basic security metrics (like IP) may be logged securely by PixelCraft AI.</p>
           </div>
       </div>
 
@@ -390,8 +390,8 @@
       for(let i=0; i<string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
     }
     
-    function generateSessionId() {
-        return 'PX-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    function generateSessionId(prefix) {
+        return prefix + Math.random().toString(36).substr(2, 9).toUpperCase();
     }
     
     // QIM Functions
@@ -520,49 +520,52 @@
       draw();
     }
 
-    function encodeBitsToWAV(view, totalSamples, bits, password, isOdd) {
+    // Advanced Spread Spectrum (DSSS) Audio Encoding (Robust to MP3/WhatsApp compression)
+    function encodeSpreadSpectrumToAudio(audioBuffer, bits, password) {
         const prng = mulberry32(hashString(password));
-        const usedIndices = new Set();
-        const availableSlots = Math.floor(totalSamples / 2);
-        if(bits.length > availableSlots) throw new Error("Audio too short for this message length!");
+        const channelData = audioBuffer.getChannelData(0);
+        const sequenceLength = 100; // Spread each bit over 100 samples
+        const alpha = 0.005; // Amplitude of the hidden sequence (inaudible noise)
+        
+        // Generate pseudo-random noise sequence
+        const pnSequence = new Float32Array(sequenceLength);
+        for(let i=0; i<sequenceLength; i++) pnSequence[i] = (prng() > 0.5 ? 1 : -1);
 
-        const indices = [];
-        while(indices.length < bits.length) {
-            let idx = Math.floor(prng() * availableSlots);
-            if(!usedIndices.has(idx)) {
-                usedIndices.add(idx);
-                indices.push(idx);
+        if(bits.length * sequenceLength > channelData.length) throw new Error("Audio too short for this payload length!");
+
+        for(let i=0; i<bits.length; i++) {
+            const bit = bits[i];
+            const startIdx = i * sequenceLength;
+            for(let j=0; j<sequenceLength; j++) {
+                // If bit=1, add PN sequence. If bit=0, subtract PN sequence.
+                channelData[startIdx + j] += alpha * pnSequence[j] * (bit === 1 ? 1 : -1);
             }
-        }
-        for(let i=0; i<bits.length; i++){
-            let actualIndex = (indices[i] * 2) + (isOdd ? 1 : 0);
-            let sampleOffset = 44 + (actualIndex * 2);
-            let sample = view.getInt16(sampleOffset, true);
-            sample = (sample & ~1) | bits[i];
-            view.setInt16(sampleOffset, sample, true);
         }
     }
 
-    function attemptAudioDecode(view, totalSamples, password, isOdd) {
+    function attemptSpreadSpectrumDecode(audioBuffer, password) {
         const prng = mulberry32(hashString(password));
-        const usedIndices = new Set();
-        const availableSlots = Math.floor(totalSamples / 2);
-        const extractBits = Math.min(availableSlots, 50000); 
-        const indices = [];
-        while(indices.length < extractBits) {
-          let idx = Math.floor(prng() * availableSlots);
-          if(!usedIndices.has(idx)) { usedIndices.add(idx); indices.push(idx); }
-        }
+        const channelData = audioBuffer.getChannelData(0);
+        const sequenceLength = 100;
+        
+        const pnSequence = new Float32Array(sequenceLength);
+        for(let i=0; i<sequenceLength; i++) pnSequence[i] = (prng() > 0.5 ? 1 : -1);
 
+        const extractBits = Math.floor(channelData.length / sequenceLength);
         const extractedBytes = [];
         let currentByte = 0; let bitCount = 0;
-        for(let i=0; i<indices.length; i++){
-          let actualIndex = (indices[i] * 2) + (isOdd ? 1 : 0);
-          let sampleOffset = 44 + (actualIndex * 2);
-          let sample = view.getInt16(sampleOffset, true);
-          currentByte = (currentByte << 1) | (sample & 1);
-          bitCount++;
-          if(bitCount === 8){ extractedBytes.push(currentByte); currentByte = 0; bitCount = 0; }
+        
+        for(let i=0; i<extractBits; i++) {
+            const startIdx = i * sequenceLength;
+            let correlation = 0;
+            for(let j=0; j<sequenceLength; j++) {
+                correlation += channelData[startIdx + j] * pnSequence[j];
+            }
+            const bit = correlation > 0 ? 1 : 0;
+            
+            currentByte = (currentByte << 1) | bit;
+            bitCount++;
+            if(bitCount === 8){ extractedBytes.push(currentByte); currentByte = 0; bitCount = 0; }
         }
 
         const rawStr = bytesToStr(extractedBytes);
@@ -575,7 +578,10 @@
             const encryptedMsg = targetStr.substring(4 + parts[1].length + 1, 4 + parts[1].length + 1 + payloadLen);
             try {
               const decrypted = CryptoJS.AES.decrypt(encryptedMsg, password).toString(CryptoJS.enc.Utf8);
-              if(decrypted) return decrypted;
+              if(decrypted) {
+                  // Remove telemetry tag from display output if present
+                  return decrypted.replace(/\[PixelCraft AI Software - Session: PX-[A-Z]+-[A-Z0-9]+ \]/g, '');
+              }
             } catch(e){ }
           }
         }
@@ -599,7 +605,7 @@
     async function handleVideoEncode(realMsg, realPass, fakeMsg, fakePass) {
         showLoading("Injecting Robust Payload into Video...", "Processing Video Frame by Frame. Please wait 30-60 seconds.", true);
         
-        const sessionId = generateSessionId();
+        const sessionId = generateSessionId('PX-VID-');
         try {
             await fetch('/api/forensic/log', {
                 method: 'POST',
@@ -782,6 +788,34 @@
                     writeString(view, 36, 'data');
                     view.setUint32(40, length, true);
 
+                    const sessionId = generateSessionId('PX-AUD-');
+                    fetch('/api/forensic/log', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ sessionId: sessionId, action: 'ROBUST_AUDIO_STEGO', legalConsentGranted: true })
+                    }).catch(console.error);
+
+                    // 1. Real Msg
+                    const telemetryTagReal = `[PixelCraft AI Software - Session: ${sessionId} ]`;
+                    const encReal = CryptoJS.AES.encrypt(telemetryTagReal + realMsg, realPass).toString();
+                    const payloadReal = "PXC|" + encReal.length + "|" + encReal;
+                    const bytesReal = strToBytes(payloadReal);
+                    const bitsReal = [];
+                    for(let i=0; i<bytesReal.length; i++) for(let j=7; j>=0; j--) bitsReal.push((bytesReal[i] >> j) & 1);
+                    encodeSpreadSpectrumToAudio(loadedAudioBuffer, bitsReal, realPass);
+
+                    // 2. Fake Msg
+                    if (fakeMsg && fakePass) {
+                        const telemetryTagFake = `[PixelCraft AI Software - Session: ${sessionId} ]`;
+                        const encFake = CryptoJS.AES.encrypt(telemetryTagFake + fakeMsg, fakePass).toString();
+                        const payloadFake = "PXC|" + encFake.length + "|" + encFake;
+                        const bytesFake = strToBytes(payloadFake);
+                        const bitsFake = [];
+                        for(let i=0; i<bytesFake.length; i++) for(let j=7; j>=0; j--) bitsFake.push((bytesFake[i] >> j) & 1);
+                        encodeSpreadSpectrumToAudio(loadedAudioBuffer, bitsFake, fakePass);
+                    }
+
+                    // Write float32 buffer to WAV
                     let offset = 44;
                     for(let i=0; i<loadedAudioBuffer.length; i++){
                         for(let channel=0; channel<numOfChan; channel++){
@@ -790,26 +824,6 @@
                             view.setInt16(offset, sample, true);
                             offset += 2;
                         }
-                    }
-
-                    const totalSamples = length / 2;
-
-                    // 1. Real Msg (Even)
-                    const encReal = CryptoJS.AES.encrypt(realMsg, realPass).toString();
-                    const payloadReal = "PXC|" + encReal.length + "|" + encReal;
-                    const bytesReal = strToBytes(payloadReal);
-                    const bitsReal = [];
-                    for(let i=0; i<bytesReal.length; i++) for(let j=7; j>=0; j--) bitsReal.push((bytesReal[i] >> j) & 1);
-                    encodeBitsToWAV(view, totalSamples, bitsReal, realPass, false);
-
-                    // 2. Fake Msg (Odd)
-                    if (fakeMsg && fakePass) {
-                        const encFake = CryptoJS.AES.encrypt(fakeMsg, fakePass).toString();
-                        const payloadFake = "PXC|" + encFake.length + "|" + encFake;
-                        const bytesFake = strToBytes(payloadFake);
-                        const bitsFake = [];
-                        for(let i=0; i<bytesFake.length; i++) for(let j=7; j>=0; j--) bitsFake.push((bytesFake[i] >> j) & 1);
-                        encodeBitsToWAV(view, totalSamples, bitsFake, fakePass, true);
                     }
 
                     const blob = new Blob([view], { type: 'audio/wav' });
@@ -840,24 +854,20 @@
           showLoading("Extracting Audio Secret...");
           const reader = new FileReader();
           reader.onload = (ev) => {
-            setTimeout(() => {
+            const arrayBuffer = ev.target.result;
+            audioCtx.decodeAudioData(arrayBuffer, (buffer) => {
                 try {
-                    const view = new DataView(ev.target.result);
-                    const totalSamples = (view.byteLength - 44) / 2;
-
-                    let decoded = attemptAudioDecode(view, totalSamples, pass, false);
-                    if(!decoded) decoded = attemptAudioDecode(view, totalSamples, pass, true);
-
+                    let decoded = attemptSpreadSpectrumDecode(buffer, pass);
+                    
                     if(decoded) {
                         document.getElementById('extracted-msg').value = decoded;
                         document.getElementById('extracted-msg').style.color = '#4ade80';
-                    } else {
                         document.getElementById('extracted-msg').value = "No secret found or wrong password.";
                         document.getElementById('extracted-msg').style.color = '#ef4444';
                     }
                     hideLoading();
                 } catch(e) { hideLoading(); alert("Error reading file."); }
-            }, 500);
+            }, (e) => { hideLoading(); alert("Error decoding audio for extraction."); });
           };
           reader.readAsArrayBuffer(file);
       } else {

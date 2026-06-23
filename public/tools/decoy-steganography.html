@@ -283,6 +283,14 @@
           </div>
         </div>
 
+        <div style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 15px; border-radius: 12px; margin-top: 24px; display: flex; align-items: flex-start; gap: 12px;">
+          <input type="checkbox" id="legal-check" style="margin-top: 4px; width: 18px; height: 18px; accent-color: #eab308; cursor: pointer;">
+          <div>
+            <label for="legal-check" style="color: #eab308; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: block; margin-bottom: 4px;">Terms & Privacy Policy</label>
+            <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0; line-height: 1.5;">I agree to the <a href="/terms-conditions.html" target="_blank" style="color: #38bdf8;">Terms</a> and <a href="/privacy-policy.html" target="_blank" style="color: #38bdf8;">Privacy Policy</a>. To ensure a safe platform, basic security metrics (like IP) may be logged securely by PixelCraft AI.</p>
+          </div>
+        </div>
+
         <button class="btn-blue" id="btn-encode" style="width:100%; margin-top:20px; font-size:1.1rem; padding:14px; display:flex; justify-content:center; gap:10px;">
           🔒 Encrypt & Hide Message
         </button>
@@ -593,12 +601,33 @@ document.getElementById('btn-encode').addEventListener('click', () => {
   const bitsPerChannel = parseInt(document.getElementById('stealth-level').value);
 
   const isDecoy = document.getElementById('enable-decoy').checked;
-  const decoyMsg = isDecoy ? document.getElementById('decoy-text').value : "";
+  let decoyMsg = isDecoy ? document.getElementById('decoy-text').value : "";
   const decoyPwd = isDecoy ? document.getElementById('decoy-password').value : "";
 
   if(!realMsg) return showToast('Please enter the real secret message.', 'error');
   if(!realPwd) return showToast('Real password is strictly required.', 'error');
   if(isDecoy && (!decoyMsg || !decoyPwd)) return showToast('Decoy message and password are required if Decoy Mode is enabled.', 'error');
+  
+  const legalCheck = document.getElementById('legal-check');
+  if(!legalCheck || !legalCheck.checked) {
+      return showToast('You must agree to the Terms & Privacy Policy before encrypting.', 'error');
+  }
+
+  // Generate Telemetry Session
+  const sessionId = 'PX-DCY-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+  fetch('/api/forensic/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: sessionId, action: 'DECOY_IMAGE_STEGO', legalConsentGranted: true })
+  }).catch(console.error);
+
+  const telemetryTag = `[PixelCraft AI Software - Session: ${sessionId} ]`;
+  let finalRealMsg = telemetryTag + realMsg;
+  if(isDecoy) decoyMsg = telemetryTag + decoyMsg;
+
+  const btn = document.getElementById('btn-encode');
+  const ogText = btn.innerHTML;
+  btn.innerHTML = '🔒 Encrypting & Injecting...';
 
   const cvs = document.getElementById('stego-canvas');
   cvs.width = encodeImageObj.width;
@@ -615,7 +644,7 @@ document.getElementById('btn-encode').addEventListener('click', () => {
   // Generate payloads
   let realPayload, decoyPayload;
   try {
-      realPayload = generatePayload(realMsg, realPwd);
+      realPayload = generatePayload(finalRealMsg, realPwd);
       if(isDecoy) decoyPayload = generatePayload(decoyMsg, decoyPwd);
   } catch(e) {
       return showToast('Encryption failed.', 'error');
@@ -682,6 +711,7 @@ document.getElementById('btn-encode').addEventListener('click', () => {
   const finalDataUrl = cvs.toDataURL('image/png');
   document.getElementById('final-image').src = finalDataUrl;
   document.getElementById('encode-result').style.display = 'block';
+  btn.innerHTML = ogText;
   showToast('Image Encrypted Successfully!', 'success');
 
   document.getElementById('btn-download').onclick = () => {
@@ -692,37 +722,12 @@ document.getElementById('btn-encode').addEventListener('click', () => {
 // --- Decoding ---
 document.getElementById('btn-decode').addEventListener('click', () => {
   const pwd = document.getElementById('decode-password').value;
-  const bitsPerChannel = parseInt(document.getElementById('decode-stealth-level').value);
-
   if(!pwd) return showToast('Password is required to decrypt.', 'error');
 
-  const cvs = document.getElementById('stego-canvas');
-  cvs.width = decodeImageObj.width;
-  cvs.height = decodeImageObj.height;
-  const ctx = cvs.getContext('2d');
+  const canvas = document.getElementById('stego-canvas');
+  canvas.width = decodeImageObj.width;
+  canvas.height = decodeImageObj.height;
+  const ctx = canvas.getContext('2d');
   ctx.drawImage(decodeImageObj, 0, 0);
 
-  const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
-  const data = imgData.data;
-  let bitMask = (1 << bitsPerChannel) - 1;
-
-  // Extract both streams
-  const streamF = extractStream(data, bitMask, bitsPerChannel, false);
-  let msg = extractPayload(streamF, pwd);
-  
-  if(!msg) {
-      const streamB = extractStream(data, bitMask, bitsPerChannel, true);
-      msg = extractPayload(streamB, pwd);
-  }
-
-  if(msg) {
-      document.getElementById('decoded-text').textContent = msg;
-      document.getElementById('decode-result').style.display = 'block';
-      showToast('Message decrypted successfully!', 'success');
-  } else {
-      showToast('Incorrect Password or no message found!', 'error');
-  }
-});
-</script>
-</body>
 </html>

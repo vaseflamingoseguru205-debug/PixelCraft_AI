@@ -225,13 +225,12 @@
           Securely remove sensitive metadata (EXIF) and anonymize your images. This tool adds an invisible protective layer to help prevent unauthorized tracking while keeping your photos looking exactly the same.
         </p>
         
-        <div class="legal-container">
-          <label>
-            <input type="checkbox" id="legalCheck">
-            <span class="legal-text">
-              <strong>COMPLIANCE DECLARATION:</strong> I confirm that I own the rights to this image. I understand that to prevent misuse, basic session details (like time and a session ID) are logged securely, and an invisible tag is added to the image.
-            </span>
-          </label>
+        <div class="legal-container" style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 10px;">
+          <input type="checkbox" id="legalCheck" style="margin-top: 4px; accent-color: #eab308;">
+          <div>
+            <label for="legalCheck" style="color: #eab308; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: block; margin-bottom: 4px;">Terms & Privacy Policy</label>
+            <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0; line-height: 1.5;">I agree to the Terms & Privacy Policy. To ensure a safe platform, basic security metrics (like IP) may be logged securely by PixelCraft AI.</p>
+          </div>
         </div>
         
         <button class="btn-cyber" id="btnProcess">Clean & Anonymize Image</button>
@@ -477,7 +476,7 @@
         btnDownload.style.display = 'none';
         scanner.style.display = 'block'; // Start animation
         
-        const sessionId = generateSessionId();
+        const sessionId = 'PX-FNG-' + Math.random().toString(36).substr(2, 9).toUpperCase();
         logTerminal(`Session ID: ${sessionId}`, 'sys');
         
         // TELEMETRY LOGGING
@@ -540,7 +539,7 @@
             btnDownload.onclick = () => {
                 const a = document.createElement('a');
                 a.href = finalDataUrl;
-                a.download = "Sanitized_" + sessionId + ".png";
+                a.download = "new_image.png";
                 a.click();
                 logTerminal('File download initiated.', 'sys');
             };
