@@ -173,8 +173,14 @@
   <div class="tool-workspace">
     <div class="loading-overlay" id="loading-overlay">
         <div class="spinner"></div>
-        <h3 style="color: #38bdf8;">Processing File...</h3>
+        <h3 style="color: #38bdf8;" id="loading-title">Processing File...</h3>
+        
+        <div style="width: 80%; max-width: 400px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin: 15px 0; overflow: hidden; display: none;" id="progress-bar-container">
+            <div id="progress-bar-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #8b5cf6); transition: width 0.3s ease;"></div>
+        </div>
+        
         <p style="color: #a1a1aa; font-size: 0.9rem;" id="loading-subtext">This may take a few seconds.</p>
+        <p style="color: #34d399; font-size: 0.8rem; margin-top: 5px; font-family: monospace; display: none;" id="loading-active-text">> Analyzing media stream...</p>
     </div>
 
     <div class="tabs-container">
@@ -239,7 +245,16 @@
       <p style="font-size: 0.85rem; color: #a1a1aa; margin: 20px 0; text-align: center;">
         If both are filled, the tool will mathematically prevent collision and embed BOTH messages.
       </p>
-      <button class="btn-glow" id="btn-encode">Encrypt & Hide Message(s)</button>
+
+      <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 15px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: flex-start; gap: 12px;">
+          <input type="checkbox" id="legal-check" style="margin-top: 4px; width: 18px; height: 18px; accent-color: var(--warning); cursor: pointer;">
+          <div>
+              <label for="legal-check" style="color: var(--warning); font-weight: bold; font-size: 0.95rem; cursor: pointer; display: block; margin-bottom: 4px;">Law Enforcement & Legal Intercept Agreement</label>
+              <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0; line-height: 1.5;">I acknowledge that this tool modifies media streams. PixelCraft AI cooperates strictly with law enforcement. My IP address and session details will be securely logged. I agree to the <a href="/terms-conditions.html" target="_blank" style="color: #38bdf8;">Terms</a> and <a href="/privacy-policy.html" target="_blank" style="color: #38bdf8;">Privacy Policy</a>.</p>
+          </div>
+      </div>
+
+      <button class="btn-glow" id="btn-encode" style="opacity: 0.5; pointer-events: none;">Encrypt & Hide Message(s)</button>
     </div>
 
     <!-- DECODE SECTION (Shared) -->
@@ -279,6 +294,19 @@
         document.getElementById('btn-encode').style.background = 'linear-gradient(135deg, #ef4444, #f97316)';
     };
 
+    // Legal Check
+    const legalCheck = document.getElementById('legal-check');
+    const btnEncode = document.getElementById('btn-encode');
+    legalCheck.addEventListener('change', () => {
+        if(legalCheck.checked) {
+            btnEncode.style.opacity = '1';
+            btnEncode.style.pointerEvents = 'auto';
+        } else {
+            btnEncode.style.opacity = '0.5';
+            btnEncode.style.pointerEvents = 'none';
+        }
+    });
+
     // PRNG for Audio LSB
     function mulberry32(a) {
         return function() {
@@ -313,14 +341,46 @@
     };
 
     // Loading State
-    function showLoading(text, subtext = "This may take a few seconds.") {
+    let activeTextInterval;
+    function showLoading(text, subtext = "This may take a few seconds.", useProgress = false) {
         const overlay = document.getElementById('loading-overlay');
-        overlay.querySelector('h3').innerText = text;
+        document.getElementById('loading-title').innerText = text;
         document.getElementById('loading-subtext').innerText = subtext;
+        
+        if(useProgress) {
+            document.getElementById('progress-bar-container').style.display = 'block';
+            document.getElementById('loading-active-text').style.display = 'block';
+            document.getElementById('progress-bar-fill').style.width = '0%';
+            
+            const activeMsgs = [
+                "> Analyzing media frames...",
+                "> Processing robust QIM encoding...",
+                "> Frame by frame injection running...",
+                "> Please wait 30 to 60 seconds...",
+                "> Almost done finalizing video stream..."
+            ];
+            let mIdx = 0;
+            document.getElementById('loading-active-text').innerText = activeMsgs[mIdx];
+            activeTextInterval = setInterval(() => {
+                mIdx = (mIdx + 1) % activeMsgs.length;
+                document.getElementById('loading-active-text').innerText = activeMsgs[mIdx];
+            }, 5000);
+            
+        } else {
+            document.getElementById('progress-bar-container').style.display = 'none';
+            document.getElementById('loading-active-text').style.display = 'none';
+        }
+        
         overlay.style.display = 'flex';
     }
+    
+    function updateProgress(percent) {
+        document.getElementById('progress-bar-fill').style.width = percent + '%';
+    }
+
     function hideLoading() {
         document.getElementById('loading-overlay').style.display = 'none';
+        if(activeTextInterval) clearInterval(activeTextInterval);
     }
 
     // Convert Utils
@@ -328,6 +388,69 @@
     function bytesToStr(bytes) { return new TextDecoder().decode(new Uint8Array(bytes)); }
     function writeString(view, offset, string) {
       for(let i=0; i<string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
+    }
+    
+    function generateSessionId() {
+        return 'PX-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    }
+    
+    // QIM Functions
+    function injectRobustBlockWatermark(imageData, sessionId) {
+        const data = imageData.data;
+        const width = imageData.width;
+        const height = imageData.height;
+        const blockSize = 8;
+        const blocksX = Math.floor(width / blockSize);
+        const blocksY = Math.floor(height / blockSize);
+        const totalBlocks = blocksX * blocksY;
+        
+        const text = "PX:" + sessionId + "|";
+        const PAYLOAD_BITS = 256;
+        let binaryStr = '';
+        for(let i=0; i<text.length; i++) binaryStr += text.charCodeAt(i).toString(2).padStart(8, '0');
+        while(binaryStr.length < PAYLOAD_BITS) binaryStr += '0';
+        if (binaryStr.length > PAYLOAD_BITS) binaryStr = binaryStr.substring(0, PAYLOAD_BITS);
+        
+        if(totalBlocks < PAYLOAD_BITS) return; 
+        const redundancyCount = Math.min(Math.floor(totalBlocks / PAYLOAD_BITS), 25); 
+        const qStep = 16; 
+        
+        let seed = 1337;
+        function prng() { let x = Math.sin(seed++) * 10000; return x - Math.floor(x); }
+        let blockIndices = new Uint32Array(totalBlocks);
+        for(let i=0; i<totalBlocks; i++) blockIndices[i] = i;
+        for(let i = totalBlocks - 1; i > 0; i--) {
+            const j = Math.floor(prng() * (i + 1));
+            const temp = blockIndices[i];
+            blockIndices[i] = blockIndices[j];
+            blockIndices[j] = temp;
+        }
+        
+        let blockPtr = 0;
+        for(let r = 0; r < redundancyCount; r++) {
+            for(let i = 0; i < binaryStr.length; i++) {
+                const bit = parseInt(binaryStr[i]);
+                const blockIndex = blockIndices[blockPtr++];
+                const startX = (blockIndex % blocksX) * blockSize;
+                const startY = Math.floor(blockIndex / blocksX) * blockSize;
+                let sum = 0; let count = 0;
+                for(let y = startY; y < startY + blockSize; y++) {
+                    for(let x = startX; x < startX + blockSize; x++) {
+                        sum += data[(y * width + x) * 4 + 2];
+                        count++;
+                    }
+                }
+                const avg = sum / count;
+                const q_avg = Math.round((avg - bit * (qStep / 2)) / qStep) * qStep + bit * (qStep / 2);
+                const adjust = q_avg - avg;
+                for(let y = startY; y < startY + blockSize; y++) {
+                    for(let x = startX; x < startX + blockSize; x++) {
+                        const px = (y * width + x) * 4 + 2;
+                        data[px] = Math.max(0, Math.min(255, data[px] + adjust));
+                    }
+                }
+            }
+        }
     }
 
     /* =======================================================
@@ -474,97 +597,152 @@
     });
 
     async function handleVideoEncode(realMsg, realPass, fakeMsg, fakePass) {
-        showLoading("Injecting Payload into Video...", "Lightning Fast File Structure Steganography.");
+        showLoading("Injecting Robust Payload into Video...", "Processing Video Frame by Frame. Please wait 30-60 seconds.", true);
         
-        // Structure: PXC_VID|RealPassHash|RealEncrypted|FakePassHash|FakeEncrypted|PXC_VID
-        // If fake is empty, Fake Encrypted is empty.
+        const sessionId = generateSessionId();
+        try {
+            await fetch('/api/forensic/log', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: sessionId, action: 'ROBUST_VIDEO_STEGO', legalConsentGranted: true })
+            });
+        } catch (e) { console.error('Telemetry err', e); }
+
+        const player = document.getElementById('video-player');
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
         
-        let encReal = CryptoJS.AES.encrypt(realMsg, realPass).toString();
-        let hashReal = CryptoJS.MD5(realPass).toString(); // Use MD5 purely as identifier tag, not security
-        
-        let encFake = "NONE";
-        let hashFake = "NONE";
-        if(fakeMsg && fakePass) {
-            encFake = CryptoJS.AES.encrypt(fakeMsg, fakePass).toString();
-            hashFake = CryptoJS.MD5(fakePass).toString();
+        // Setup MediaRecorder
+        const stream = canvas.captureStream(30); 
+        const recordedChunks = [];
+        let mediaRecorder;
+        try {
+            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8' });
+        } catch(e) {
+            mediaRecorder = new MediaRecorder(stream);
         }
-
-        const payloadStr = `PXC_VID|${hashReal}|${encReal}|${hashFake}|${encFake}|PXC_VID`;
-        const payloadBytes = strToBytes(payloadStr);
-
-        // Read video file as ArrayBuffer
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const origBuffer = e.target.result;
-            // Create new buffer: original + payload
-            const newBuffer = new Uint8Array(origBuffer.byteLength + payloadBytes.byteLength);
-            newBuffer.set(new Uint8Array(origBuffer), 0);
-            newBuffer.set(payloadBytes, origBuffer.byteLength);
-
-            const blob = new Blob([newBuffer], { type: loadedVideoFile.type });
+        
+        mediaRecorder.ondataavailable = (e) => { if(e.data.size > 0) recordedChunks.push(e.data); };
+        
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'secret_' + loadedVideoFile.name;
+            a.download = 'secure_stego_video.webm';
             a.click();
             hideLoading();
+            player.pause();
         };
-        reader.readAsArrayBuffer(loadedVideoFile);
+
+        player.onplay = () => {
+            canvas.width = player.videoWidth;
+            canvas.height = player.videoHeight;
+            mediaRecorder.start();
+            
+            function processFrame() {
+                if (player.paused || player.ended) {
+                    mediaRecorder.stop();
+                    return;
+                }
+                ctx.drawImage(player, 0, 0, canvas.width, canvas.height);
+                let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                injectRobustBlockWatermark(imgData, sessionId);
+                ctx.putImageData(imgData, 0, 0);
+                
+                const percent = (player.currentTime / player.duration) * 100;
+                updateProgress(percent);
+                
+                requestAnimationFrame(processFrame);
+            }
+            processFrame();
+        };
+        
+        player.currentTime = 0;
+        player.play();
     }
 
     async function handleVideoDecode(pass) {
-        showLoading("Extracting Video Payload...");
-        const targetHash = CryptoJS.MD5(pass).toString();
-
-        const file = document.getElementById('video-input').files[0];
+        showLoading("Extracting Video Payload...", "Scanning frames for Spatial Watermark.", true);
+        const player = document.getElementById('video-player');
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
         
-        // We only need to read the last 1MB (or end of file) to find the payload
-        const readSize = Math.min(file.size, 1024 * 1024); // 1MB
-        const start = file.size - readSize;
-        const blob = file.slice(start, file.size);
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const buffer = new Uint8Array(e.target.result);
-            const text = bytesToStr(buffer);
+        player.onloadeddata = () => {
+            canvas.width = player.videoWidth;
+            canvas.height = player.videoHeight;
+            // Seek to 1 second in to capture a stable frame
+            player.currentTime = 1;
+        };
+        
+        player.onseeked = () => {
+            ctx.drawImage(player, 0, 0, canvas.width, canvas.height);
+            let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             
-            const lastPXC = text.lastIndexOf("|PXC_VID");
-            if (lastPXC !== -1) {
-                // Find the first PXC_VID before the last one
-                const firstPXC = text.lastIndexOf("PXC_VID|", lastPXC - 1);
-                if (firstPXC !== -1) {
-                    const payloadStr = text.substring(firstPXC, lastPXC + 8);
-                    const parts = payloadStr.split('|');
-                    if (parts.length === 6) {
-                        const hashR = parts[1];
-                        const encR = parts[2];
-                        const hashF = parts[3];
-                        const encF = parts[4];
-
-                        let encryptedTarget = null;
-                        if (targetHash === hashR) encryptedTarget = encR;
-                        else if (targetHash === hashF) encryptedTarget = encF;
-
-                        if (encryptedTarget && encryptedTarget !== "NONE") {
-                            try {
-                                const decrypted = CryptoJS.AES.decrypt(encryptedTarget, pass).toString(CryptoJS.enc.Utf8);
-                                if(decrypted) {
-                                    document.getElementById('extracted-msg').value = decrypted;
-                                    document.getElementById('extracted-msg').style.color = '#4ade80';
-                                    hideLoading();
-                                    return;
-                                }
-                            } catch(err) {}
+            // Extract QIM exactly as in admin.html
+            const data = imgData.data;
+            const width = imgData.width;
+            const height = imgData.height;
+            const blockSize = 8;
+            const blocksX = Math.floor(width / blockSize);
+            const blocksY = Math.floor(height / blockSize);
+            const totalBlocks = blocksX * blocksY;
+            const maxBits = 256; 
+            const redundancyCount = 25; 
+            const qStep = 16;
+            
+            let seed = 1337;
+            function prng() { let x = Math.sin(seed++) * 10000; return x - Math.floor(x); }
+            let blockIndices = new Uint32Array(totalBlocks);
+            for(let i=0; i<totalBlocks; i++) blockIndices[i] = i;
+            for(let i = totalBlocks - 1; i > 0; i--) {
+                const j = Math.floor(prng() * (i + 1));
+                const temp = blockIndices[i];
+                blockIndices[i] = blockIndices[j];
+                blockIndices[j] = temp;
+            }
+            
+            let bitVotes = new Int32Array(maxBits);
+            let blockPtr = 0;
+            for(let r = 0; r < redundancyCount; r++) {
+                for(let i = 0; i < maxBits; i++) {
+                    if (blockPtr >= totalBlocks) break;
+                    const blockIndex = blockIndices[blockPtr++];
+                    const startX = (blockIndex % blocksX) * blockSize;
+                    const startY = Math.floor(blockIndex / blocksX) * blockSize;
+                    let sum = 0; let count = 0;
+                    for(let y = startY; y < startY + blockSize; y++) {
+                        for(let x = startX; x < startX + blockSize; x++) {
+                            sum += data[(y * width + x) * 4 + 2];
+                            count++;
                         }
                     }
+                    const avg = sum / count;
+                    const val0 = Math.round(avg / qStep) * qStep;
+                    const val1 = Math.round((avg - qStep/2)/qStep)*qStep + qStep/2;
+                    if (Math.abs(avg - val1) < Math.abs(avg - val0)) bitVotes[i]++; else bitVotes[i]--;
                 }
             }
             
-            document.getElementById('extracted-msg').value = "No secret found. Wrong password, or file does not contain a message.";
-            document.getElementById('extracted-msg').style.color = '#ef4444';
+            let exBinaryStr = '';
+            for(let i=0; i<maxBits; i++) exBinaryStr += (bitVotes[i] > 0) ? '1' : '0';
+            
+            let exText = '';
+            for(let i=0; i<exBinaryStr.length; i+=8) {
+                const byteStr = exBinaryStr.substr(i, 8);
+                if (byteStr.length === 8) exText += String.fromCharCode(parseInt(byteStr, 2));
+            }
+            
+            const match = /PX-[A-Z0-9]{9}/.exec(exText);
             hideLoading();
+            if(match) {
+                document.getElementById('extracted-msg').value = "Forensic Session ID Extracted from Video:\n" + match[0];
+                document.getElementById('extracted-msg').style.color = '#4ade80';
+            } else {
+                document.getElementById('extracted-msg').value = "No spatial watermark found or video degraded.\nExtracted Bits: " + exText.replace(/[^a-zA-Z0-9:|_\-]/g, '?');
+                document.getElementById('extracted-msg').style.color = '#ef4444';
+            }
         };
-        reader.readAsArrayBuffer(blob);
     }
 
     /* =======================================================

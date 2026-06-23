@@ -520,8 +520,10 @@
 
         <!-- Forensics Tab: Extractor -->
         <div class="tab-content active" id="tab-extractor" style="display: block;">
-            <div class="forensic-dropzone" id="forensic-dropzone">Click or Drop Compressed Image Here to Extract Session ID</div>
-            <input type="file" id="forensic-fileInput" accept="image/*" style="display: none;">
+            <div class="forensic-dropzone" id="forensic-dropzone">Click or Drop Compressed Image/Video Here to Extract Session ID
+                <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">Supports JPG, PNG, WEBP, MP4, WEBM</p>
+            </div>
+            <input type="file" id="forensic-fileInput" accept="image/*,video/*" style="display: none;">
             <img id="forensic-previewImg" class="forensic-preview" src="">
             <canvas id="forensic-hiddenCanvas" style="display: none;"></canvas>
             
@@ -859,23 +861,45 @@
     fDropzone.addEventListener('click', () => fFileInput.click());
     
     fFileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) processForensicImage(e.target.files[0]);
+        if (e.target.files.length > 0) processForensicMedia(e.target.files[0]);
     });
 
-    function processForensicImage(file) {
+    function processForensicMedia(file) {
         flog(`Loading file: ${file.name}...`, 'sys');
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.onload = () => {
-                fPreviewImg.src = img.src;
-                fPreviewImg.style.display = 'block';
-                flog(`Image loaded [${img.width}x${img.height}]`);
-                extractQIMWatermark(img);
+        
+        if (file.type.startsWith('video/')) {
+            const video = document.createElement('video');
+            video.onloadeddata = () => {
+                flog(`Analyzing video stream...`);
+                video.currentTime = 1; // Seek to 1s to grab a stable frame
             };
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
+            video.onseeked = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                fPreviewImg.src = canvas.toDataURL('image/png');
+                fPreviewImg.style.display = 'block';
+                flog(`Video frame captured [${canvas.width}x${canvas.height}]`);
+                extractQIMWatermark(canvas);
+            };
+            video.onerror = () => flog(`Error decoding video format.`, 'error');
+            video.src = URL.createObjectURL(file);
+        } else {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    fPreviewImg.src = img.src;
+                    fPreviewImg.style.display = 'block';
+                    flog(`Image loaded [${img.width}x${img.height}]`);
+                    extractQIMWatermark(img);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
     }
 
     function extractQIMWatermark(img) {
@@ -1007,7 +1031,7 @@
         logs.forEach(log => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="color:var(--accent); font-family:'JetBrains Mono',monospace;">${log.sessionId}</td>
+                <td style="color:var(--accent); font-family:'JetBrains Mono',monospace;">PixelCraft Software<br><span style="font-size:0.85em; color:var(--text-muted);">${log.sessionId}</span></td>
                 <td>${new Date(log.timestamp).toLocaleString()}</td>
                 <td style="color:#fff;">${log.email}</td>
                 <td style="color:#cbd5e1; font-family:'JetBrains Mono',monospace;">${log.ipAddress}</td>
