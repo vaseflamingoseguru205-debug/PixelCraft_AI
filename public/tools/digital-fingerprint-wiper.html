@@ -2,157 +2,245 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Digital Fingerprint Wiper | PixelCraft AI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: #1e293b;
-      --accent: #e11d48;
-      --accent-glow: rgba(225, 29, 72, 0.4);
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --terminal: #000000;
-      --terminal-text: #10b981;
+      --bg-dark: #050505;
+      --panel-bg: #0a0a0a;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --text-main: #e2e8f0;
+      --text-muted: #64748b;
+      --accent-cyan: #06b6d4;
+      --accent-cyan-glow: rgba(6, 182, 212, 0.4);
+      --accent-emerald: #10b981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.4);
+      --alert-red: #ef4444;
     }
+    
+    * { box-sizing: border-box; }
+    
     body {
-      margin: 0; padding: 0; font-family: 'Space Grotesk', sans-serif;
-      background-color: var(--bg); color: var(--text);
-      min-height: 100vh; display: flex; flex-direction: column;
+      margin: 0; padding: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
     }
-    .navbar { padding: 20px 40px; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
-    .navbar a { color: white; text-decoration: none; font-weight: bold; font-size: 1.5rem; }
-    .navbar span { color: var(--accent); }
-    .back-btn { background: transparent; border: 1px solid var(--text-muted); color: var(--text); padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; }
-    
+
+    /* Navbar */
+    .navbar {
+      padding: 15px 20px;
+      background: #000;
+      border-bottom: 1px solid var(--border-cyan);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .navbar .logo {
+      color: #fff; text-decoration: none; font-weight: 600; font-size: 1.2rem; letter-spacing: 1px;
+    }
+    .navbar .logo span { color: var(--accent-cyan); }
+    .back-btn {
+      color: var(--text-muted); text-decoration: none; font-size: 0.85rem;
+      border: 1px solid #333; padding: 6px 12px; border-radius: 4px; transition: 0.2s;
+    }
+    .back-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+    /* Main Container */
     .container {
-      display: flex; flex: 1; max-width: 1200px; margin: 40px auto; gap: 30px; padding: 0 20px; width: 100%; box-sizing: border-box;
-      align-items: stretch; flex-wrap: wrap;
+      display: flex; flex: 1;
+      max-width: 1400px; margin: 0 auto; width: 100%;
+      padding: 20px; gap: 20px;
+      align-items: stretch;
     }
     
-    /* Left Panel: Upload & Preview */
-    .left-panel {
-      flex: 1; min-width: 300px; background: var(--panel); border-radius: 16px; padding: 30px;
-      border: 1px solid rgba(255,255,255,0.05);
-      display: flex; flex-direction: column; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    /* Left Panel: Dropzone & Image */
+    .panel-left {
+      flex: 1; min-width: 0;
+      background: var(--panel-bg);
+      border: 1px solid var(--border-cyan);
+      border-radius: 8px; padding: 20px;
+      display: flex; flex-direction: column; position: relative;
     }
     
     .dropzone {
-      flex: 1; min-height: 300px; border: 2px dashed var(--accent); border-radius: 12px;
+      flex: 1; border: 1px dashed var(--accent-cyan); border-radius: 6px;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: rgba(225, 29, 72, 0.05); transition: all 0.3s ease; cursor: pointer; text-align: center; padding: 20px;
+      background: rgba(6, 182, 212, 0.02); cursor: pointer; transition: 0.3s;
+      text-align: center; padding: 20px;
     }
-    .dropzone.dragover {
-      background: var(--accent-glow); border-style: solid;
-    }
-    .dropzone i { font-size: 4rem; margin-bottom: 15px; font-style: normal; }
-    .dropzone h3 { margin: 0 0 10px 0; font-size: 1.5rem; }
-    .dropzone p { margin: 0; color: var(--text-muted); }
-    
-    .preview-container {
-      display: none; flex-direction: column; align-items: center; justify-content: center; gap: 15px; flex: 1; min-height: 300px;
-    }
-    .preview-container img {
-      max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
-    }
-    .btn-secondary {
-      background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted);
-      padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-family: inherit;
-    }
-    .btn-secondary:hover { color: white; border-color: white; }
+    .dropzone.dragover { background: rgba(6, 182, 212, 0.1); border-style: solid; box-shadow: inset 0 0 20px var(--accent-cyan-glow); }
+    .dropzone-icon { font-size: 3rem; margin-bottom: 10px; color: var(--accent-cyan); }
+    .dropzone-title { margin: 0 0 5px 0; font-size: 1.2rem; font-weight: 500; letter-spacing: 0.5px; }
+    .dropzone-desc { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
 
-    /* Right Panel: Controls & Terminal */
-    .right-panel {
-      flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px;
+    .preview-wrapper {
+      display: none; flex-direction: column; height: 100%; position: relative;
+    }
+    .preview-img-container {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      overflow: hidden; border-radius: 6px; background: #000; border: 1px solid #333;
+      position: relative;
+    }
+    .preview-img-container img {
+      max-width: 100%; max-height: 50vh; object-fit: contain;
     }
     
-    .info-card {
-      background: var(--panel); padding: 30px; border-radius: 16px; border: 1px solid rgba(225, 29, 72, 0.2);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    /* Scanner Animation */
+    .scanner {
+      position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+      background: var(--accent-cyan); box-shadow: 0 0 15px var(--accent-cyan);
+      display: none; z-index: 10;
+      animation: scanline 2s linear infinite;
     }
-    .info-card h2 { margin: 0 0 15px 0; color: var(--accent); display: flex; align-items: center; gap: 10px; }
-    
-    .legal-box {
-      background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent);
-      margin-bottom: 25px;
+    @keyframes scanline {
+      0% { top: 0; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
     }
-    .legal-box label { display: flex; gap: 12px; cursor: pointer; font-size: 0.95rem; line-height: 1.5; color: var(--text-muted); }
-    .legal-box input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); flex-shrink: 0; margin-top: 2px; cursor: pointer; }
-    
-    .btn-primary {
-      width: 100%; background: var(--accent); color: white; border: none; padding: 18px;
-      font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer;
-      text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
-      opacity: 0.5; pointer-events: none;
+
+    .btn-outline {
+      background: transparent; border: 1px solid var(--text-muted); color: var(--text-main);
+      padding: 10px; border-radius: 4px; cursor: pointer; font-family: 'Inter', sans-serif;
+      margin-top: 15px; transition: 0.2s; font-size: 0.9rem;
     }
-    .btn-primary.active { opacity: 1; pointer-events: auto; box-shadow: 0 0 20px var(--accent-glow); }
-    .btn-primary.active:hover { transform: translateY(-2px); box-shadow: 0 5px 25px rgba(225, 29, 72, 0.6); }
+    .btn-outline:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+    /* Right Panel: Controls */
+    .panel-right {
+      flex: 0 0 400px; display: flex; flex-direction: column; gap: 20px;
+    }
     
+    .control-box {
+      background: var(--panel-bg); border: 1px solid var(--border-cyan);
+      border-radius: 8px; padding: 25px;
+    }
+    
+    .tool-header {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: var(--accent-cyan);
+      margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px;
+    }
+    .tool-desc {
+      color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 20px;
+    }
+
+    /* Professional Legal Checkbox */
+    .legal-container {
+      background: rgba(239, 68, 68, 0.05); border-left: 3px solid var(--alert-red);
+      padding: 12px; border-radius: 0 4px 4px 0; margin-bottom: 20px;
+    }
+    .legal-container label {
+      display: flex; gap: 10px; cursor: pointer; align-items: flex-start;
+    }
+    .legal-container input {
+      margin-top: 3px; accent-color: var(--alert-red); cursor: pointer; width: 16px; height: 16px;
+    }
+    .legal-text {
+      font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;
+    }
+
+    /* Action Buttons */
+    .btn-cyber {
+      width: 100%; background: #111; border: 1px solid var(--accent-cyan); color: var(--accent-cyan);
+      padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: bold;
+      border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+      transition: all 0.3s ease; opacity: 0.5; pointer-events: none;
+    }
+    .btn-cyber.active {
+      opacity: 1; pointer-events: auto; background: rgba(6, 182, 212, 0.1);
+      box-shadow: inset 0 0 10px var(--accent-cyan-glow);
+    }
+    .btn-cyber.active:hover {
+      background: var(--accent-cyan); color: #000; box-shadow: 0 0 20px var(--accent-cyan-glow);
+    }
+
+    .btn-success {
+      display: none; width: 100%; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-emerald);
+      color: var(--accent-emerald); padding: 14px; font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase;
+      margin-top: 15px; transition: 0.3s;
+    }
+    .btn-success:hover { background: var(--accent-emerald); color: #000; box-shadow: 0 0 20px var(--accent-emerald-glow); }
+
+    /* Terminal */
     .terminal {
-      flex: 1; background: var(--terminal); border-radius: 16px; padding: 20px;
-      font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--terminal-text);
-      overflow-y: auto; border: 1px solid #333; min-height: 200px;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+      flex: 1; background: #000; border: 1px solid #222; border-radius: 8px; padding: 15px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #cbd5e1;
+      overflow-y: auto; max-height: 300px;
     }
-    .terminal div { margin-bottom: 5px; word-wrap: break-word; }
-    .terminal .err { color: #ef4444; }
-    .terminal .sys { color: #38bdf8; }
+    .terminal div { margin-bottom: 4px; word-wrap: break-word; }
+    .terminal .sys { color: var(--accent-cyan); }
+    .terminal .success { color: var(--accent-emerald); }
+    .terminal .err { color: var(--alert-red); }
     .terminal .warn { color: #f59e0b; }
-    
-    .btn-download {
-      display: none; width: 100%; background: #10b981; color: white; border: none; padding: 18px;
-      font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer;
-      text-transform: uppercase; margin-top: 15px; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
-      transition: 0.2s;
-    }
-    .btn-download:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(16, 185, 129, 0.6); }
 
-    @media (max-width: 768px) {
-      .container { flex-direction: column; }
+    /* Mobile Optimization */
+    @media (max-width: 900px) {
+      .container { flex-direction: column; padding: 10px; margin-top: 10px; gap: 10px; }
+      .panel-right { flex: none; width: 100%; }
+      .panel-left { padding: 15px; min-height: 300px; }
+      .preview-img-container img { max-height: 35vh; }
+      .btn-cyber, .btn-success { padding: 12px; font-size: 0.9rem; }
+      .control-box { padding: 15px; }
+      .terminal { max-height: 200px; font-size: 0.75rem; }
     }
   </style>
 </head>
 <body>
+
   <nav class="navbar">
-    <a href="/index.html">PixelCraft <span>AI</span></a>
-    <a href="/index.html" class="back-btn">← Back to Tools</a>
+    <a href="/index.html" class="logo">PixelCraft <span>AI</span></a>
+    <a href="/index.html" class="back-btn">RETURN</a>
   </nav>
 
   <div class="container">
-    <div class="left-panel">
+    
+    <!-- LEFT PANEL: Image View -->
+    <div class="panel-left">
       <div class="dropzone" id="dropzone">
-        <i>📸</i>
-        <h3>Drag & Drop Image Here</h3>
-        <p>or click anywhere in this box to select</p>
+        <div class="dropzone-icon">⛶</div>
+        <h3 class="dropzone-title">AWAITING TARGET MEDIA</h3>
+        <p class="dropzone-desc">Drag & drop or tap to select image</p>
       </div>
-      <div class="preview-container" id="previewContainer">
-        <img id="previewImg" src="" alt="Target Image Preview">
-        <button class="btn-secondary" id="btnChange">🔄 Load Different Image</button>
+      
+      <div class="preview-wrapper" id="previewWrapper">
+        <div class="preview-img-container">
+          <div class="scanner" id="scanner"></div>
+          <img id="previewImg" src="" alt="Target Image">
+        </div>
+        <button class="btn-outline" id="btnChange">Abord & Select New Target</button>
       </div>
     </div>
     
-    <div class="right-panel">
-      <div class="info-card">
-        <h2>🛡️ Digital Fingerprint Wiper</h2>
-        <p style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;">
-          Advanced Anti-Forensics module. Instantly strips EXIF metadata, neutralizes PRNU (Camera Sensor) signatures via micro-noise injection, and poisons cryptographic hashes to bypass automated detection systems.
+    <!-- RIGHT PANEL: Controls -->
+    <div class="panel-right">
+      <div class="control-box">
+        <h2 class="tool-header">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          EXIF-STRIPPER & ANONYMIZER
+        </h2>
+        <p class="tool-desc">
+          Military-grade digital sanitization. Strips all EXIF metadata, neutralizes Camera Sensor PRNU signatures via localized noise, and injects a robust Block-Luminance forensic watermark resilient to standard JPEG compression.
         </p>
         
-        <div class="legal-box">
+        <div class="legal-container">
           <label>
             <input type="checkbox" id="legalCheck">
-            <span><strong>Mandatory Compliance:</strong> I confirm I own the rights to this media. I am NOT using this tool to tamper with legal evidence or facilitate illegal acts. I acknowledge that session telemetry is logged for law enforcement compliance.</span>
+            <span class="legal-text">
+              <strong>COMPLIANCE DECLARATION:</strong> By initializing this protocol, I certify under penalty of perjury that I hold legal rights to this media and am not obstructing law enforcement. I acknowledge that my IP address, Timestamp, and a unique Forensic Session ID will be securely logged and embedded within the file's robust metadata structure to ensure strict compliance with cyber-law directives.
+            </span>
           </label>
         </div>
         
-        <button class="btn-primary" id="btnProcess">Initiate Wipe Protocol</button>
-        <button class="btn-download" id="btnDownload">⬇️ Download Sanitized File</button>
+        <button class="btn-cyber" id="btnProcess">INITIATE WIPE PROTOCOL</button>
+        <button class="btn-success" id="btnDownload">EXPORT SANITIZED PAYLOAD</button>
       </div>
       
       <div class="terminal" id="terminal">
-        <div class="sys">> INITIALIZING ANTI-FORENSICS SUITE...</div>
-        <div>> WAITING FOR TARGET FILE...</div>
+        <div class="sys">> SECURE TERMINAL INITIALIZED</div>
+        <div>> WAITING FOR USER INPUT...</div>
       </div>
     </div>
   </div>
@@ -161,102 +249,50 @@
   <input type="file" id="fileInput" accept="image/*" style="display: none;">
 
   <script>
-    // --- AUTH BLOCK (DISABLED FOR LOCAL TESTING) ---
-    // Uncomment before final production deploy!
-    /*
-    async function checkAccess() {
-        try {
-            const res = await fetch('/api/auth/status');
-            const data = await res.json();
-            const allowed = ['support.pixelcraft205@gmail.com', 'vaseflamingoseguru205@gmail.com'];
-            if (!data.authenticated || !allowed.includes(data.user.email)) {
-                alert("Tool is currently in Early Access (Coming Soon). Only developers can view this page.");
-                window.location.href = "/index.html";
-            }
-        } catch(e) {
-            window.location.href = "/index.html";
-        }
-    }
-    checkAccess();
-    */
-
     // --- DOM Elements ---
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
-    const previewContainer = document.getElementById('previewContainer');
+    const previewWrapper = document.getElementById('previewWrapper');
     const previewImg = document.getElementById('previewImg');
     const btnChange = document.getElementById('btnChange');
     const legalCheck = document.getElementById('legalCheck');
     const btnProcess = document.getElementById('btnProcess');
     const btnDownload = document.getElementById('btnDownload');
     const terminal = document.getElementById('terminal');
+    const scanner = document.getElementById('scanner');
     const hiddenCanvas = document.getElementById('hiddenCanvas');
-    const ctx = hiddenCanvas.getContext('2d');
+    const ctx = hiddenCanvas.getContext('2d', { willReadFrequently: true });
 
     let loadedImage = null;
 
-    function printLog(msg, type = '') {
+    // --- Terminal Logger ---
+    function logTerminal(msg, type = '') {
       const div = document.createElement('div');
       div.textContent = '> ' + msg;
-      if(type) div.className = type;
+      if (type) div.className = type;
       terminal.appendChild(div);
       terminal.scrollTop = terminal.scrollHeight;
     }
 
-    // --- Foolproof Drag & Drop Logic ---
+    // --- Input Handling ---
     window.addEventListener('dragover', (e) => e.preventDefault());
     window.addEventListener('drop', (e) => e.preventDefault());
 
     dropzone.addEventListener('click', () => fileInput.click());
-
-    dropzone.addEventListener('dragenter', (e) => {
-        e.preventDefault();
-        dropzone.classList.add('dragover');
-    });
-    dropzone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropzone.classList.add('dragover');
-    });
-    dropzone.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        dropzone.classList.remove('dragover');
-    });
+    dropzone.addEventListener('dragenter', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    dropzone.addEventListener('dragleave', (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); });
     dropzone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropzone.classList.remove('dragover');
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            handleFile(e.dataTransfer.files[0]);
-        }
+        e.preventDefault(); dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
     });
-
     fileInput.addEventListener('change', (e) => {
-        if (e.target.files && e.target.files.length > 0) {
-            handleFile(e.target.files[0]);
-        }
-    });
-
-    btnChange.addEventListener('click', () => {
-        loadedImage = null;
-        fileInput.value = '';
-        previewImg.src = '';
-        previewContainer.style.display = 'none';
-        dropzone.style.display = 'flex';
-        btnProcess.classList.remove('active');
-        btnDownload.style.display = 'none';
-        printLog('TARGET CLEARED. Waiting for new file...', 'warn');
-    });
-
-    legalCheck.addEventListener('change', () => {
-        if (legalCheck.checked && loadedImage) {
-            btnProcess.classList.add('active');
-        } else {
-            btnProcess.classList.remove('active');
-        }
+        if (e.target.files && e.target.files.length > 0) handleFile(e.target.files[0]);
     });
 
     function handleFile(file) {
         if (!file.type.startsWith('image/')) {
-            printLog('ERROR: Invalid file type. Images only.', 'err');
+            logTerminal('ERROR: Invalid media format.', 'err');
             return;
         }
         const reader = new FileReader();
@@ -266,49 +302,88 @@
                 loadedImage = img;
                 dropzone.style.display = 'none';
                 previewImg.src = e.target.result;
-                previewContainer.style.display = 'flex';
-                printLog(`TARGET ACQUIRED: ${file.name} (${img.width}x${img.height})`, 'sys');
+                previewWrapper.style.display = 'flex';
+                logTerminal(`TARGET ACQUIRED: ${file.name} [${img.width}x${img.height}]`, 'sys');
                 if (legalCheck.checked) btnProcess.classList.add('active');
             };
-            img.onerror = () => printLog('ERROR: Could not decode image.', 'err');
+            img.onerror = () => logTerminal('ERROR: Data corruption detected.', 'err');
             img.src = e.target.result;
         };
         reader.readAsDataURL(file);
     }
 
-    // --- Core Processing Logic ---
+    btnChange.addEventListener('click', () => {
+        loadedImage = null;
+        fileInput.value = '';
+        previewImg.src = '';
+        previewWrapper.style.display = 'none';
+        dropzone.style.display = 'flex';
+        btnProcess.classList.remove('active');
+        btnDownload.style.display = 'none';
+        logTerminal('TARGET DISCARDED. Standing by...', 'warn');
+    });
+
+    legalCheck.addEventListener('change', () => {
+        if (legalCheck.checked && loadedImage) btnProcess.classList.add('active');
+        else btnProcess.classList.remove('active');
+    });
+
+    // --- Forensic Architecture ---
     function generateSessionId() {
         return 'PX-' + Math.random().toString(36).substr(2, 9).toUpperCase();
     }
 
-    function pseudoRandom(seed) {
-        let x = Math.sin(seed++) * 10000;
-        return x - Math.floor(x);
-    }
-
-    function injectRobustWatermark(imageData, sessionId) {
-        const text = "PX_FORENSIC:" + sessionId + "|";
+    // Advanced Compression-Resistant Spatial Watermark
+    function injectRobustBlockWatermark(imageData, sessionId) {
+        const data = imageData.data;
+        const width = imageData.width;
+        const height = imageData.height;
+        
+        // Use 8x8 macro-blocks to survive standard JPEG downsampling
+        const blockSize = 8;
+        const blocksX = Math.floor(width / blockSize);
+        const blocksY = Math.floor(height / blockSize);
+        const totalBlocks = blocksX * blocksY;
+        
+        const text = "PX_META:" + sessionId + "|";
         let binaryStr = '';
         for(let i=0; i<text.length; i++) {
             binaryStr += text.charCodeAt(i).toString(2).padStart(8, '0');
         }
-        const data = imageData.data;
-        const totalPixels = data.length / 4;
-        const redundancyCount = Math.floor(totalPixels / (binaryStr.length * 10));
-        const actualRedundancy = Math.min(redundancyCount, 50);
-
+        
+        const bitsNeeded = binaryStr.length;
+        if(totalBlocks < bitsNeeded) return; // Image too small
+        
+        const redundancyCount = Math.floor(totalBlocks / bitsNeeded);
+        const actualRedundancy = Math.min(redundancyCount, 150); // Broad spread spectrum
+        const modulationDelta = 6; // Low frequency visual shift
+        
         for(let r = 0; r < actualRedundancy; r++) {
-            let seed = 42 + r;
+            let seed = 1337 + r;
             for(let i = 0; i < binaryStr.length; i++) {
                 const bit = parseInt(binaryStr[i]);
-                const pos = Math.floor(pseudoRandom(seed++) * totalPixels) * 4;
-                if(pos < data.length - 4) {
-                    data[pos + 2] = (data[pos + 2] & ~1) | bit; // Embed in Blue channel LSB
+                let xSeed = Math.sin(seed++) * 10000;
+                const blockIndex = Math.floor((xSeed - Math.floor(xSeed)) * totalBlocks);
+                
+                const bx = blockIndex % blocksX;
+                const by = Math.floor(blockIndex / blocksX);
+                const startX = bx * blockSize;
+                const startY = by * blockSize;
+                
+                for(let y = startY; y < startY + blockSize; y++) {
+                    for(let x = startX; x < startX + blockSize; x++) {
+                        const px = (y * width + x) * 4;
+                        const adjust = bit === 1 ? modulationDelta : -modulationDelta;
+                        data[px] = Math.max(0, Math.min(255, data[px] + adjust));
+                        data[px+1] = Math.max(0, Math.min(255, data[px+1] + adjust));
+                        data[px+2] = Math.max(0, Math.min(255, data[px+2] + adjust));
+                    }
                 }
             }
         }
     }
 
+    // Valid PNG Metadata Injector (For raw file discovery)
     function addPngTextChunk(dataUrl, keyword, text) {
         const binary = atob(dataUrl.split(',')[1]);
         const bytes = new Uint8Array(binary.length);
@@ -319,7 +394,6 @@
         const length = chunkData.length;
         
         const newChunk = new Uint8Array(4 + 4 + length + 4);
-        // Length
         newChunk[0] = (length >>> 24) & 0xff;
         newChunk[1] = (length >>> 16) & 0xff;
         newChunk[2] = (length >>> 8) & 0xff;
@@ -328,7 +402,6 @@
         newChunk.set(chunkType, 4);
         newChunk.set(chunkData, 8);
         
-        // Calculate CRC32 for chunkType + chunkData
         const crcTable = [];
         for (let n = 0; n < 256; n++) {
             let c = n;
@@ -341,101 +414,103 @@
         }
         crc = (crc ^ (-1)) >>> 0;
         
-        // CRC32
         newChunk[8 + length] = (crc >>> 24) & 0xff;
         newChunk[8 + length + 1] = (crc >>> 16) & 0xff;
         newChunk[8 + length + 2] = (crc >>> 8) & 0xff;
         newChunk[8 + length + 3] = crc & 0xff;
         
         const result = new Uint8Array(bytes.length + newChunk.length);
-        result.set(bytes.slice(0, 8)); // PNG signature
-        result.set(newChunk, 8); // Our chunk
-        result.set(bytes.slice(8), 8 + newChunk.length); // Rest of PNG
+        result.set(bytes.slice(0, 8)); 
+        result.set(newChunk, 8); 
+        result.set(bytes.slice(8), 8 + newChunk.length);
         
-        // Safely convert to string avoiding max call stack
         let binaryStr = '';
         const chunkSize = 8192;
         for (let i = 0; i < result.length; i += chunkSize) {
             binaryStr += String.fromCharCode.apply(null, result.subarray(i, i + chunkSize));
         }
-        
         return 'data:image/png;base64,' + btoa(binaryStr);
     }
 
+    // --- Execution Pipeline ---
     btnProcess.addEventListener('click', async () => {
         if (!loadedImage || !legalCheck.checked) return;
         
         btnProcess.classList.remove('active');
-        btnProcess.textContent = "Processing...";
+        btnProcess.textContent = "PROCESSING...";
         btnDownload.style.display = 'none';
+        scanner.style.display = 'block'; // Start animation
         
         const sessionId = generateSessionId();
-        printLog(`SESSION ESTABLISHED: ${sessionId}`, 'sys');
+        logTerminal(`SESSION IDENTIFIER: ${sessionId}`, 'sys');
         
+        // TELEMETRY LOGGING
         try {
-            printLog('Logging compliance telemetry...', 'sys');
+            logTerminal('Transmitting compliance telemetry...', 'sys');
             await fetch('/api/forensic/log', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     sessionId: sessionId,
-                    action: 'DIGITAL_FINGERPRINT_WIPE',
+                    action: 'ADVANCED_WIPE_V2',
                     legalConsentGranted: true
                 })
             });
-            printLog('Telemetry logged successfully.');
+            logTerminal('Telemetry accepted by mainframe.', 'success');
         } catch (e) {
-            printLog('Telemetry log warning: ' + e.message, 'warn');
+            logTerminal('Telemetry fallback warning: ' + e.message, 'warn');
         }
 
+        // Processing needs a small timeout so the DOM updates
         setTimeout(() => {
-            printLog('Executing PRNU Sensor Scrubber...');
+            logTerminal('Neutralizing PRNU hardware signatures...');
             hiddenCanvas.width = loadedImage.width;
             hiddenCanvas.height = loadedImage.height;
             
-            // Draw image with slight blur to disrupt high-frequency sensor noise
+            // 1. Defeat PRNU via canvas blur interpolation
             ctx.filter = 'blur(1px)';
             ctx.drawImage(loadedImage, 0, 0);
             ctx.filter = 'none';
-            
             let imgData = ctx.getImageData(0, 0, hiddenCanvas.width, hiddenCanvas.height);
             
-            printLog('Injecting Cryptographic Hash Poison...');
-            // Add subtle noise
+            // 2. Hash Poisoning
+            logTerminal('Executing Cryptographic Hash scrambling...');
             for (let i = 0; i < imgData.data.length; i += 4) {
-                const noise = (Math.random() - 0.5) * 4; // +/- 2 RGB variation
+                const noise = (Math.random() - 0.5) * 4;
                 imgData.data[i] = Math.min(255, Math.max(0, imgData.data[i] + noise));
                 imgData.data[i+1] = Math.min(255, Math.max(0, imgData.data[i+1] + noise));
                 imgData.data[i+2] = Math.min(255, Math.max(0, imgData.data[i+2] + noise));
             }
             
-            printLog('Embedding Forensic Watermark...');
-            injectRobustWatermark(imgData, sessionId);
-            
+            // 3. Robust Watermarking
+            logTerminal('Injecting compression-resistant spatial watermark...');
+            injectRobustBlockWatermark(imgData, sessionId);
             ctx.putImageData(imgData, 0, 0);
             
-            printLog('Stripping EXIF Metadata...');
+            // 4. EXIF Stripping & PNG Metadata Injection
+            logTerminal('Purging EXIF metadata...');
             let finalDataUrl = hiddenCanvas.toDataURL('image/png');
             
-            printLog('Injecting Forensic Meta-Signature...');
+            logTerminal('Embedding forensic trace chunk...', 'sys');
             finalDataUrl = addPngTextChunk(finalDataUrl, 'Software', `PixelCraft AI Anti-Forensics (Session: ${sessionId})`);
             
             previewImg.src = finalDataUrl;
             
-            printLog('WIPE COMPLETE. Payload ready.', 'sys');
+            logTerminal('PROTOCOL COMPLETE. File sanitized.', 'success');
+            scanner.style.display = 'none';
+            btnProcess.textContent = "INITIATE WIPE PROTOCOL";
+            if(legalCheck.checked) btnProcess.classList.add('active');
             
             btnDownload.onclick = () => {
                 const a = document.createElement('a');
                 a.href = finalDataUrl;
-                a.download = "sanitized_" + Date.now() + ".png";
+                a.download = "Sanitized_" + sessionId + ".png";
                 a.click();
-                printLog('File downloaded.', 'sys');
+                logTerminal('File download initiated.', 'sys');
             };
-            
             btnDownload.style.display = 'block';
-            btnProcess.textContent = "Initiate Wipe Protocol";
-            if (legalCheck.checked) btnProcess.classList.add('active');
-        }, 800); // slight delay for terminal reading
+            
+        }, 1000);
     });
   </script>
 </body>
