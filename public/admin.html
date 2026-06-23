@@ -877,10 +877,17 @@
     });
 
     function switchForensicTab(tabId, btn) {
+        // Hide all forensic tabs
         document.getElementById('tab-extractor').style.display = 'none';
         document.getElementById('tab-flogs').style.display = 'none';
+        document.getElementById('tab-avlogs').style.display = 'none';
+        document.getElementById('tab-decoylogs').style.display = 'none';
+        
+        // Remove active class from all forensic tab buttons
         document.getElementById('tab-btn-extractor').classList.remove('active');
         document.getElementById('tab-btn-logs').classList.remove('active');
+        document.getElementById('tab-btn-avlogs').classList.remove('active');
+        document.getElementById('tab-btn-decoylogs').classList.remove('active');
 
         document.getElementById(tabId).style.display = 'block';
         btn.classList.add('active');
