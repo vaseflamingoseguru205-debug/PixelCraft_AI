@@ -794,7 +794,7 @@
                 if (idx === currentChunk) {
                     extractedPayload += match[2].replace(/\0/g, ''); // remove padding null bytes
                     currentChunk++;
-                    if (currentChunk < maxChunks && (currentChunk * 0.5 + 0.25) < player.duration) {
+                    if (currentChunk < maxChunks) {
                         player.currentTime = currentChunk * 0.5 + 0.25;
                         return; // Wait for next seeked event!
                     }
