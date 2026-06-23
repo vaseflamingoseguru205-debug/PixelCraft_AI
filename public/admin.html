@@ -1079,7 +1079,7 @@
         const blocksY = Math.floor(height / blockSize);
         const totalBlocks = blocksX * blocksY;
         
-        const maxBits = 4096; 
+        const maxBits = 384; 
         const redundancyCount = Math.min(Math.floor(totalBlocks / maxBits), 25); 
         const qStep = 32;
         
@@ -1120,7 +1120,7 @@
                 let count = 0;
                 for(let y = startY; y < startY + blockSize; y++) {
                     for(let x = startX; x < startX + blockSize; x++) {
-                        sum += data[(y * width + x) * 4 + 2];
+                        sum += data[(y * width + x) * 4 + 1]; // Use Green (Luminance) channel instead of Blue
                         count++;
                     }
                 }

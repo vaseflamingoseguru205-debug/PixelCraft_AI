@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <!-- Google tag (gtag.js) -->
@@ -602,263 +602,139 @@
     });
 
     async function handleVideoEncode(realMsg, realPass, fakeMsg, fakePass) {
-        showLoading("Injecting Robust Payload into Video...", "Processing Video Frame by Frame. Please wait 30-60 seconds.", true);
-        
-        const sessionId = generateSessionId('PX-VID-');
-        // Fire and forget telemetry to prevent dropping the user-gesture token
-        fetch('/api/forensic/log', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId: sessionId, action: 'ROBUST_VIDEO_STEGO', legalConsentGranted: true })
-        }).catch(e => console.error('Telemetry err', e));
+        showLoading("Injecting Payload into Video...", "Embedding secret in audio track. Please wait up to 30s.", true);
+        const sessionId = generateSessionId("PX-VID-");
+        fetch("/api/forensic/log", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sessionId, action: "ROBUST_VIDEO_STEGO", legalConsentGranted: true })
+        }).catch(() => {});
 
-        let textPayload = "PX:" + sessionId + "|";
-        const encReal = CryptoJS.AES.encrypt(realMsg, realPass).toString();
-        textPayload += "PXC|" + encReal.length + "|" + encReal;
-        
-        if (fakeMsg && fakePass) {
-            const encFake = CryptoJS.AES.encrypt(fakeMsg, fakePass).toString();
-            textPayload += "|PXF|" + encFake.length + "|" + encFake;
-        }
-
-        if (textPayload.length > 512) {
-            textPayload = textPayload.substring(0, 512);
-            showToast("Messages very long. Truncated to fit within limits.", "warning");
-        }
-        
-        // Split payload into 16-char chunks for Temporal-Spatial encoding
-        const chunks = [];
-        for(let i=0; i<textPayload.length; i+=16) {
-            chunks.push(textPayload.substring(i, i+16));
-        }
-
-        const player = document.getElementById('video-player');
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        
-        canvas.width = player.videoWidth || 1280;
-        canvas.height = player.videoHeight || 720;
-        
-        player.muted = true; // Mute to guarantee browser allows programmatic playback
-        player.currentTime = 0;
-        
-        player.onplay = () => {
-            // Draw first frame to ensure canvas isn't blank before captureStream
-            ctx.drawImage(player, 0, 0, canvas.width, canvas.height);
-            
-            // Setup MediaRecorder
-            const stream = canvas.captureStream(30); 
-            
-            // Capture audio track from original video
-            if (player.captureStream) {
-                const audioStream = player.captureStream();
-                if (audioStream.getAudioTracks().length > 0) {
-                    stream.addTrack(audioStream.getAudioTracks()[0]);
-                }
-            } else if (player.mozCaptureStream) {
-                const audioStream = player.mozCaptureStream();
-                if (audioStream.getAudioTracks().length > 0) {
-                    stream.addTrack(audioStream.getAudioTracks()[0]);
+        try {
+            let textPayload = "PX:" + sessionId + "|";
+            const encReal = CryptoJS.AES.encrypt(realMsg, realPass).toString();
+            textPayload += "PXC|" + encReal.length + "|" + encReal;
+            if (fakeMsg && fakePass) {
+                const ef = CryptoJS.AES.encrypt(fakeMsg, fakePass).toString();
+                textPayload += "|PXF|" + ef.length + "|" + ef;
+            }
+            updateProgress(10);
+            const vidBytes = await loadedVideoFile.arrayBuffer();
+            const decAc = new (window.AudioContext || window.webkitAudioContext)();
+            let origBuf;
+            try { origBuf = await decAc.decodeAudioData(vidBytes.slice(0)); }
+            catch(e) { origBuf = decAc.createBuffer(1, Math.round(decAc.sampleRate * 30), decAc.sampleRate); }
+            decAc.close();
+            updateProgress(25);
+            const payloadBytes = strToBytes(textPayload);
+            const payloadBits = [];
+            for (let i = 0; i < payloadBytes.length; i++)
+                for (let j = 7; j >= 0; j--) payloadBits.push((payloadBytes[i] >> j) & 1);
+            encodeSpreadSpectrumToAudio(origBuf, payloadBits, realPass);
+            const adminStr = "PXCADMIN|" + sessionId + "|END";
+            const adminBts = strToBytes(adminStr);
+            const adminBits = [];
+            for (let i = 0; i < adminBts.length; i++)
+                for (let j = 7; j >= 0; j--) adminBits.push((adminBts[i] >> j) & 1);
+            encodeSpreadSpectrumToAudio(origBuf, adminBits, "PIXELCRAFT_ADMIN_KEY");
+            updateProgress(50);
+            const numCh = origBuf.numberOfChannels;
+            const numFrames = origBuf.length;
+            const sr = origBuf.sampleRate;
+            const wavBuf = new ArrayBuffer(44 + numFrames * numCh * 2);
+            const dv = new DataView(wavBuf);
+            writeString(dv, 0, "RIFF");
+            dv.setUint32(4, 36 + numFrames * numCh * 2, true);
+            writeString(dv, 8, "WAVE");
+            writeString(dv, 12, "fmt ");
+            dv.setUint32(16, 16, true);
+            dv.setUint16(20, 1, true);
+            dv.setUint16(22, numCh, true);
+            dv.setUint32(24, sr, true);
+            dv.setUint32(28, sr * numCh * 2, true);
+            dv.setUint16(32, numCh * 2, true);
+            dv.setUint16(34, 16, true);
+            writeString(dv, 36, "data");
+            dv.setUint32(40, numFrames * numCh * 2, true);
+            let off2 = 44;
+            for (let f = 0; f < numFrames; f++) {
+                for (let c = 0; c < numCh; c++) {
+                    const s = Math.max(-1, Math.min(1, origBuf.getChannelData(c)[f]));
+                    dv.setInt16(off2, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+                    off2 += 2;
                 }
             }
-            
-            const recordedChunks = [];
-            let mediaRecorder;
-            try {
-                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8' });
-            } catch(e) {
-                mediaRecorder = new MediaRecorder(stream);
-            }
-            
-            mediaRecorder.ondataavailable = (e) => { if(e.data.size > 0) recordedChunks.push(e.data); };
-            
-            mediaRecorder.onstop = () => {
-                const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'secure_stego_video.webm';
-                a.click();
-                hideLoading();
-                player.pause();
+            updateProgress(70);
+            const player = document.getElementById("video-player");
+            player.muted = true;
+            player.currentTime = 0;
+            const playAc = new AudioContext({ sampleRate: sr });
+            const wBuf = await playAc.decodeAudioData(wavBuf);
+            const wSrc = playAc.createBufferSource();
+            wSrc.buffer = wBuf;
+            const wDest = playAc.createMediaStreamDestination();
+            wSrc.connect(wDest);
+            const cvs = document.createElement("canvas");
+            cvs.width = player.videoWidth || 1280;
+            cvs.height = player.videoHeight || 720;
+            const cvsCtx = cvs.getContext("2d");
+            const vidStream = cvs.captureStream(30);
+            const finalStream = new MediaStream([...vidStream.getVideoTracks(), ...wDest.stream.getAudioTracks()]);
+            const chunks2 = [];
+            let rec;
+            try { rec = new MediaRecorder(finalStream, { mimeType: "video/webm;codecs=vp8,opus" }); }
+            catch(e) { try { rec = new MediaRecorder(finalStream, { mimeType: "video/webm" }); } catch(e2) { rec = new MediaRecorder(finalStream); } }
+            rec.ondataavailable = ev => { if (ev.data.size > 0) chunks2.push(ev.data); };
+            rec.onstop = () => {
+                playAc.close();
+                const blob = new Blob(chunks2, { type: "video/webm" });
+                const dlUrl = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = dlUrl; a.download = "secure_stego_video.webm"; a.click();
+                hideLoading(); player.pause(); player.muted = false;
             };
-
-            mediaRecorder.start();
-            
-            function processFrame() {
-                // Trim to 30 seconds to ensure encoding finishes under 30s
-                if (player.paused || player.ended || player.currentTime > 30) {
-                    mediaRecorder.stop();
-                    return;
-                }
-                ctx.drawImage(player, 0, 0, canvas.width, canvas.height);
-                
-                // Temporal-Spatial QIM: Embed chunks chronologically
-                const chunkIndex = Math.floor(player.currentTime / 0.5); // 0.5s per chunk
-                if (chunkIndex < chunks.length) {
-                    const chunkString = chunks[chunkIndex];
-                    // Format: PX:SESSION|Cidx|CHUNK
-                    const framePayload = "PX:" + sessionId + "|C" + chunkIndex.toString(36) + "|" + chunkString;
-                    let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    injectRobustBlockWatermark(imgData, framePayload);
-                    ctx.putImageData(imgData, 0, 0);
-                }
-                
-                const duration = player.duration && !isNaN(player.duration) ? player.duration : 30;
-                const percent = (player.currentTime / Math.min(duration, 30)) * 100;
-                updateProgress(percent);
-                
-                requestAnimationFrame(processFrame);
-            }
-            processFrame();
-        };
-        
-        player.play().catch(e => {
-            console.error("Video play failed:", e);
-            hideLoading();
-            alert("Video playback failed. Please ensure the video format is supported.");
-        });
+            player.onplay = () => {
+                wSrc.start(0); rec.start();
+                const tick = () => {
+                    if (player.paused || player.ended || player.currentTime > 30) { rec.stop(); return; }
+                    cvsCtx.drawImage(player, 0, 0, cvs.width, cvs.height);
+                    const dur = (player.duration && !isNaN(player.duration)) ? player.duration : 30;
+                    updateProgress(70 + (player.currentTime / Math.min(dur, 30)) * 30);
+                    requestAnimationFrame(tick);
+                };
+                tick();
+            };
+            player.play().catch(e => { hideLoading(); alert("Playback error: " + e.message); });
+        } catch(err) { hideLoading(); alert("Encoding error: " + (err.message || err)); }
     }
 
     async function handleVideoDecode(pass) {
-        showLoading("Extracting Video Payload...", "Scanning frames for Temporal-Spatial Watermarks.", true);
-        const player = document.getElementById('video-player');
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        
-        let currentChunk = 0;
-        let extractedPayload = "";
-        let maxChunks = 35; // maximum possible 512/16 = 32
-        
-        const processSeek = () => {
-            ctx.drawImage(player, 0, 0, canvas.width, canvas.height);
-            let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            
-            const data = imgData.data;
-            const width = imgData.width;
-            const height = imgData.height;
-            const blockSize = 8;
-            const blocksX = Math.floor(width / blockSize);
-            const blocksY = Math.floor(height / blockSize);
-            const totalBlocks = blocksX * blocksY;
-            const maxBits = 384; 
-            const redundancyCount = Math.min(Math.floor(totalBlocks / maxBits), 25); 
-            const qStep = 32;
-            
-            let seed = 1337;
-            function prng() { let x = Math.sin(seed++) * 10000; return x - Math.floor(x); }
-            let blockIndices = new Uint32Array(totalBlocks);
-            for(let i=0; i<totalBlocks; i++) blockIndices[i] = i;
-            for(let i = totalBlocks - 1; i > 0; i--) {
-                const j = Math.floor(prng() * (i + 1));
-                const temp = blockIndices[i];
-                blockIndices[i] = blockIndices[j];
-                blockIndices[j] = temp;
+        showLoading("Extracting Secret from Video...", "Decoding audio watermark. Please wait.", true);
+        const file = document.getElementById("video-input").files[0];
+        if (!file) { hideLoading(); alert("Please select the video file to decode."); return; }
+        try {
+            const ab = await file.arrayBuffer();
+            const dAc = new (window.AudioContext || window.webkitAudioContext)();
+            let audioBuf;
+            try { audioBuf = await dAc.decodeAudioData(ab); }
+            catch(e) {
+                hideLoading();
+                document.getElementById("extracted-msg").value = "Could not read audio from this video. Make sure it was encoded with this tool.";
+                document.getElementById("extracted-msg").style.color = "#ef4444";
+                return;
             }
-            
-            let bitVotes = new Int32Array(maxBits);
-            let blockPtr = 0;
-            for(let r = 0; r < redundancyCount; r++) {
-                for(let i = 0; i < maxBits; i++) {
-                    if (blockPtr >= totalBlocks) break;
-                    const blockIndex = blockIndices[blockPtr++];
-                    const startX = (blockIndex % blocksX) * blockSize;
-                    const startY = Math.floor(blockIndex / blocksX) * blockSize;
-                    let sum = 0; let count = 0;
-                    for(let y = startY; y < startY + blockSize; y++) {
-                        for(let x = startX; x < startX + blockSize; x++) {
-                            sum += data[(y * width + x) * 4 + 2];
-                            count++;
-                        }
-                    }
-                    const avg = sum / count;
-                    const val0 = Math.round(avg / qStep) * qStep;
-                    const val1 = Math.round((avg - qStep/2)/qStep)*qStep + qStep/2;
-                    if (Math.abs(avg - val1) < Math.abs(avg - val0)) bitVotes[i]++; else bitVotes[i]--;
-                }
-            }
-            
-            let exBinaryStr = '';
-            for(let i=0; i<maxBits; i++) exBinaryStr += (bitVotes[i] > 0) ? '1' : '0';
-            
-            let exText = '';
-            for(let i=0; i<exBinaryStr.length; i+=8) {
-                const byteStr = exBinaryStr.substr(i, 8);
-                if (byteStr.length === 8) exText += String.fromCharCode(parseInt(byteStr, 2));
-            }
-            
-            // Try to match the Temporal Chunk
-            const match = /PX:PX-VID-[A-Z0-9]{9}\|C([0-9a-z]+)\|(.{1,16})/.exec(exText);
-            if (match) {
-                const idx = parseInt(match[1], 36);
-                if (idx === currentChunk) {
-                    extractedPayload += match[2].replace(/\0/g, ''); // remove padding null bytes
-                    currentChunk++;
-                    if (currentChunk < maxChunks) {
-                        player.currentTime = currentChunk * 0.5 + 0.25;
-                        return; // Wait for next seeked event!
-                    }
-                }
-            }
-            
-            finishDecode();
-        };
-
-        const doSeek = () => {
-            canvas.width = player.videoWidth;
-            canvas.height = player.videoHeight;
-            player.onseeked = processSeek;
-            player.currentTime = 0.25; // Target middle of the first 0.5s chunk window
-        };
-        
-        if (player.readyState >= 2) {
-            doSeek();
-        } else {
-            player.onloadeddata = doSeek;
-        }
-        
-        function finishDecode() {
-            player.onseeked = null; // Clean up listener
+            updateProgress(60);
+            const decoded = attemptSpreadSpectrumDecode(audioBuf, pass);
+            updateProgress(100);
             hideLoading();
-            
-            // Decrypt Logic
-            let decodedMessage = null;
-            const exText = extractedPayload;
-            const pxcIndex = exText.indexOf("PXC|");
-            if(pxcIndex !== -1){
-                const parts = exText.substring(pxcIndex).split('|');
-                if(parts.length >= 3) {
-                    const payloadLen = parseInt(parts[1]);
-                    const encryptedMsg = exText.substring(pxcIndex + 4 + parts[1].length + 1, pxcIndex + 4 + parts[1].length + 1 + payloadLen);
-                    try {
-                        const decrypted = CryptoJS.AES.decrypt(encryptedMsg, pass).toString(CryptoJS.enc.Utf8);
-                        if(decrypted) decodedMessage = decrypted;
-                    } catch(e) {}
-                }
-            }
-            const pxfIndex = exText.indexOf("PXF|");
-            if(!decodedMessage && pxfIndex !== -1){
-                const parts = exText.substring(pxfIndex).split('|');
-                if(parts.length >= 3) {
-                    const payloadLen = parseInt(parts[1]);
-                    const encryptedMsg = exText.substring(pxfIndex + 4 + parts[1].length + 1, pxfIndex + 4 + parts[1].length + 1 + payloadLen);
-                    try {
-                        const decrypted = CryptoJS.AES.decrypt(encryptedMsg, pass).toString(CryptoJS.enc.Utf8);
-                        if(decrypted) decodedMessage = decrypted;
-                    } catch(e) {}
-                }
-            }
-
-            if(decodedMessage) {
-                document.getElementById('extracted-msg').value = decodedMessage;
-                document.getElementById('extracted-msg').style.color = '#4ade80';
+            if (decoded) {
+                document.getElementById("extracted-msg").value = decoded;
+                document.getElementById("extracted-msg").style.color = "#4ade80";
             } else {
-                document.getElementById('extracted-msg').value = "No spatial watermark found or incorrect password.";
-                document.getElementById('extracted-msg').style.color = '#ef4444';
+                document.getElementById("extracted-msg").value = "No watermark found or incorrect password.";
+                document.getElementById("extracted-msg").style.color = "#ef4444";
             }
-        };
+        } catch(err) { hideLoading(); alert("Decoding error: " + (err.message || err)); }
     }
-
     /* =======================================================
        SHARED BUTTON HANDLERS
        ======================================================= */
