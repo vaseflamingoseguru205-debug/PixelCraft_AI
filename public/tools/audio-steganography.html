@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <!-- Google tag (gtag.js) -->
@@ -167,8 +167,18 @@
 
   <div class="mode-switch">
       <button class="mode-btn active" id="mode-audio">🎧 Audio Mode (Advanced DSSS / Echo Hiding)</button>
-      <button class="mode-btn" id="mode-video">🎥 Video Mode (Spatial QIM)</button>
+      <div style="position: relative; display: inline-block;">
+          <button class="mode-btn" id="mode-video" style="opacity: 0.5; cursor: not-allowed;" disabled>🎥 Video Mode (Spatial QIM)</button>
+          <span style="position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 12px; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4); animation: pulse 2s infinite;">Coming Soon</span>
+      </div>
   </div>
+  <style>
+      @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+      }
+  </style>
 
   <div class="tool-workspace">
     <div class="loading-overlay" id="loading-overlay">
@@ -285,14 +295,14 @@
         document.getElementById('video-module').style.display = 'none';
         document.getElementById('btn-encode').style.background = 'linear-gradient(135deg, #3b82f6, #8b5cf6)';
     };
-    document.getElementById('mode-video').onclick = () => {
-        currentMode = 'video';
-        document.getElementById('mode-video').classList.add('active');
-        document.getElementById('mode-audio').classList.remove('active');
-        document.getElementById('video-module').style.display = 'block';
-        document.getElementById('audio-module').style.display = 'none';
-        document.getElementById('btn-encode').style.background = 'linear-gradient(135deg, #ef4444, #f97316)';
-    };
+    // document.getElementById('mode-video').onclick = () => {
+    //     currentMode = 'video';
+    //     document.getElementById('mode-video').classList.add('active');
+    //     document.getElementById('mode-audio').classList.remove('active');
+    //     document.getElementById('video-module').style.display = 'block';
+    //     document.getElementById('audio-module').style.display = 'none';
+    //     document.getElementById('btn-encode').style.background = 'linear-gradient(135deg, #ef4444, #f97316)';
+    // };
 
     // Legal Check
     const legalCheck = document.getElementById('legal-check');
