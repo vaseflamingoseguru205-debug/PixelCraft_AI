@@ -362,8 +362,8 @@
             ctx.putImageData(imgData, 0, 0);
             
             printLog('Stripping EXIF Metadata...');
-            // Export as WebP natively strips metadata
-            const finalDataUrl = hiddenCanvas.toDataURL('image/webp', 0.95);
+            // Export as PNG natively strips metadata and losslessly preserves our watermark
+            const finalDataUrl = hiddenCanvas.toDataURL('image/png');
             
             previewImg.src = finalDataUrl;
             
@@ -372,7 +372,7 @@
             btnDownload.onclick = () => {
                 const a = document.createElement('a');
                 a.href = finalDataUrl;
-                a.download = "sanitized_" + Date.now() + ".webp";
+                a.download = "sanitized_" + Date.now() + ".png";
                 a.click();
                 printLog('File downloaded.', 'sys');
             };
