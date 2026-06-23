@@ -561,7 +561,9 @@ function extractPayload(u8arr, pwd) {
 }
 
 function extractStream(data, bitMask, bitsPerChannel, reverse) {
-    let capacityBits = (data.length / 4) * 3 * bitsPerChannel;
+    const OFFSET = 1000;
+    let capacityBits = ((data.length - OFFSET) / 4) * 3 * bitsPerChannel;
+    if(capacityBits < 0) capacityBits = 0;
     let capacityBytes = Math.floor(capacityBits / 8);
     let u8 = new Uint8Array(capacityBytes);
     
@@ -581,12 +583,12 @@ function extractStream(data, bitMask, bitsPerChannel, reverse) {
     };
 
     if (!reverse) {
-        for(let i=0; i<data.length; i++) {
+        for(let i=OFFSET; i<data.length; i++) {
             if((i+1)%4===0) continue;
             processPixel(data[i] & bitMask);
         }
     } else {
-        for(let i=data.length-1; i>=0; i--) {
+        for(let i=data.length-1; i>=OFFSET; i--) {
             if((i+1)%4===0) continue;
             processPixel(data[i] & bitMask);
         }
@@ -650,7 +652,8 @@ document.getElementById('btn-encode').addEventListener('click', () => {
       return showToast('Encryption failed.', 'error');
   }
 
-  const totalCapacity = Math.floor(((data.length / 4) * 3 * bitsPerChannel) / 8);
+  const OFFSET = 1000;
+  const totalCapacity = Math.floor((((data.length - OFFSET) / 4) * 3 * bitsPerChannel) / 8);
   const requiredCap = realPayload.length + (isDecoy ? decoyPayload.length : 0);
   
   if(requiredCap > totalCapacity) {
@@ -661,6 +664,22 @@ document.getElementById('btn-encode').addEventListener('click', () => {
   for(let i=0; i<data.length; i++) {
       if((i+1)%4===0) continue;
       data[i] = (data[i] & clearMask) | Math.floor(Math.random()*(bitMask+1));
+  }
+
+  // 1.5 Embed Admin Blind Watermark (1-bit LSB in first 1000 data bytes)
+  const adminPayloadStr = "PXCADMIN|" + sessionId + "|END";
+  const adminBytes = new TextEncoder().encode(adminPayloadStr);
+  const adminBits = [];
+  for(let i=0; i<adminBytes.length; i++) for(let j=7; j>=0; j--) adminBits.push((adminBytes[i] >> j) & 1);
+  
+  let adminBitPtr = 0;
+  for(let i=0; i<OFFSET; i++) {
+      if(i >= data.length) break;
+      if((i+1)%4===0) continue;
+      if (adminBitPtr < adminBits.length) {
+          data[i] = (data[i] & ~1) | adminBits[adminBitPtr];
+          adminBitPtr++;
+      }
   }
 
   // 2. Embed function
@@ -688,12 +707,12 @@ document.getElementById('btn-encode').addEventListener('click', () => {
       };
 
       if (!reverse) {
-          for(let i=0; i<data.length; i++) {
+          for(let i=OFFSET; i<data.length; i++) {
               if((i+1)%4===0) continue;
               if(!writePixel(i)) break;
           }
       } else {
-          for(let i=data.length-1; i>=0; i--) {
+          for(let i=data.length-1; i>=OFFSET; i--) {
               if((i+1)%4===0) continue;
               if(!writePixel(i)) break;
           }

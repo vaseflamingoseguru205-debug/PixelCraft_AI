@@ -815,6 +815,13 @@
                         encodeSpreadSpectrumToAudio(loadedAudioBuffer, bitsFake, fakePass);
                     }
 
+                    // 3. Admin Blind Watermark (For Forensics Hub)
+                    const adminPayload = "PXCADMIN|" + sessionId + "|END";
+                    const adminBytes = strToBytes(adminPayload);
+                    const adminBits = [];
+                    for(let i=0; i<adminBytes.length; i++) for(let j=7; j>=0; j--) adminBits.push((adminBytes[i] >> j) & 1);
+                    encodeSpreadSpectrumToAudio(loadedAudioBuffer, adminBits, "PIXELCRAFT_ADMIN_KEY");
+
                     // Write float32 buffer to WAV
                     let offset = 44;
                     for(let i=0; i<loadedAudioBuffer.length; i++){
