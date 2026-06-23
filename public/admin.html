@@ -1079,8 +1079,8 @@
         const blocksY = Math.floor(height / blockSize);
         const totalBlocks = blocksX * blocksY;
         
-        const maxBits = 256; 
-        const redundancyCount = 25; 
+        const maxBits = 4096; 
+        const redundancyCount = Math.min(Math.floor(totalBlocks / maxBits), 25); 
         const qStep = 16;
         
         if (totalBlocks < maxBits) {
