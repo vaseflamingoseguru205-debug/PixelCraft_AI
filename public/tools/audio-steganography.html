@@ -647,16 +647,21 @@
             mediaRecorder.start();
             
             function processFrame() {
-                if (player.paused || player.ended) {
+                // Trim to 30 seconds to ensure encoding finishes under 30s
+                if (player.paused || player.ended || player.currentTime > 30) {
                     mediaRecorder.stop();
                     return;
                 }
                 ctx.drawImage(player, 0, 0, canvas.width, canvas.height);
-                let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                injectRobustBlockWatermark(imgData, sessionId);
-                ctx.putImageData(imgData, 0, 0);
                 
-                const percent = (player.currentTime / player.duration) * 100;
+                // Only run heavy QIM logic on the first 5 seconds to reduce CPU lag
+                if (player.currentTime < 5.0) {
+                    let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    injectRobustBlockWatermark(imgData, sessionId);
+                    ctx.putImageData(imgData, 0, 0);
+                }
+                
+                const percent = (player.currentTime / Math.min(player.duration, 30)) * 100;
                 updateProgress(percent);
                 
                 requestAnimationFrame(processFrame);
@@ -674,12 +679,17 @@
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         
-        player.onloadeddata = () => {
+        const doSeek = () => {
             canvas.width = player.videoWidth;
             canvas.height = player.videoHeight;
             // Seek to 1 second in to capture a stable frame
             player.currentTime = 1;
         };
+        if (player.readyState >= 2) {
+            doSeek();
+        } else {
+            player.onloadeddata = doSeek;
+        }
         
         player.onseeked = () => {
             ctx.drawImage(player, 0, 0, canvas.width, canvas.height);
@@ -869,6 +879,7 @@
                     if(decoded) {
                         document.getElementById('extracted-msg').value = decoded;
                         document.getElementById('extracted-msg').style.color = '#4ade80';
+                    } else {
                         document.getElementById('extracted-msg').value = "No secret found or wrong password.";
                         document.getElementById('extracted-msg').style.color = '#ef4444';
                     }
