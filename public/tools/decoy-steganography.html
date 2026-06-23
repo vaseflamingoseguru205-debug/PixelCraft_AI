@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <!-- Google tag (gtag.js) -->
@@ -629,124 +629,175 @@ document.getElementById('btn-encode').addEventListener('click', () => {
 
   const btn = document.getElementById('btn-encode');
   const ogText = btn.innerHTML;
-  btn.innerHTML = '🔒 Encrypting & Injecting...';
-
-  const cvs = document.getElementById('stego-canvas');
-  cvs.width = encodeImageObj.width;
-  cvs.height = encodeImageObj.height;
-  const ctx = cvs.getContext('2d');
-  ctx.drawImage(encodeImageObj, 0, 0);
-
-  const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
-  const data = imgData.data;
-
-  let bitMask = (1 << bitsPerChannel) - 1;
-  let clearMask = ~bitMask;
-
-  // Generate payloads
-  let realPayload, decoyPayload;
-  try {
-      realPayload = generatePayload(finalRealMsg, realPwd);
-      if(isDecoy) decoyPayload = generatePayload(decoyMsg, decoyPwd);
-  } catch(e) {
-      return showToast('Encryption failed.', 'error');
-  }
-
-  const OFFSET = 1000;
-  const totalCapacity = Math.floor((((data.length - OFFSET) / 4) * 3 * bitsPerChannel) / 8);
-  const requiredCap = realPayload.length + (isDecoy ? decoyPayload.length : 0);
   
-  if(requiredCap > totalCapacity) {
-      return showToast('Message(s) too large for this image! Use a larger image or lower stealth level.', 'error');
-  }
+  // Loading Animation
+  btn.innerHTML = '<span style="display:inline-block; animation: pulse 1s infinite;">🔒 Encrypting & Injecting...</span>';
+  btn.style.opacity = '0.7';
+  btn.style.pointerEvents = 'none';
 
-  // 1. Fill entire image with secure random noise padding
-  for(let i=0; i<data.length; i++) {
-      if((i+1)%4===0) continue;
-      data[i] = (data[i] & clearMask) | Math.floor(Math.random()*(bitMask+1));
-  }
+  setTimeout(() => {
+      try {
+          const cvs = document.getElementById('stego-canvas');
+          cvs.width = encodeImageObj.width;
+          cvs.height = encodeImageObj.height;
+          const ctx = cvs.getContext('2d');
+          ctx.drawImage(encodeImageObj, 0, 0);
 
-  // 1.5 Embed Admin Blind Watermark (1-bit LSB in first 1000 data bytes)
-  const adminPayloadStr = "PXCADMIN|" + sessionId + "|END";
-  const adminBytes = new TextEncoder().encode(adminPayloadStr);
-  const adminBits = [];
-  for(let i=0; i<adminBytes.length; i++) for(let j=7; j>=0; j--) adminBits.push((adminBytes[i] >> j) & 1);
-  
-  let adminBitPtr = 0;
-  for(let i=0; i<OFFSET; i++) {
-      if(i >= data.length) break;
-      if((i+1)%4===0) continue;
-      if (adminBitPtr < adminBits.length) {
-          data[i] = (data[i] & ~1) | adminBits[adminBitPtr];
-          adminBitPtr++;
-      }
-  }
+          const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+          const data = imgData.data;
 
-  // 2. Embed function
-  function embedData(payloadU8, reverse) {
-      if(!payloadU8 || payloadU8.length === 0) return;
-      let byteIndex = 0;
-      let bitBuffer = payloadU8[0];
-      let bitsInBuffer = 8;
-      
-      let writePixel = (i) => {
-          if(byteIndex >= payloadU8.length) return false;
-          if(bitsInBuffer < bitsPerChannel) {
-              byteIndex++;
-              if(byteIndex < payloadU8.length) {
-                  bitBuffer = (bitBuffer << 8) | payloadU8[byteIndex];
-                  bitsInBuffer += 8;
-              } else {
-                  return false;
+          let bitMask = (1 << bitsPerChannel) - 1;
+          let clearMask = ~bitMask;
+
+          let realPayload, decoyPayload;
+          realPayload = generatePayload(finalRealMsg, realPwd);
+          if(isDecoy) decoyPayload = generatePayload(decoyMsg, decoyPwd);
+
+          const OFFSET = 1000;
+          const totalCapacity = Math.floor((((data.length - OFFSET) / 4) * 3 * bitsPerChannel) / 8);
+          const requiredCap = realPayload.length + (isDecoy ? decoyPayload.length : 0);
+          
+          if(requiredCap > totalCapacity) {
+              btn.innerHTML = ogText;
+              btn.style.opacity = '1';
+              btn.style.pointerEvents = 'auto';
+              return showToast('Message(s) too large for this image! Use a larger image or lower stealth level.', 'error');
+          }
+
+          for(let i=0; i<data.length; i++) {
+              if((i+1)%4===0) continue;
+              data[i] = (data[i] & clearMask) | Math.floor(Math.random()*(bitMask+1));
+          }
+
+          const adminPayloadStr = "PXCADMIN|" + sessionId + "|END";
+          const adminBytes = new TextEncoder().encode(adminPayloadStr);
+          const adminBits = [];
+          for(let i=0; i<adminBytes.length; i++) for(let j=7; j>=0; j--) adminBits.push((adminBytes[i] >> j) & 1);
+          
+          let adminBitPtr = 0;
+          for(let i=0; i<OFFSET; i++) {
+              if(i >= data.length) break;
+              if((i+1)%4===0) continue;
+              if (adminBitPtr < adminBits.length) {
+                  data[i] = (data[i] & ~1) | adminBits[adminBitPtr];
+                  adminBitPtr++;
               }
           }
-          bitsInBuffer -= bitsPerChannel;
-          let val = (bitBuffer >>> bitsInBuffer) & bitMask;
-          data[i] = (data[i] & clearMask) | val;
-          return true;
-      };
 
-      if (!reverse) {
-          for(let i=OFFSET; i<data.length; i++) {
-              if((i+1)%4===0) continue;
-              if(!writePixel(i)) break;
+          function embedData(payloadU8, reverse) {
+              if(!payloadU8 || payloadU8.length === 0) return;
+              let byteIndex = 0;
+              let bitBuffer = payloadU8[0];
+              let bitsInBuffer = 8;
+              
+              let writePixel = (i) => {
+                  if(byteIndex >= payloadU8.length) return false;
+                  if(bitsInBuffer < bitsPerChannel) {
+                      byteIndex++;
+                      if(byteIndex < payloadU8.length) {
+                          bitBuffer = (bitBuffer << 8) | payloadU8[byteIndex];
+                          bitsInBuffer += 8;
+                      } else {
+                          return false;
+                      }
+                  }
+                  bitsInBuffer -= bitsPerChannel;
+                  let val = (bitBuffer >>> bitsInBuffer) & bitMask;
+                  data[i] = (data[i] & clearMask) | val;
+                  return true;
+              };
+
+              if (!reverse) {
+                  for(let i=OFFSET; i<data.length; i++) {
+                      if((i+1)%4===0) continue;
+                      if(!writePixel(i)) break;
+                  }
+              } else {
+                  for(let i=data.length-1; i>=OFFSET; i--) {
+                      if((i+1)%4===0) continue;
+                      if(!writePixel(i)) break;
+                  }
+              }
           }
-      } else {
-          for(let i=data.length-1; i>=OFFSET; i--) {
-              if((i+1)%4===0) continue;
-              if(!writePixel(i)) break;
+
+          if (isDecoy) {
+              embedData(decoyPayload, false);
           }
+          embedData(realPayload, isDecoy);
+
+          ctx.putImageData(imgData, 0, 0);
+          
+          const finalDataUrl = cvs.toDataURL('image/png');
+          document.getElementById('final-image').src = finalDataUrl;
+          document.getElementById('encode-result').style.display = 'block';
+          showToast('Image Encrypted Successfully!', 'success');
+
+          document.getElementById('btn-download').onclick = () => {
+            downloadFile(finalDataUrl, 'pixelcraft-secret.png');
+          };
+      } catch(e) {
+          showToast('Encryption failed: ' + e.message, 'error');
+      } finally {
+          btn.innerHTML = ogText;
+          btn.style.opacity = '1';
+          btn.style.pointerEvents = 'auto';
       }
-  }
-
-  // 3. Apply payloads
-  if (isDecoy) {
-      embedData(decoyPayload, false); // Decoy at front
-  }
-  embedData(realPayload, isDecoy); // Real at front if no decoy, back if decoy
-
-  ctx.putImageData(imgData, 0, 0);
-  
-  const finalDataUrl = cvs.toDataURL('image/png');
-  document.getElementById('final-image').src = finalDataUrl;
-  document.getElementById('encode-result').style.display = 'block';
-  btn.innerHTML = ogText;
-  showToast('Image Encrypted Successfully!', 'success');
-
-  document.getElementById('btn-download').onclick = () => {
-    downloadFile(finalDataUrl, 'pixelcraft-secret.png');
-  };
+  }, 50);
 });
 
 // --- Decoding ---
 document.getElementById('btn-decode').addEventListener('click', () => {
   const pwd = document.getElementById('decode-password').value;
+  const bitsPerChannelObj = document.getElementById('decode-stealth-level');
+  // Default to 2 if not found in UI
+  const bitsPerChannel = bitsPerChannelObj ? parseInt(bitsPerChannelObj.value) : 2;
+
   if(!pwd) return showToast('Password is required to decrypt.', 'error');
+  if(!decodeImageObj) return showToast('Please select an image to decode.', 'error');
 
-  const canvas = document.getElementById('stego-canvas');
-  canvas.width = decodeImageObj.width;
-  canvas.height = decodeImageObj.height;
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(decodeImageObj, 0, 0);
+  const btn = document.getElementById('btn-decode');
+  const ogText = btn.innerHTML;
+  btn.innerHTML = '<span style="display:inline-block; animation: pulse 1s infinite;">🔓 Extracting Secret...</span>';
+  btn.style.opacity = '0.7';
+  btn.style.pointerEvents = 'none';
 
+  setTimeout(() => {
+      try {
+          const cvs = document.getElementById('stego-canvas');
+          cvs.width = decodeImageObj.width;
+          cvs.height = decodeImageObj.height;
+          const ctx = cvs.getContext('2d');
+          ctx.drawImage(decodeImageObj, 0, 0);
+
+          const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+          const data = imgData.data;
+          let bitMask = (1 << bitsPerChannel) - 1;
+
+          const streamF = extractStream(data, bitMask, bitsPerChannel, false);
+          let msg = extractPayload(streamF, pwd);
+          
+          if(!msg) {
+              const streamB = extractStream(data, bitMask, bitsPerChannel, true);
+              msg = extractPayload(streamB, pwd);
+          }
+
+          if(msg) {
+              msg = msg.replace(/\[PixelCraft AI Software - Session: PX-[A-Z]+-[A-Z0-9]+ \]/g, '');
+              document.getElementById('decoded-text').textContent = msg;
+              document.getElementById('decode-result').style.display = 'block';
+              showToast('Message decrypted successfully!', 'success');
+          } else {
+              showToast('Incorrect Password or no message found!', 'error');
+          }
+      } catch(e) {
+          showToast('Decryption error: ' + e.message, 'error');
+      } finally {
+          btn.innerHTML = ogText;
+          btn.style.opacity = '1';
+          btn.style.pointerEvents = 'auto';
+      }
+  }, 50);
+});
+</script>
+</body>
 </html>
