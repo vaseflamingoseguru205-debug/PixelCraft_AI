@@ -333,14 +333,14 @@
         return 'PX-' + Math.random().toString(36).substr(2, 9).toUpperCase();
     }
 
-    // Advanced Compression-Resistant Spatial Watermark
+    // Advanced Blind Spatial QIM Watermark
     function injectRobustBlockWatermark(imageData, sessionId) {
         const data = imageData.data;
         const width = imageData.width;
         const height = imageData.height;
         
-        // Use 4x4 blocks, modify only the Blue channel (invisible to humans, survives JPEG)
-        const blockSize = 4;
+        // 8x8 blocks survive JPEG downsampling perfectly.
+        const blockSize = 8;
         const blocksX = Math.floor(width / blockSize);
         const blocksY = Math.floor(height / blockSize);
         const totalBlocks = blocksX * blocksY;
@@ -354,10 +354,10 @@
         const bitsNeeded = binaryStr.length;
         if(totalBlocks < bitsNeeded) return; 
         
-        const redundancyCount = Math.min(Math.floor(totalBlocks / bitsNeeded), 20); 
-        const modulationDelta = 4; 
+        const redundancyCount = Math.min(Math.floor(totalBlocks / bitsNeeded), 25); 
+        const qStep = 16; // Quantization step size
         
-        // Shuffle blocks to prevent any pixel from being modified twice (prevents black squares)
+        // Shuffle blocks to prevent accumulation
         let seed = 1337;
         function random() {
             let x = Math.sin(seed++) * 10000;
@@ -385,13 +385,25 @@
                 const startX = bx * blockSize;
                 const startY = by * blockSize;
                 
-                const adjust = bit === 1 ? modulationDelta : -modulationDelta;
+                // Calculate average Blue value
+                let sum = 0;
+                let count = 0;
+                for(let y = startY; y < startY + blockSize; y++) {
+                    for(let x = startX; x < startX + blockSize; x++) {
+                        sum += data[(y * width + x) * 4 + 2];
+                        count++;
+                    }
+                }
+                const avg = sum / count;
+                
+                // Quantization Index Modulation
+                const q_avg = Math.round((avg - bit * (qStep / 2)) / qStep) * qStep + bit * (qStep / 2);
+                const adjust = q_avg - avg;
                 
                 for(let y = startY; y < startY + blockSize; y++) {
                     for(let x = startX; x < startX + blockSize; x++) {
-                        const px = (y * width + x) * 4;
-                        // Modify only Blue channel (index px+2) for perfect invisibility
-                        data[px+2] = Math.max(0, Math.min(255, data[px+2] + adjust));
+                        const px = (y * width + x) * 4 + 2;
+                        data[px] = Math.max(0, Math.min(255, data[px] + adjust));
                     }
                 }
             }
