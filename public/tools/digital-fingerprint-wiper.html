@@ -346,12 +346,19 @@
         const totalBlocks = blocksX * blocksY;
         
         const text = "PX:" + sessionId + "|";
+        const PAYLOAD_BITS = 256;
         let binaryStr = '';
         for(let i=0; i<text.length; i++) {
             binaryStr += text.charCodeAt(i).toString(2).padStart(8, '0');
         }
+        while(binaryStr.length < PAYLOAD_BITS) {
+            binaryStr += '0';
+        }
+        if (binaryStr.length > PAYLOAD_BITS) {
+            binaryStr = binaryStr.substring(0, PAYLOAD_BITS);
+        }
         
-        const bitsNeeded = binaryStr.length;
+        const bitsNeeded = PAYLOAD_BITS;
         if(totalBlocks < bitsNeeded) return; 
         
         const redundancyCount = Math.min(Math.floor(totalBlocks / bitsNeeded), 25); 
