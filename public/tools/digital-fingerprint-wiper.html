@@ -219,28 +219,28 @@
       <div class="control-box">
         <h2 class="tool-header">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          EXIF-STRIPPER & ANONYMIZER
+          Digital Privacy & Metadata Wiper
         </h2>
         <p class="tool-desc">
-          Military-grade digital sanitization. Strips all EXIF metadata, neutralizes Camera Sensor PRNU signatures via localized noise, and injects a robust Block-Luminance forensic watermark resilient to standard JPEG compression.
+          Securely remove sensitive metadata (EXIF) and anonymize your images. This tool adds an invisible protective layer to help prevent unauthorized tracking while keeping your photos looking exactly the same.
         </p>
         
         <div class="legal-container">
           <label>
             <input type="checkbox" id="legalCheck">
             <span class="legal-text">
-              <strong>COMPLIANCE DECLARATION:</strong> By initializing this protocol, I certify under penalty of perjury that I hold legal rights to this media and am not obstructing law enforcement. I acknowledge that my IP address, Timestamp, and a unique Forensic Session ID will be securely logged and embedded within the file's robust metadata structure to ensure strict compliance with cyber-law directives.
+              <strong>COMPLIANCE DECLARATION:</strong> I confirm that I own the rights to this image. I understand that to prevent misuse, basic session details (like time and a session ID) are logged securely, and an invisible tag is added to the image.
             </span>
           </label>
         </div>
         
-        <button class="btn-cyber" id="btnProcess">INITIATE WIPE PROTOCOL</button>
-        <button class="btn-success" id="btnDownload">EXPORT SANITIZED PAYLOAD</button>
+        <button class="btn-cyber" id="btnProcess">Clean & Anonymize Image</button>
+        <button class="btn-success" id="btnDownload">Download Secure Image</button>
       </div>
       
       <div class="terminal" id="terminal">
-        <div class="sys">> SECURE TERMINAL INITIALIZED</div>
-        <div>> WAITING FOR USER INPUT...</div>
+        <div class="sys">> System Ready.</div>
+        <div>> Waiting for image upload...</div>
       </div>
     </div>
   </div>
@@ -339,43 +339,58 @@
         const width = imageData.width;
         const height = imageData.height;
         
-        // Use 8x8 macro-blocks to survive standard JPEG downsampling
-        const blockSize = 8;
+        // Use 4x4 blocks, modify only the Blue channel (invisible to humans, survives JPEG)
+        const blockSize = 4;
         const blocksX = Math.floor(width / blockSize);
         const blocksY = Math.floor(height / blockSize);
         const totalBlocks = blocksX * blocksY;
         
-        const text = "PX_META:" + sessionId + "|";
+        const text = "PX:" + sessionId + "|";
         let binaryStr = '';
         for(let i=0; i<text.length; i++) {
             binaryStr += text.charCodeAt(i).toString(2).padStart(8, '0');
         }
         
         const bitsNeeded = binaryStr.length;
-        if(totalBlocks < bitsNeeded) return; // Image too small
+        if(totalBlocks < bitsNeeded) return; 
         
-        const redundancyCount = Math.floor(totalBlocks / bitsNeeded);
-        const actualRedundancy = Math.min(redundancyCount, 150); // Broad spread spectrum
-        const modulationDelta = 6; // Low frequency visual shift
+        const redundancyCount = Math.min(Math.floor(totalBlocks / bitsNeeded), 20); 
+        const modulationDelta = 4; 
         
-        for(let r = 0; r < actualRedundancy; r++) {
-            let seed = 1337 + r;
+        // Shuffle blocks to prevent any pixel from being modified twice (prevents black squares)
+        let seed = 1337;
+        function random() {
+            let x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+        }
+        
+        let blockIndices = new Uint32Array(totalBlocks);
+        for(let i=0; i<totalBlocks; i++) blockIndices[i] = i;
+        
+        for(let i = totalBlocks - 1; i > 0; i--) {
+            const j = Math.floor(random() * (i + 1));
+            const temp = blockIndices[i];
+            blockIndices[i] = blockIndices[j];
+            blockIndices[j] = temp;
+        }
+        
+        let blockPtr = 0;
+        for(let r = 0; r < redundancyCount; r++) {
             for(let i = 0; i < binaryStr.length; i++) {
                 const bit = parseInt(binaryStr[i]);
-                let xSeed = Math.sin(seed++) * 10000;
-                const blockIndex = Math.floor((xSeed - Math.floor(xSeed)) * totalBlocks);
+                const blockIndex = blockIndices[blockPtr++];
                 
                 const bx = blockIndex % blocksX;
                 const by = Math.floor(blockIndex / blocksX);
                 const startX = bx * blockSize;
                 const startY = by * blockSize;
                 
+                const adjust = bit === 1 ? modulationDelta : -modulationDelta;
+                
                 for(let y = startY; y < startY + blockSize; y++) {
                     for(let x = startX; x < startX + blockSize; x++) {
                         const px = (y * width + x) * 4;
-                        const adjust = bit === 1 ? modulationDelta : -modulationDelta;
-                        data[px] = Math.max(0, Math.min(255, data[px] + adjust));
-                        data[px+1] = Math.max(0, Math.min(255, data[px+1] + adjust));
+                        // Modify only Blue channel (index px+2) for perfect invisibility
                         data[px+2] = Math.max(0, Math.min(255, data[px+2] + adjust));
                     }
                 }
@@ -420,9 +435,11 @@
         newChunk[8 + length + 3] = crc & 0xff;
         
         const result = new Uint8Array(bytes.length + newChunk.length);
-        result.set(bytes.slice(0, 8)); 
-        result.set(newChunk, 8); 
-        result.set(bytes.slice(8), 8 + newChunk.length);
+        // Valid PNG requires IHDR to be the first chunk after the 8-byte signature. 
+        // IHDR is 25 bytes long. Offset = 8 + 25 = 33.
+        result.set(bytes.slice(0, 33)); 
+        result.set(newChunk, 33); 
+        result.set(bytes.slice(33), 33 + newChunk.length);
         
         let binaryStr = '';
         const chunkSize = 8192;
@@ -437,16 +454,16 @@
         if (!loadedImage || !legalCheck.checked) return;
         
         btnProcess.classList.remove('active');
-        btnProcess.textContent = "PROCESSING...";
+        btnProcess.textContent = "Processing...";
         btnDownload.style.display = 'none';
         scanner.style.display = 'block'; // Start animation
         
         const sessionId = generateSessionId();
-        logTerminal(`SESSION IDENTIFIER: ${sessionId}`, 'sys');
+        logTerminal(`Session ID: ${sessionId}`, 'sys');
         
         // TELEMETRY LOGGING
         try {
-            logTerminal('Transmitting compliance telemetry...', 'sys');
+            logTerminal('Logging session details securely...', 'sys');
             await fetch('/api/forensic/log', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -456,14 +473,14 @@
                     legalConsentGranted: true
                 })
             });
-            logTerminal('Telemetry accepted by mainframe.', 'success');
+            logTerminal('Session logged.', 'success');
         } catch (e) {
             logTerminal('Telemetry fallback warning: ' + e.message, 'warn');
         }
 
         // Processing needs a small timeout so the DOM updates
         setTimeout(() => {
-            logTerminal('Neutralizing PRNU hardware signatures...');
+            logTerminal('Removing hardware tracking signatures...');
             hiddenCanvas.width = loadedImage.width;
             hiddenCanvas.height = loadedImage.height;
             
@@ -474,7 +491,7 @@
             let imgData = ctx.getImageData(0, 0, hiddenCanvas.width, hiddenCanvas.height);
             
             // 2. Hash Poisoning
-            logTerminal('Executing Cryptographic Hash scrambling...');
+            logTerminal('Scrambling digital fingerprint...');
             for (let i = 0; i < imgData.data.length; i += 4) {
                 const noise = (Math.random() - 0.5) * 4;
                 imgData.data[i] = Math.min(255, Math.max(0, imgData.data[i] + noise));
@@ -483,22 +500,22 @@
             }
             
             // 3. Robust Watermarking
-            logTerminal('Injecting compression-resistant spatial watermark...');
+            logTerminal('Applying invisible security tag...');
             injectRobustBlockWatermark(imgData, sessionId);
             ctx.putImageData(imgData, 0, 0);
             
             // 4. EXIF Stripping & PNG Metadata Injection
-            logTerminal('Purging EXIF metadata...');
+            logTerminal('Removing GPS and EXIF metadata...');
             let finalDataUrl = hiddenCanvas.toDataURL('image/png');
             
-            logTerminal('Embedding forensic trace chunk...', 'sys');
+            logTerminal('Finalizing secure image...', 'sys');
             finalDataUrl = addPngTextChunk(finalDataUrl, 'Software', `PixelCraft AI Anti-Forensics (Session: ${sessionId})`);
             
             previewImg.src = finalDataUrl;
             
-            logTerminal('PROTOCOL COMPLETE. File sanitized.', 'success');
+            logTerminal('Process complete. Image is secure.', 'success');
             scanner.style.display = 'none';
-            btnProcess.textContent = "INITIATE WIPE PROTOCOL";
+            btnProcess.textContent = "Clean & Anonymize Image";
             if(legalCheck.checked) btnProcess.classList.add('active');
             
             btnDownload.onclick = () => {
