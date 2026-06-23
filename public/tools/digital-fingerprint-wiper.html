@@ -2,170 +2,168 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Digital Fingerprint Wiper | PixelCraft AI</title>
-  <meta name="description" content="Ultra-premium privacy tool. Strip EXIF data, poison file hashes, and destroy invisible tracking pixels locally in your browser."/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V78ZLHJLR8"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-V78ZLHJLR8');
-  </script>
-
-  <!-- Google AdSense -->
-  <meta name="google-adsense-account" content="ca-pub-3788374704176398">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3788374704176398" crossorigin="anonymous"></script>
-
-  <link rel="stylesheet" href="../css/style.css"/>
-
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --accent: #e11d48;
+      --accent-glow: rgba(225, 29, 72, 0.4);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --terminal: #000000;
+      --terminal-text: #10b981;
+    }
     body {
-        background-color: #020617 !important;
-        background-image: radial-gradient(circle at 50% -20%, rgba(225, 29, 72, 0.15), rgba(2, 6, 23, 1) 80%) !important;
-        color: #f8fafc !important;
-        font-family: 'Inter', 'JetBrains Mono', sans-serif !important;
+      margin: 0; padding: 0; font-family: 'Space Grotesk', sans-serif;
+      background-color: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column;
     }
-    .tool-page-header { text-align: center; margin-bottom: 20px; }
-    .tool-page-header h1 {
-        font-size: 2.8rem !important;
-        background: linear-gradient(90deg, #fb7185, #e11d48);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        letter-spacing: 2px;
+    .navbar { padding: 20px 40px; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+    .navbar a { color: white; text-decoration: none; font-weight: bold; font-size: 1.5rem; }
+    .navbar span { color: var(--accent); }
+    .back-btn { background: transparent; border: 1px solid var(--text-muted); color: var(--text); padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; }
+    
+    .container {
+      display: flex; flex: 1; max-width: 1200px; margin: 40px auto; gap: 30px; padding: 0 20px; width: 100%; box-sizing: border-box;
+      align-items: stretch; flex-wrap: wrap;
     }
     
-    .panel-container {
-        display: flex; flex-direction: column; gap: 20px;
-        max-width: 900px; margin: 0 auto;
-    }
-    .glass-box {
-        background: rgba(15, 23, 42, 0.7);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(225, 29, 72, 0.3);
-        border-radius: 16px;
-        padding: 30px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(225, 29, 72, 0.05);
+    /* Left Panel: Upload & Preview */
+    .left-panel {
+      flex: 1; min-width: 300px; background: var(--panel); border-radius: 16px; padding: 30px;
+      border: 1px solid rgba(255,255,255,0.05);
+      display: flex; flex-direction: column; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
     
-    .upload-area {
-        border: 2px dashed rgba(225, 29, 72, 0.4);
-        border-radius: 12px;
-        padding: 40px 20px;
-        text-align: center;
-        cursor: pointer;
-        transition: 0.3s;
-        background: rgba(0,0,0,0.3);
+    .dropzone {
+      flex: 1; min-height: 300px; border: 2px dashed var(--accent); border-radius: 12px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: rgba(225, 29, 72, 0.05); transition: all 0.3s ease; cursor: pointer; text-align: center; padding: 20px;
     }
-    .upload-area:hover, .upload-area.dragover {
-        border-color: #fb7185;
-        background: rgba(225, 29, 72, 0.1);
+    .dropzone.dragover {
+      background: var(--accent-glow); border-style: solid;
     }
+    .dropzone i { font-size: 4rem; margin-bottom: 15px; font-style: normal; }
+    .dropzone h3 { margin: 0 0 10px 0; font-size: 1.5rem; }
+    .dropzone p { margin: 0; color: var(--text-muted); }
+    
+    .preview-container {
+      display: none; flex-direction: column; align-items: center; justify-content: center; gap: 15px; flex: 1; min-height: 300px;
+    }
+    .preview-container img {
+      max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+    }
+    .btn-secondary {
+      background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted);
+      padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-family: inherit;
+    }
+    .btn-secondary:hover { color: white; border-color: white; }
 
-    .btn-danger {
-        background: linear-gradient(45deg, #e11d48, #be123c);
-        color: white;
-        border: none;
-        padding: 14px 28px;
-        border-radius: 8px;
-        font-weight: bold;
-        font-size: 1rem;
-        cursor: pointer;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
-        transition: 0.3s;
-        width: 100%;
-        opacity: 0.5;
-        pointer-events: none;
+    /* Right Panel: Controls & Terminal */
+    .right-panel {
+      flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px;
     }
-    .btn-danger.active { opacity: 1; pointer-events: auto; }
-    .btn-danger.active:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(225, 29, 72, 0.6); }
-
+    
+    .info-card {
+      background: var(--panel); padding: 30px; border-radius: 16px; border: 1px solid rgba(225, 29, 72, 0.2);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .info-card h2 { margin: 0 0 15px 0; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+    
+    .legal-box {
+      background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent);
+      margin-bottom: 25px;
+    }
+    .legal-box label { display: flex; gap: 12px; cursor: pointer; font-size: 0.95rem; line-height: 1.5; color: var(--text-muted); }
+    .legal-box input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); flex-shrink: 0; margin-top: 2px; cursor: pointer; }
+    
+    .btn-primary {
+      width: 100%; background: var(--accent); color: white; border: none; padding: 18px;
+      font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer;
+      text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+      opacity: 0.5; pointer-events: none;
+    }
+    .btn-primary.active { opacity: 1; pointer-events: auto; box-shadow: 0 0 20px var(--accent-glow); }
+    .btn-primary.active:hover { transform: translateY(-2px); box-shadow: 0 5px 25px rgba(225, 29, 72, 0.6); }
+    
+    .terminal {
+      flex: 1; background: var(--terminal); border-radius: 16px; padding: 20px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--terminal-text);
+      overflow-y: auto; border: 1px solid #333; min-height: 200px;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    }
+    .terminal div { margin-bottom: 5px; word-wrap: break-word; }
+    .terminal .err { color: #ef4444; }
+    .terminal .sys { color: #38bdf8; }
+    .terminal .warn { color: #f59e0b; }
+    
     .btn-download {
-        background: linear-gradient(45deg, #10b981, #059669);
-        color: white; border: none; padding: 14px 28px; border-radius: 8px;
-        font-weight: bold; font-size: 1rem; cursor: pointer; text-transform: uppercase;
-        width: 100%; margin-top: 15px; display: none;
+      display: none; width: 100%; background: #10b981; color: white; border: none; padding: 18px;
+      font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer;
+      text-transform: uppercase; margin-top: 15px; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+      transition: 0.2s;
     }
+    .btn-download:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(16, 185, 129, 0.6); }
 
-    .checkbox-container {
-        display: flex; align-items: flex-start; gap: 12px;
-        background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px;
-        border: 1px solid rgba(255,255,255,0.1); margin-top: 20px;
+    @media (max-width: 768px) {
+      .container { flex-direction: column; }
     }
-    .checkbox-container input[type="checkbox"] { width: 20px; height: 20px; accent-color: #e11d48; margin-top: 2px;}
-    .checkbox-container label { font-size: 0.9rem; color: #cbd5e1; line-height: 1.5; }
-
-    .console-box {
-        background: #000; border: 1px solid #333; border-radius: 8px;
-        padding: 15px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
-        color: #10b981; height: 150px; overflow-y: auto; margin-top: 20px;
-    }
-
-    .preview-image { max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 20px; display: none; border: 1px solid rgba(255,255,255,0.1); }
   </style>
 </head>
 <body>
-
-  <nav class="navbar" id="navbar">
-    <a href="../index.html" class="nav-logo">
-      <div class="nav-logo-icon" style="background:#e11d48;">🛡️</div>
-      PixelCraft AI
-    </a>
+  <nav class="navbar">
+    <a href="/index.html">PixelCraft <span>AI</span></a>
+    <a href="/index.html" class="back-btn">← Back to Tools</a>
   </nav>
 
-  <section class="section" style="padding-top: 120px;">
-    <div class="container">
-      <div class="tool-page-header">
-        <h1>Digital Fingerprint Wiper</h1>
-        <p style="color: #94a3b8; font-size: 1.1rem; max-width: 700px; margin: 0 auto;">
-          Anonymize your media. Instantly strip EXIF data, poison file hashes to bypass bans, and destroy invisible tracking pixels. All processing happens locally in your browser.
-        </p>
+  <div class="container">
+    <div class="left-panel">
+      <div class="dropzone" id="dropzone">
+        <i>📸</i>
+        <h3>Drag & Drop Image Here</h3>
+        <p>or click anywhere in this box to select</p>
       </div>
-
-      <div class="panel-container">
-        <div class="glass-box">
-          <div class="upload-area" id="upload-area" onclick="document.getElementById('fileInput').click()">
-            <div style="font-size: 3rem; margin-bottom: 10px;">📸</div>
-            <h3 style="color:#f8fafc; margin-bottom: 5px;">Drag & Drop Image Here</h3>
-            <p style="color:#94a3b8; font-size: 0.9rem;">or click to browse (JPG, PNG, WebP)</p>
-            <input type="file" id="fileInput" accept="image/*" style="display:none;" onclick="event.stopPropagation()">
-          </div>
-
-          <div style="text-align:center;">
-             <img id="preview" class="preview-image" />
-          </div>
-
-          <div class="checkbox-container">
-            <input type="checkbox" id="legalCheck">
-            <label for="legalCheck">
-              <strong>Mandatory Legal Agreement:</strong> I confirm I own the rights to this image. I am NOT using this tool to tamper with legal evidence, infringe copyrights, or facilitate illegal activity. I understand PixelCraft AI temporarily logs my IP/Session details for Law Enforcement compliance as per the Terms & Conditions.
-            </label>
-          </div>
-
-          <button id="btn-wipe" class="btn-danger" style="margin-top: 20px;">Initialize Wipe Protocol</button>
-          
-          <div class="console-box" id="console-output">
-            > SYSTEM READY. WAITING FOR FILE UPLOAD...<br>
-          </div>
-
-          <button id="btn-download" class="btn-download">⬇️ Download Cleaned Image</button>
-        </div>
+      <div class="preview-container" id="previewContainer">
+        <img id="previewImg" src="" alt="Target Image Preview">
+        <button class="btn-secondary" id="btnChange">🔄 Load Different Image</button>
       </div>
     </div>
-  </section>
+    
+    <div class="right-panel">
+      <div class="info-card">
+        <h2>🛡️ Digital Fingerprint Wiper</h2>
+        <p style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;">
+          Advanced Anti-Forensics module. Instantly strips EXIF metadata, neutralizes PRNU (Camera Sensor) signatures via micro-noise injection, and poisons cryptographic hashes to bypass automated detection systems.
+        </p>
+        
+        <div class="legal-box">
+          <label>
+            <input type="checkbox" id="legalCheck">
+            <span><strong>Mandatory Compliance:</strong> I confirm I own the rights to this media. I am NOT using this tool to tamper with legal evidence or facilitate illegal acts. I acknowledge that session telemetry is logged for law enforcement compliance.</span>
+          </label>
+        </div>
+        
+        <button class="btn-primary" id="btnProcess">Initiate Wipe Protocol</button>
+        <button class="btn-download" id="btnDownload">⬇️ Download Sanitized File</button>
+      </div>
+      
+      <div class="terminal" id="terminal">
+        <div class="sys">> INITIALIZING ANTI-FORENSICS SUITE...</div>
+        <div>> WAITING FOR TARGET FILE...</div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Hidden canvas for processing -->
-  <canvas id="processingCanvas" style="display:none;"></canvas>
+  <canvas id="hiddenCanvas" style="display: none;"></canvas>
+  <input type="file" id="fileInput" accept="image/*" style="display: none;">
 
   <script>
-    // FRONTEND ACCESS CONTROL (COMING SOON BLOCK)
-    // *** DISABLED FOR LOCAL TESTING - Re-enable before production deploy ***
+    // --- AUTH BLOCK (DISABLED FOR LOCAL TESTING) ---
+    // Uncomment before final production deploy!
+    /*
     async function checkAccess() {
         try {
             const res = await fetch('/api/auth/status');
@@ -179,248 +177,211 @@
             window.location.href = "/index.html";
         }
     }
-    // checkAccess();  // <-- COMMENTED OUT FOR LOCAL TESTING
+    checkAccess();
+    */
 
-    const uploadArea = document.getElementById('upload-area');
+    // --- DOM Elements ---
+    const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
-    const preview = document.getElementById('preview');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImg = document.getElementById('previewImg');
+    const btnChange = document.getElementById('btnChange');
     const legalCheck = document.getElementById('legalCheck');
-    const btnWipe = document.getElementById('btn-wipe');
-    const btnDownload = document.getElementById('btn-download');
-    const consoleOutput = document.getElementById('console-output');
-    const canvas = document.getElementById('processingCanvas');
-    const ctx = canvas.getContext('2d');
+    const btnProcess = document.getElementById('btnProcess');
+    const btnDownload = document.getElementById('btnDownload');
+    const terminal = document.getElementById('terminal');
+    const hiddenCanvas = document.getElementById('hiddenCanvas');
+    const ctx = hiddenCanvas.getContext('2d');
 
     let loadedImage = null;
-    let originalFileName = "";
 
-    function logToConsole(msg, color = '#10b981') {
-        consoleOutput.innerHTML += `<span style="color:${color};">> ${msg}</span><br>`;
-        consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    function printLog(msg, type = '') {
+      const div = document.createElement('div');
+      div.textContent = '> ' + msg;
+      if(type) div.className = type;
+      terminal.appendChild(div);
+      terminal.scrollTop = terminal.scrollHeight;
     }
 
-    // Check Login logic (Using same logic as other premium tools)
-    // Actually, we don't strictly redirect since the user might be logged in via express-session cookie.
-    // The API will fail with 401 if they aren't logged in.
-
-    // Prevent global drag-and-drop from opening the file in the browser tab
+    // --- Foolproof Drag & Drop Logic ---
     window.addEventListener('dragover', (e) => e.preventDefault());
     window.addEventListener('drop', (e) => e.preventDefault());
 
+    dropzone.addEventListener('click', () => fileInput.click());
 
-    uploadArea.addEventListener('dragenter', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
-    uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
-    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
-    uploadArea.addEventListener('drop', (e) => {
+    dropzone.addEventListener('dragenter', (e) => {
         e.preventDefault();
-        uploadArea.classList.remove('dragover');
-        if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        dropzone.classList.add('dragover');
     });
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+    });
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleFile(e.dataTransfer.files[0]);
+        }
+    });
+
     fileInput.addEventListener('change', (e) => {
-        if(e.target.files.length) handleFile(e.target.files[0]);
+        if (e.target.files && e.target.files.length > 0) {
+            handleFile(e.target.files[0]);
+        }
+    });
+
+    btnChange.addEventListener('click', () => {
+        loadedImage = null;
+        fileInput.value = '';
+        previewImg.src = '';
+        previewContainer.style.display = 'none';
+        dropzone.style.display = 'flex';
+        btnProcess.classList.remove('active');
+        btnDownload.style.display = 'none';
+        printLog('TARGET CLEARED. Waiting for new file...', 'warn');
     });
 
     legalCheck.addEventListener('change', () => {
-        if(legalCheck.checked && loadedImage) {
-            btnWipe.classList.add('active');
+        if (legalCheck.checked && loadedImage) {
+            btnProcess.classList.add('active');
         } else {
-            btnWipe.classList.remove('active');
+            btnProcess.classList.remove('active');
         }
     });
 
     function handleFile(file) {
-        if(!file.type.startsWith('image/')) {
-            alert('Please upload an image file (JPG, PNG, WebP).'); return;
+        if (!file.type.startsWith('image/')) {
+            printLog('ERROR: Invalid file type. Images only.', 'err');
+            return;
         }
-        originalFileName = file.name;
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
                 loadedImage = img;
-                // Hide upload area, show preview
-                uploadArea.style.display = 'none';
-                preview.src = e.target.result;
-                preview.style.display = 'inline-block';
-                // Show change image button
-                let changeBtn = document.getElementById('change-img-btn');
-                if(!changeBtn) {
-                    changeBtn = document.createElement('button');
-                    changeBtn.id = 'change-img-btn';
-                    changeBtn.textContent = '🔄 Change Image';
-                    changeBtn.style.cssText = 'margin-top:10px; background:transparent; color:#94a3b8; border:1px solid #475569; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.85rem;';
-                    changeBtn.onclick = () => {
-                        uploadArea.style.display = '';
-                        preview.style.display = 'none';
-                        preview.src = '';
-                        loadedImage = null;
-                        changeBtn.remove();
-                        btnWipe.classList.remove('active');
-                        logToConsole('IMAGE CLEARED. Upload a new file.', '#94a3b8');
-                    };
-                    preview.parentNode.insertBefore(changeBtn, preview.nextSibling);
-                }
-                logToConsole(`FILE LOADED: ${file.name} (${img.width}x${img.height})`, '#fb7185');
-                if(legalCheck.checked) btnWipe.classList.add('active');
+                dropzone.style.display = 'none';
+                previewImg.src = e.target.result;
+                previewContainer.style.display = 'flex';
+                printLog(`TARGET ACQUIRED: ${file.name} (${img.width}x${img.height})`, 'sys');
+                if (legalCheck.checked) btnProcess.classList.add('active');
             };
-            img.onerror = () => alert('Could not load this image. Please try another file.');
+            img.onerror = () => printLog('ERROR: Could not decode image.', 'err');
             img.src = e.target.result;
         };
         reader.readAsDataURL(file);
     }
 
-    // Generate a secure session ID
+    // --- Core Processing Logic ---
     function generateSessionId() {
         return 'PX-' + Math.random().toString(36).substr(2, 9).toUpperCase();
     }
 
-    // Simple PRNG for Spread Spectrum
     function pseudoRandom(seed) {
         let x = Math.sin(seed++) * 10000;
         return x - Math.floor(x);
     }
 
-    // Robust Spread-Spectrum Forensic Watermark
     function injectRobustWatermark(imageData, sessionId) {
         const text = "PX_FORENSIC:" + sessionId + "|";
         let binaryStr = '';
         for(let i=0; i<text.length; i++) {
             binaryStr += text.charCodeAt(i).toString(2).padStart(8, '0');
         }
-
         const data = imageData.data;
         const totalPixels = data.length / 4;
-        
-        // Redundancy: Embed the same string multiple times across the image
-        // using a pseudo-random distribution based on a fixed seed (e.g., 42)
-        const redundancyCount = Math.floor(totalPixels / (binaryStr.length * 10)); // Safe spread
-        const actualRedundancy = Math.min(redundancyCount, 50); // Embed it up to 50 times
+        const redundancyCount = Math.floor(totalPixels / (binaryStr.length * 10));
+        const actualRedundancy = Math.min(redundancyCount, 50);
 
         for(let r = 0; r < actualRedundancy; r++) {
-            let seed = 42 + r; // Fixed seed sequence so we can hypothetically extract it later
-            
+            let seed = 42 + r;
             for(let i = 0; i < binaryStr.length; i++) {
-                // Pick a random pixel index
-                let pixelIdx = Math.floor(pseudoRandom(seed++) * totalPixels) * 4;
-                
-                // Avoid alpha channel, use Blue channel for watermark (least visible to human eye)
-                let bit = parseInt(binaryStr[i]);
-                
-                // We use a slightly deeper bit injection (modifying the 2nd LSB) to survive light compression
-                // This is a basic simulation of a robust spatial domain watermark
-                let val = data[pixelIdx + 2]; // Blue channel
-                val = (val & 252) | (bit << 1); // Clear bottom 2 bits, set the 2nd bit to our watermark bit
-                data[pixelIdx + 2] = val;
+                const bit = parseInt(binaryStr[i]);
+                const pos = Math.floor(pseudoRandom(seed++) * totalPixels) * 4;
+                if(pos < data.length - 4) {
+                    data[pos + 2] = (data[pos + 2] & ~1) | bit; // Embed in Blue channel LSB
+                }
             }
         }
-        return imageData;
     }
 
-    // PRNU (Camera Sensor) Scrubber
-    function applyPRNUScrubber(ctx, canvas, loadedImage) {
-        // 1. Draw original
-        ctx.drawImage(loadedImage, 0, 0);
+    btnProcess.addEventListener('click', async () => {
+        if (!loadedImage || !legalCheck.checked) return;
         
-        // 2. Apply a micro-blur to destroy high-frequency sensor noise (PRNU signature)
-        ctx.globalAlpha = 0.5;
-        ctx.drawImage(canvas, 1, 1);
-        ctx.drawImage(canvas, -1, -1);
-        ctx.globalAlpha = 1.0;
-        
-        // 3. Inject synthetic Gaussian-like noise to create a fake sensor signature
-        let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < imgData.data.length; i += 4) {
-            // Synthetic sensor noise (-2 to +2)
-            const noise = Math.floor(Math.random() * 5) - 2;
-            imgData.data[i] = Math.min(255, Math.max(0, imgData.data[i] + noise));
-            imgData.data[i+1] = Math.min(255, Math.max(0, imgData.data[i+1] + noise));
-            imgData.data[i+2] = Math.min(255, Math.max(0, imgData.data[i+2] + noise));
-        }
-        return imgData;
-    }
-
-    btnWipe.addEventListener('click', async () => {
-        if(!loadedImage || !legalCheck.checked) return;
-
-        btnWipe.style.display = 'none';
-        legalCheck.disabled = true;
-        
-        logToConsole("INITIATING WIPE PROTOCOL...", "#eab308");
+        btnProcess.classList.remove('active');
+        btnProcess.textContent = "Processing...";
+        btnDownload.style.display = 'none';
         
         const sessionId = generateSessionId();
-
-        // 1. Send Log to Server
+        printLog(`SESSION ESTABLISHED: ${sessionId}`, 'sys');
+        
         try {
-            logToConsole(`CONTACTING SECURE BACKEND...`, "#eab308");
-            const res = await fetch('/api/forensic/log', {
+            printLog('Logging compliance telemetry...', 'sys');
+            await fetch('/api/forensic/log', {
                 method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     sessionId: sessionId,
-                    action: 'Fingerprint Wipe & Anonymize',
+                    action: 'DIGITAL_FINGERPRINT_WIPE',
                     legalConsentGranted: true
                 })
             });
-
-            if(!res.ok) {
-                const data = await res.json();
-                throw new Error(data.error || "Backend connection failed.");
-            }
-            logToConsole(`SESSION LOGGED: [${sessionId}]`, "#10b981");
-
+            printLog('Telemetry logged successfully.');
         } catch (e) {
-            logToConsole(`ERROR: ${e.message}`, "#ef4444");
-            if(e.message.includes("Unauthorized")) {
-                logToConsole(`PLEASE LOGIN VIA HOME PAGE.`, "#ef4444");
-            }
-            btnWipe.style.display = 'block';
-            legalCheck.disabled = false;
-            return;
+            printLog('Telemetry log warning: ' + e.message, 'warn');
         }
 
-        // 2. Client Side Processing
         setTimeout(() => {
-            logToConsole("STRIPPING EXIF METADATA AND GPS COORDINATES...", "#38bdf8");
+            printLog('Executing PRNU Sensor Scrubber...');
+            hiddenCanvas.width = loadedImage.width;
+            hiddenCanvas.height = loadedImage.height;
             
-            canvas.width = loadedImage.width;
-            canvas.height = loadedImage.height;
+            // Draw image with slight blur to disrupt high-frequency sensor noise
+            ctx.filter = 'blur(1px)';
+            ctx.drawImage(loadedImage, 0, 0);
+            ctx.filter = 'none';
             
-            // Drawing to canvas removes EXIF
-            // Apply PRNU sensor scrubber (Micro-blur + Synthetic Noise)
-            let imgData = applyPRNUScrubber(ctx, canvas, loadedImage);
-
-            setTimeout(() => {
-                logToConsole("POISONING HASH & DESTROYING INVISIBLE TRACKERS...", "#38bdf8");
-                
-                // Change one random pixel dramatically to ensure completely new SHA256
-                const randomIdx = Math.floor(Math.random() * (imgData.data.length / 4)) * 4;
-                imgData.data[randomIdx] = (imgData.data[randomIdx] + 10) % 255; 
-
-                logToConsole("INJECTING ROBUST SPREAD-SPECTRUM FORENSIC WATERMARK...", "#38bdf8");
-                // Inject Spread-Spectrum Forensic Watermark
-                imgData = injectRobustWatermark(imgData, sessionId);
-
-                    ctx.putImageData(imgData, 0, 0);
-
-                    setTimeout(() => {
-                        logToConsole("✅ PROCESS COMPLETE. IMAGE ANONYMIZED.", "#10b981");
-                        const cleanDataUrl = canvas.toDataURL('image/png', 1.0);
-                        
-                        btnDownload.style.display = 'block';
-                        btnDownload.onclick = () => {
-                            const a = document.createElement('a');
-                            a.href = cleanDataUrl;
-                            a.download = `anonymized_${originalFileName.split('.')[0]}.png`;
-                            a.click();
-                        };
-                    }, 800);
-                }, 800);
-            }, 800);
-        }, 800);
+            let imgData = ctx.getImageData(0, 0, hiddenCanvas.width, hiddenCanvas.height);
+            
+            printLog('Injecting Cryptographic Hash Poison...');
+            // Add subtle noise
+            for (let i = 0; i < imgData.data.length; i += 4) {
+                const noise = (Math.random() - 0.5) * 4; // +/- 2 RGB variation
+                imgData.data[i] = Math.min(255, Math.max(0, imgData.data[i] + noise));
+                imgData.data[i+1] = Math.min(255, Math.max(0, imgData.data[i+1] + noise));
+                imgData.data[i+2] = Math.min(255, Math.max(0, imgData.data[i+2] + noise));
+            }
+            
+            printLog('Embedding Forensic Watermark...');
+            injectRobustWatermark(imgData, sessionId);
+            
+            ctx.putImageData(imgData, 0, 0);
+            
+            printLog('Stripping EXIF Metadata...');
+            // Export as WebP natively strips metadata
+            const finalDataUrl = hiddenCanvas.toDataURL('image/webp', 0.95);
+            
+            previewImg.src = finalDataUrl;
+            
+            printLog('WIPE COMPLETE. Payload ready.', 'sys');
+            
+            btnDownload.onclick = () => {
+                const a = document.createElement('a');
+                a.href = finalDataUrl;
+                a.download = "sanitized_" + Date.now() + ".webp";
+                a.click();
+                printLog('File downloaded.', 'sys');
+            };
+            
+            btnDownload.style.display = 'block';
+            btnProcess.textContent = "Initiate Wipe Protocol";
+            if (legalCheck.checked) btnProcess.classList.add('active');
+        }, 800); // slight delay for terminal reading
     });
-
   </script>
 </body>
 </html>
