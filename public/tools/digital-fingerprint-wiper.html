@@ -148,11 +148,6 @@
         
         <button class="btn-primary" id="btnProcess">Initiate Wipe Protocol</button>
         <button class="btn-download" id="btnDownload">⬇️ Download Sanitized File</button>
-        
-        <div id="sessionDisplay" style="display: none; margin-top: 20px; padding: 15px; background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; border-radius: 8px; text-align: center;">
-          <p style="margin: 0; color: #94a3b8; font-size: 0.9rem; text-transform: uppercase;">Injected Forensic Watermark</p>
-          <h3 id="sessionText" style="margin: 5px 0 0 0; color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; letter-spacing: 2px;"></h3>
-        </div>
       </div>
       
       <div class="terminal" id="terminal">
@@ -248,7 +243,6 @@
         dropzone.style.display = 'flex';
         btnProcess.classList.remove('active');
         btnDownload.style.display = 'none';
-        document.getElementById('sessionDisplay').style.display = 'none';
         printLog('TARGET CLEARED. Waiting for new file...', 'warn');
     });
 
@@ -315,6 +309,28 @@
         }
     }
 
+    function addPngTextChunk(dataUrl, keyword, text) {
+        const binary = atob(dataUrl.split(',')[1]);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        
+        const chunkData = new TextEncoder().encode(keyword + '\0' + text);
+        const chunkType = new TextEncoder().encode('tEXt');
+        const length = chunkData.length;
+        
+        const newChunk = new Uint8Array(4 + 4 + length + 4);
+        new Uint8Array(newChunk.buffer, 0, 4).set(new Uint8Array([(length >> 24) & 0xFF, (length >> 16) & 0xFF, (length >> 8) & 0xFF, length & 0xFF]));
+        newChunk.set(chunkType, 4);
+        newChunk.set(chunkData, 8);
+        
+        const result = new Uint8Array(bytes.length + newChunk.length);
+        result.set(bytes.slice(0, 8));
+        result.set(newChunk, 8);
+        result.set(bytes.slice(8), 8 + newChunk.length);
+        
+        return 'data:image/png;base64,' + btoa(String.fromCharCode(...result));
+    }
+
     btnProcess.addEventListener('click', async () => {
         if (!loadedImage || !legalCheck.checked) return;
         
@@ -368,16 +384,14 @@
             ctx.putImageData(imgData, 0, 0);
             
             printLog('Stripping EXIF Metadata...');
-            // Export as PNG natively strips metadata and losslessly preserves our watermark
-            const finalDataUrl = hiddenCanvas.toDataURL('image/png');
+            let finalDataUrl = hiddenCanvas.toDataURL('image/png');
+            
+            printLog('Injecting Forensic Meta-Signature...');
+            finalDataUrl = addPngTextChunk(finalDataUrl, 'Software', `PixelCraft AI Anti-Forensics (Session: ${sessionId})`);
             
             previewImg.src = finalDataUrl;
             
             printLog('WIPE COMPLETE. Payload ready.', 'sys');
-            
-            // Display the Session ID prominently
-            document.getElementById('sessionText').textContent = sessionId;
-            document.getElementById('sessionDisplay').style.display = 'block';
             
             btnDownload.onclick = () => {
                 const a = document.createElement('a');
