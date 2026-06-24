@@ -1038,10 +1038,12 @@
         const extractedBytes = [];
         let currentByte = 0; let bitCount = 0;
         
-        for(let i=0; i<1000; i++) {
+        for(let i=0; i<1000; i+=4) {
             if(i >= data.length) break;
-            if((i+1)%4===0) continue;
-            const bit = data[i] & 1;
+            const r = data[i] & 1;
+            const g = data[i+1] & 1;
+            const b = data[i+2] & 1;
+            const bit = (r + g + b >= 2) ? 1 : 0;
             currentByte = (currentByte << 1) | bit;
             bitCount++;
             if(bitCount === 8){ extractedBytes.push(currentByte); currentByte = 0; bitCount = 0; }

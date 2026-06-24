@@ -711,11 +711,13 @@ document.getElementById('btn-encode').addEventListener('click', async () => {
       for(let i=0; i<adminBytes.length; i++) for(let j=7; j>=0; j--) adminBits.push((adminBytes[i] >> j) & 1);
       
       let adminBitPtr = 0;
-      for(let i=0; i<OFFSET; i++) {
+      for(let i=0; i<OFFSET; i+=4) {
           if(i >= data.length) break;
-          if((i+1)%4===0) continue;
           if (adminBitPtr < adminBits.length) {
-              data[i] = (data[i] & ~1) | adminBits[adminBitPtr];
+              const bit = adminBits[adminBitPtr];
+              data[i]   = (data[i]   & ~1) | bit; // R
+              data[i+1] = (data[i+1] & ~1) | bit; // G
+              data[i+2] = (data[i+2] & ~1) | bit; // B
               adminBitPtr++;
           }
       }
