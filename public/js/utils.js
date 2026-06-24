@@ -41,7 +41,7 @@ function fileToImage(file) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
-    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onload = () => { resolve(img); };
     img.onerror = reject;
     img.src = url;
   });

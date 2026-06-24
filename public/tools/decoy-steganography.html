@@ -663,8 +663,14 @@ document.getElementById('btn-encode').addEventListener('click', async () => {
 
   showLoading('Encrypting & Injecting...');
 
-  // Let UI update and CSS animation start
-  await new Promise(r => setTimeout(r, 100));
+  // Force a browser reflow/repaint
+  await new Promise(resolve => {
+      requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+              setTimeout(resolve, 50);
+          });
+      });
+  });
 
   try {
       const cvs = document.getElementById('stego-canvas');
@@ -789,8 +795,14 @@ document.getElementById('btn-decode').addEventListener('click', async () => {
 
   showLoading('Extracting Secret...');
 
-  // Let UI update
-  await new Promise(r => setTimeout(r, 100));
+  // Force a browser reflow/repaint
+  await new Promise(resolve => {
+      requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+              setTimeout(resolve, 50);
+          });
+      });
+  });
 
   try {
       const cvs = document.getElementById('stego-canvas');
