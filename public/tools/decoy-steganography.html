@@ -275,14 +275,6 @@
                 <input type="password" id="enc-decoy-pwd" placeholder="Must be different from Real Password">
             </div>
 
-            <div class="legal-warning">
-                <strong>Law Enforcement Compliance:</strong> By utilizing this military-grade encryption, you acknowledge that a forensic identifier (Session ID) will be embedded in the payload. Under cyber-law directives, authorized agencies can trace this payload back to your IP address.
-            </div>
-            <div class="legal-checkbox">
-                <input type="checkbox" id="enc-legal">
-                <label for="enc-legal">I agree to the Terms & Conditions and certify that I will not use this tool for illegal activities.</label>
-            </div>
-
             <button class="btn-action" id="btn-encrypt">INITIATE ENCRYPTION</button>
             
             <div id="enc-result" style="display: none; margin-top: 20px; text-align: center;">
@@ -532,10 +524,8 @@ document.getElementById('btn-encrypt').addEventListener('click', async () => {
     const rPwd = document.getElementById('enc-real-pwd').value;
     const dMsg = document.getElementById('enc-decoy-msg').value;
     const dPwd = document.getElementById('enc-decoy-pwd').value;
-    const legal = document.getElementById('enc-legal').checked;
 
     if(!rMsg || !rPwd) return alert('Real Message and Password are required.');
-    if(!legal) return alert('You must agree to the Legal Terms.');
 
     showLoading('Applying DSSS Spreading...');
     await new Promise(r => setTimeout(r, 50)); // UI paint
