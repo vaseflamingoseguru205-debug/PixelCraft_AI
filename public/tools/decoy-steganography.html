@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <!-- Google tag (gtag.js) -->
@@ -178,6 +178,18 @@
     .copy-btn:hover {
       background: #475569;
     }
+    .loading-overlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.9); border-radius: 12px; z-index: 100;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      display: none;
+    }
+    .spinner {
+      width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1);
+      border-left-color: #eab308; border-radius: 50%; animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
   </style>
 
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3788374704176398"
@@ -206,7 +218,13 @@
     <p>The ultimate plausible deniability tool. Hide a real message and a decoy message in the same image using TrueCrypt-style stealth architecture. Fast & secure. All processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free and without any registration.</p>
   </div>
   
-  <div class="tool-workspace" style="max-width: 800px;">
+  <div class="tool-workspace" style="max-width: 800px; position: relative;">
+    
+    <div class="loading-overlay" id="loading-overlay">
+      <div class="spinner"></div>
+      <h3 style="color: #eab308;" id="loading-title">Processing...</h3>
+      <p style="color: #94a3b8; font-size: 0.9rem;">This may take a few seconds.</p>
+    </div>
     
     <div class="tabs-container">
       <button class="tab-btn active" onclick="switchTab('encode')">🔒 Hide Message (Encode)</button>
@@ -362,6 +380,14 @@
 
 <script src="../js/utils.js"></script>
 <script>
+function showLoading(text) {
+    document.getElementById('loading-overlay').style.display = 'flex';
+    document.getElementById('loading-title').innerText = text;
+}
+function hideLoading() {
+    document.getElementById('loading-overlay').style.display = 'none';
+}
+
 // Tab Switching
 function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -633,12 +659,12 @@ document.getElementById('btn-encode').addEventListener('click', async () => {
   const btn = document.getElementById('btn-encode');
   const ogText = btn.innerHTML;
   
-  btn.innerHTML = '<span style="display:inline-block; animation: pulse 1s infinite;">🔒 Encrypting & Injecting...</span>';
-  btn.style.opacity = '0.7';
   btn.style.pointerEvents = 'none';
 
-  // Let UI update
-  await new Promise(r => setTimeout(r, 50));
+  showLoading('Encrypting & Injecting...');
+
+  // Let UI update and CSS animation start
+  await new Promise(r => setTimeout(r, 100));
 
   try {
       const cvs = document.getElementById('stego-canvas');
@@ -742,7 +768,7 @@ document.getElementById('btn-encode').addEventListener('click', async () => {
   } catch(e) {
       showToast('Encryption failed: ' + e.message, 'error');
   } finally {
-      btn.innerHTML = ogText;
+      hideLoading();
       btn.style.opacity = '1';
       btn.style.pointerEvents = 'auto';
   }
@@ -759,12 +785,12 @@ document.getElementById('btn-decode').addEventListener('click', async () => {
 
   const btn = document.getElementById('btn-decode');
   const ogText = btn.innerHTML;
-  btn.innerHTML = '<span style="display:inline-block; animation: pulse 1s infinite;">🔓 Extracting Secret...</span>';
-  btn.style.opacity = '0.7';
   btn.style.pointerEvents = 'none';
 
+  showLoading('Extracting Secret...');
+
   // Let UI update
-  await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 100));
 
   try {
       const cvs = document.getElementById('stego-canvas');
@@ -796,7 +822,7 @@ document.getElementById('btn-decode').addEventListener('click', async () => {
   } catch(e) {
       showToast('Decryption error: ' + e.message, 'error');
   } finally {
-      btn.innerHTML = ogText;
+      hideLoading();
       btn.style.opacity = '1';
       btn.style.pointerEvents = 'auto';
   }
