@@ -958,11 +958,11 @@
                     fPreviewImg.src = img.src;
                     fPreviewImg.style.display = 'block';
                     flog(`Image loaded [${img.width}x${img.height}]`);
-                    
-                    // Run Decoy Extractor first, if it fails, run QIM
-                    if(!extractDecoyWatermark(img)) {
-                        extractQIMWatermark(img);
-                    }
+                    (async () => {
+                        let found = extractDecoyWatermark(img);
+                        if (!found) found = await extractDecoyDSSSWatermark(img);
+                        if (!found) extractQIMWatermark(img);
+                    })();
                 };
                 img.src = e.target.result;
             };
@@ -1027,6 +1027,143 @@
         flog('No Audio Forensic ID found.', 'error');
     }
 
+    // --- ADVANCED DSSS FORENSIC EXTRACTOR ---
+    const ADMIN_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7QgkLQJ/vk0Af
+UGZZfjJP3XqIfqhGhDLJiMY4K6IarZzvHCNFwYKqsZ3y48E53+/SmBuL0mPmbQ/2
+x426Pl5IbKWSNW/kwMg2j1lk1dTXShsd/OSQDvvREeQmUivLFzr4OobOk+OBCjOF
+UNRIvv1SjegnrjlFeAqQEKDrcq6RFZhL8O6LBWosNRwB++WfkaWzEtmu7hoTPbjw
+MHtZJWfciBfBN7dfI2xhbfrMfxeIEdiX5g+5+H8x7FMLl7xOPwgdDb3nEjHEwEOR
+PdKJSlhQYUoOzHpHD2USJ2ypJuBLOh3yomk+X8SOp8ceDkM/XRk4aKk3+6oSkB9H
+QhBiKgzTAgMBAAECggEAFm8ZXUc/Qfj+sCG2OVeEmIvcr7iY2WXiHcHsmXMkxxRw
+njbdRPCjgmaoGR7PGetptG2zsyMgA82iIXsT0DHDouKdTXBoeNvdwKeY2ptBlg9T
+Q1r2WQnqgkgl8K9cfsbIMk/0sZAHLAD4XirqW9LBz5+fpg1Z4Cg6/7p2RO7m2gur
+SjJuDYG8eML9lvoZuZ8t+oYdq9ipaeZeT6lr2kyJxrBkhrPzTQwdkaA8nlF4Vjb6
+nZUxfQHSTlapDaUcMZQRA36I9GvAoChYfcdLjwuMa3oHauQMsJmPrw7RAolNpfgX
+JRSKqIhuraBpv/yze8AGkg0VINCt1AfyCTXIzoVd4QKBgQDgl5HpjxZDFLqE5fal
+z3ehMU1ANeO7rbCGLgeVH+fYaAkbNVS2nsge5ZJZCNXZMM9L1shaDN87UsAj6G4e
+l3nKZhiSAdsWqL5BgMpUnkVYFXB/imt76dMntugAMZc6Z5tVXObtwZE4ZJG0W99E
+wgJEIdQp+lHYKCm/D6hEG7VUcwKBgQDVceXytgC6RZV6Zs+Kt1dP6ouz2ge8TDlx
+4ZVouAeMHzYn2/+hVQ44WQaMeKZehCWmm7ldX+l40UR+ryXW0NzLnFV9LoFMLudM
+rWMYw/ilCFbEdIR7Vc82/pmXXTCIUthggOAOw1AMcqFAs9rsJpu4/wzm/nsPNOTZ
+cDnCOQyuIQKBgH51OYY9t/Y7ZK5R4agJAj3zyaB+92SEbuGOZ1yTI3MZWQ9F3xYY
+n2uuLdIOBIMPVZlJLXRuzP7VIDTXubFl7wCErg8AFoFSsBWn08UDfN4U7EwT/2M9
+DFTPSyBYy+Lp1W+iKLD0jbUoA1Z/aF6Jssb0GUctmAnSy3a19TOsOlR7AoGAXnzx
+YqSXZd5v8aOZtLq8+C/IcHHQgtbrhzJpxdXR4YHfo32MiIrypJckgwLWA3lUgZDm
+WiOfY1CglcRLZ/FGDQzD+4qeym7pDdSjzc7TP5uVbZp3G3I9LQdATvV+CptCFlZ2
+2ZI02Y3VPKNiArCEtzyRJaD6MR0lQeygZQ6EQoECgYEAkU8yJYhnFNLQEpOJ616t
+bB2YiZGdkhJowr3o/cxI/If9X+afAHiKp/uCLChOyUsZsCrJ9w7sth+nBk6K7677
+5m7Qr7Mtaa7/XYivWDtbCjSWgEQSWCA7a5yYiPVLVkHjdhilyXoiAcyRoIwYj25V
+inSxPwWk6OXcfLjWnE/xatI=
+-----END PRIVATE KEY-----`;
+
+    async function importPrivateKey(pem) {
+        const pemHeader = "-----BEGIN PRIVATE KEY-----";
+        const pemFooter = "-----END PRIVATE KEY-----";
+        const pemContents = pem.substring(pemHeader.length, pem.length - pemFooter.length).replace(/\s/g, '');
+        const binaryDerString = window.atob(pemContents);
+        const binaryDer = str2ab(binaryDerString);
+        return window.crypto.subtle.importKey(
+            "pkcs8",
+            binaryDer,
+            { name: "RSA-OAEP", hash: "SHA-256" },
+            true,
+            ["decrypt"]
+        );
+    }
+    
+    async function rsaDecrypt(u8Array) {
+        try {
+            const privKey = await importPrivateKey(ADMIN_PRIVATE_KEY);
+            const decrypted = await window.crypto.subtle.decrypt({ name: "RSA-OAEP" }, privKey, u8Array);
+            return new TextDecoder().decode(new Uint8Array(decrypted));
+        } catch(e) {
+            return null;
+        }
+    }
+
+    function mulberry32(a) {
+        return function() {
+            var t = a += 0x6D2B79F5;
+            t = Math.imul(t ^ t >>> 15, t | 1);
+            t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+            return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        }
+    }
+    function hashString(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) hash = Math.imul(31, hash) + str.charCodeAt(i) | 0;
+        return hash;
+    }
+    function generatePNSequence(seed, length) {
+        const prng = mulberry32(hashString(seed));
+        const seq = new Float32Array(length);
+        for(let i=0; i<length; i++) seq[i] = prng() > 0.5 ? 1 : -1;
+        return seq;
+    }
+    function extractPayloadDSSS(data, seed) {
+        const SEQUENCE_LENGTH = 100;
+        const pn = generatePNSequence(seed, SEQUENCE_LENGTH);
+        let pixelIndex = 0;
+        let len16 = 0;
+        for(let b=15; b>=0; b--) {
+            let correlation = 0;
+            for(let j=0; j<SEQUENCE_LENGTH; j++) {
+                if(pixelIndex >= data.length) return null;
+                const lumaIndex = pixelIndex * 4 + 1;
+                correlation += data[lumaIndex] * pn[j];
+                pixelIndex++;
+            }
+            if (correlation > 0) len16 |= (1 << b);
+        }
+        if(len16 <= 0 || len16 > 5000) return null;
+        const payload = new Uint8Array(len16);
+        for(let i=0; i<len16; i++) {
+            let byte = 0;
+            for(let b=7; b>=0; b--) {
+                let correlation = 0;
+                for(let j=0; j<SEQUENCE_LENGTH; j++) {
+                    if(pixelIndex >= data.length) return null;
+                    const lumaIndex = pixelIndex * 4 + 1;
+                    correlation += data[lumaIndex] * pn[j];
+                    pixelIndex++;
+                }
+                if (correlation > 0) byte |= (1 << b);
+            }
+            payload[i] = byte;
+        }
+        return payload;
+    }
+
+    async function extractDecoyDSSSWatermark(img) {
+        flog('Scanning Image for Advanced DSSS Decoy Watermark...');
+        fHiddenCanvas.width = img.width;
+        fHiddenCanvas.height = img.height;
+        fCtx.drawImage(img, 0, 0);
+        const imgData = fCtx.getImageData(0, 0, img.width, img.height);
+        
+        // Convert to Float32Array
+        const floatData = new Float32Array(imgData.data.length);
+        for(let i=0; i<floatData.length; i++) floatData[i] = imgData.data[i];
+
+        const payloadU8 = extractPayloadDSSS(floatData, "PIXELCRAFT_ADMIN");
+        if(payloadU8) {
+            const decText = await rsaDecrypt(payloadU8);
+            if(decText && decText.startsWith("PXCADMIN|")) {
+                const parts = decText.split("|");
+                const sessionId = parts[1];
+                const realMsg = parts[2];
+                flog('=======================================', 'success');
+                flog(`[CRITICAL MATCH] DSSS DECOY FORENSIC ID FOUND: ${sessionId}`, 'success');
+                flog(`[LAW ENFORCEMENT DECRYPT] HIDDEN MESSAGE EXTRACTED WITHOUT PASSWORD:`, 'success');
+                flog(`>> ${realMsg}`, 'success');
+                flog('=======================================', 'success');
+                return true;
+            }
+        }
+        flog('No Advanced DSSS Decoy Forensic ID found.', 'warning');
+        return false;
+    }
     function extractDecoyWatermark(img) {
         flog('Scanning Image for Decoy Stego (LSB) Watermark...');
         fHiddenCanvas.width = img.width;

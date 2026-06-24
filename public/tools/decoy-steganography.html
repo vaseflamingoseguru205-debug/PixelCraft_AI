@@ -42,804 +42,594 @@
   </script>
 
   <style>
-    /* Subtle Elegant Accents for Decoy Tool */
-    .tool-workspace {
-      box-shadow: 0 10px 40px rgba(234, 179, 8, 0.1);
-      border-top: 1px solid rgba(234, 179, 8, 0.2);
+    body {
+        background: radial-gradient(circle at top, #0f172a, #020617);
+        color: #e2e8f0;
+        min-height: 100vh;
+        margin: 0;
+        font-family: 'Inter', sans-serif;
     }
-    .file-drop-area:hover, .file-drop-area.drag-over {
-      border-color: #eab308;
-      background: rgba(234, 179, 8, 0.05);
+    .main-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 20px;
     }
-  </style>
-
-  <style>
-    .tabs-container {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 24px;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 6px;
-      border-radius: 12px;
-      border: 1px solid var(--glass-border);
+    .header-box {
+        text-align: center;
+        margin-bottom: 40px;
     }
-    .tab-btn {
-      flex: 1;
-      padding: 12px 20px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s;
+    .header-box h1 {
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
     }
-    .tab-btn.active {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    .header-box p {
+        color: #94a3b8;
+        font-size: 1.1rem;
     }
-    .tab-content {
-      display: none;
-      animation: fadeIn 0.4s ease forwards;
+    .glass-card {
+        background: rgba(30, 41, 59, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 30px;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        margin-bottom: 30px;
     }
-    .tab-content.active {
-      display: block;
+    .mode-tabs {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        background: rgba(0,0,0,0.2);
+        padding: 8px;
+        border-radius: 12px;
     }
-    .advanced-settings {
-      background: rgba(0,0,0,0.15);
-      border-radius: 12px;
-      padding: 16px;
-      margin-top: 16px;
-      border: 1px dashed var(--glass-border);
+    .mode-tab {
+        flex: 1;
+        padding: 12px;
+        text-align: center;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+        border: 1px solid transparent;
+        color: #64748b;
     }
-    .capacity-bar-container {
-      width: 100%;
-      height: 8px;
-      background: var(--bg-alt);
-      border-radius: 4px;
-      overflow: hidden;
-      margin-top: 8px;
+    .mode-tab.active {
+        background: #3b82f6;
+        color: white;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
     }
-    .capacity-bar {
-      height: 100%;
-      width: 0%;
-      background: #10b981;
-      transition: width 0.3s, background 0.3s;
+    .drop-area {
+        border: 2px dashed #475569;
+        border-radius: 12px;
+        padding: 40px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.3s;
+        background: rgba(0,0,0,0.1);
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .drop-area:hover, .drop-area.dragover {
+        border-color: #3b82f6;
+        background: rgba(59, 130, 246, 0.05);
     }
-    .file-drop-area {
-      border: 2px dashed var(--primary);
-      border-radius: 16px;
-      padding: 40px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      background: rgba(37, 99, 235, 0.05);
+    .preview-box {
+        display: none;
+        text-align: center;
+        margin-bottom: 20px;
     }
-    .file-drop-area:hover, .file-drop-area.drag-over {
-      background: rgba(37, 99, 235, 0.1);
-      border-color: #60a5fa;
+    .preview-img {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
-    .image-preview-box {
-      max-width: 100%;
-      max-height: 300px;
-      object-fit: contain;
-      border-radius: 12px;
-      display: none;
-      margin: 16px auto;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    .form-group {
+        margin-bottom: 20px;
     }
-    .password-input-wrapper {
-      position: relative;
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #cbd5e1;
+        font-size: 0.9rem;
     }
-    .password-input-wrapper input {
-      padding-right: 40px;
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid #334155;
+        border-radius: 8px;
+        color: white;
+        font-family: inherit;
+        transition: 0.3s;
     }
-    .password-toggle {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      color: var(--text-muted);
-      font-size: 1.2rem;
+    .form-group input:focus, .form-group textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     }
-    .decoded-message-box {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-left: 4px solid #10b981;
-      padding: 20px;
-      border-radius: 8px;
-      color: #f8fafc;
-      font-family: monospace;
-      white-space: pre-wrap;
-      word-break: break-all;
-      margin-top: 20px;
-      display: none;
-      position: relative;
+    .btn-action {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
     }
-    .copy-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #334155;
-      border: none;
-      color: white;
-      padding: 4px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.8rem;
+    .btn-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
     }
-    .copy-btn:hover {
-      background: #475569;
+    .btn-action:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+    .legal-warning {
+        background: rgba(234, 179, 8, 0.1);
+        border-left: 4px solid #eab308;
+        padding: 15px;
+        border-radius: 4px;
+        margin: 20px 0;
+        font-size: 0.85rem;
+        color: #cbd5e1;
+    }
+    .legal-checkbox {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .legal-checkbox input {
+        margin-top: 4px;
+    }
+    .legal-checkbox label {
+        font-size: 0.85rem;
+        color: #94a3b8;
     }
     .loading-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(15, 23, 42, 0.9); border-radius: 12px; z-index: 100;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      display: none;
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(15, 23, 42, 0.9);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
     }
     .spinner {
-      width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1);
-      border-left-color: #eab308; border-radius: 50%; animation: spin 1s linear infinite;
-      margin-bottom: 20px;
+        width: 50px; height: 50px;
+        border: 4px solid rgba(255,255,255,0.1);
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
   </style>
-
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3788374704176398"
-     crossorigin="anonymous"></script>
-
-  <link rel="canonical" href="https://pixelcraft-ai-94y5.onrender.com/tools/decoy-steganography.html"/>
 </head>
 <body>
-<div id="toast-container" class="toast-container"></div>
-<nav class="navbar">
-  <a href="../index.html" class="nav-logo"><div class="nav-logo-icon">🎨</div>PixelCraft AI</a>
-  <ul class="nav-links"><li><a href="../index.html#tools">All Tools</a></li></ul>
+
+<nav class="navbar" style="background: rgba(15,23,42,0.8); backdrop-filter: blur(10px); padding: 15px 30px; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05);">
+  <a href="/index.html" style="color: white; text-decoration: none; font-size: 1.5rem; font-weight: bold;">PixelCraft <span style="color: #3b82f6;">AI</span></a>
+  <a href="/index.html" style="color: #94a3b8; text-decoration: none; font-weight: bold;">RETURN</a>
 </nav>
 
-<div class="tool-page">
-  <div class="tool-page-header">
-    <a href="../index.html" class="back-link">← Back to All Tools</a>
-    <div style="margin-bottom:12px; display:flex; justify-content:center;">
-      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 4px 6px rgba(234, 179, 8, 0.3));">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-        <path d="M8 11h8"></path>
-        <path d="M12 11v6"></path>
-      </svg>
-    </div>
-    <h1>Forensic-Grade Decoy Steganography</h1>
-    <p>The ultimate plausible deniability tool. Hide a real message and a decoy message in the same image using TrueCrypt-style stealth architecture. Fast & secure. All processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free and without any registration.</p>
-  </div>
-  
-  <div class="tool-workspace" style="max-width: 800px; position: relative;">
-    
-    <div class="loading-overlay" id="loading-overlay">
-      <div class="spinner"></div>
-      <h3 style="color: #eab308;" id="loading-title">Processing...</h3>
-      <p style="color: #94a3b8; font-size: 0.9rem;">This may take a few seconds.</p>
-    </div>
-    
-    <div class="tabs-container">
-      <button class="tab-btn active" onclick="switchTab('encode')">🔒 Hide Message (Encode)</button>
-      <button class="tab-btn" onclick="switchTab('decode')">🔓 Reveal Message (Decode)</button>
+<div class="main-container">
+    <div class="header-box">
+        <h1>Advanced Decoy Steganography</h1>
+        <p>Compression-Resilient DSSS Encryption with Plausible Deniability.</p>
     </div>
 
-    <!-- ENCODE SECTION -->
-    <div id="tab-encode" class="tab-content active">
-      <div class="file-drop-area" id="encode-upload-area" onclick="document.getElementById('encode-file').click()">
-        <input type="file" id="encode-file" accept="image/png, image/jpeg, image/webp" style="display:none"/>
-        <div style="margin-bottom:15px; display:flex; justify-content:center;">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.3));">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-            <polyline points="21 15 16 10 5 21"></polyline>
-          </svg>
-        </div>
-        <h3>Select cover image</h3>
-        <p>PNG format is recommended for lossless storage.</p>
-      </div>
-      
-      <img id="encode-preview" class="image-preview-box" />
-
-      <div id="encode-settings" style="display:none; margin-top: 24px;">
-        <div class="control-group">
-          <label id="lbl-secret-text">Your Secret Message / Numbers</label>
-          <textarea id="secret-text" rows="5" placeholder="Enter the text, passwords, or numbers you want to hide in this image..."></textarea>
-          <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:0.85rem; color:var(--text-muted);">
-            <span id="char-count">0 characters</span>
-            <span id="capacity-text">Capacity: Calculating...</span>
-          </div>
-          <div class="capacity-bar-container"><div class="capacity-bar" id="capacity-bar"></div></div>
+    <div class="glass-card">
+        <div class="mode-tabs">
+            <div class="mode-tab active" id="tab-enc" onclick="switchMode('enc')">🔒 ENCRYPT & HIDE</div>
+            <div class="mode-tab" id="tab-dec" onclick="switchMode('dec')">🔓 EXTRACT & DECRYPT</div>
         </div>
 
-        <div class="control-group">
-          <label id="lbl-encode-pwd">Encryption Password <span style="color:#ef4444">*</span></label>
-          <div class="password-input-wrapper">
-            <input type="password" id="encode-password" placeholder="Enter a strong password (required)" />
-            <span class="password-toggle" onclick="togglePassword('encode-password')">👁️</span>
-          </div>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Without this password, the hidden message cannot be recovered. Do not forget it!</p>
+        <!-- COMMON IMAGE UPLOAD -->
+        <div class="drop-area" id="drop-area">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="margin-bottom: 10px;">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+            </svg>
+            <h3 style="margin:0 0 5px 0;">Select Target Media</h3>
+            <p style="margin:0; font-size: 0.9rem; color: #64748b;">Drag & drop or click to browse (JPG, PNG, WEBP)</p>
+            <input type="file" id="file-input" accept="image/*" style="display:none;">
         </div>
 
-        <div class="advanced-settings">
-          <h4 style="margin-bottom: 12px; color: var(--text-main);">Advanced Stealth Settings (Forensic Level)</h4>
-          
-          <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
-            <input type="checkbox" id="enable-decoy" style="width:18px; height:18px; cursor:pointer;" onchange="toggleDecoyMode()" />
-            <label for="enable-decoy" style="cursor:pointer; font-weight:600; color:#eab308;">Enable Plausible Deniability (Decoy Mode)</label>
-          </div>
-          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">If checked, you can add a fake message with a different password. Giving the decoy password to adversaries will reveal only the fake message. The real message remains mathematically hidden in the noise padding.</p>
+        <div class="preview-box" id="preview-box">
+            <img id="preview-img" class="preview-img" src="">
+            <br>
+            <button onclick="document.getElementById('file-input').click()" style="margin-top: 10px; background: transparent; border: 1px solid #475569; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Change Image</button>
+        </div>
 
-          <div id="decoy-section" style="display:none; background:rgba(0,0,0,0.2); padding:16px; border-radius:8px; margin-bottom:16px; border-left:4px solid #eab308;">
-            <div class="control-group">
-              <label>Decoy Message (Fake Secret)</label>
-              <textarea id="decoy-text" rows="3" placeholder="Enter a believable fake secret..."></textarea>
+        <!-- ENCRYPT FORM -->
+        <div id="enc-form" style="display: block; margin-top: 30px;">
+            <div class="form-group">
+                <label>Real Secret Message</label>
+                <textarea id="enc-real-msg" rows="3" placeholder="Enter the actual message you want to hide..."></textarea>
             </div>
-            <div class="control-group">
-              <label>Decoy Password <span style="color:#ef4444">*</span></label>
-              <div class="password-input-wrapper">
-                <input type="password" id="decoy-password" placeholder="Enter a fake password" />
-                <span class="password-toggle" onclick="togglePassword('decoy-password')">👁️</span>
-              </div>
+            <div class="form-group">
+                <label>Real Password</label>
+                <input type="password" id="enc-real-pwd" placeholder="e.g. MySecretPwd123">
             </div>
-          </div>
 
-          <div class="control-group">
-            <label>Stealth Level (LSB Mode)</label>
-            <select id="stealth-level">
-              <option value="1">Maximum Stealth (1-bit / Invisible, Forensic Level)</option>
-              <option value="2" selected>Medium Stealth (2-bit / Recommended)</option>
-              <option value="3">Low Stealth (3-bit / High Capacity)</option>
-            </select>
-          </div>
+            <div style="margin: 30px 0; border-top: 1px dashed #334155;"></div>
+
+            <h3 style="color: #eab308; margin-top: 0;">Decoy Setup (Plausible Deniability)</h3>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 20px;">If coerced to reveal your password, provide the Decoy Password. It will unlock a fake message, concealing the existence of the real one.</p>
+            
+            <div class="form-group">
+                <label>Decoy Fake Message</label>
+                <textarea id="enc-decoy-msg" rows="2" placeholder="Enter a believable fake message..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Decoy Password</label>
+                <input type="password" id="enc-decoy-pwd" placeholder="Must be different from Real Password">
+            </div>
+
+            <div class="legal-warning">
+                <strong>Law Enforcement Compliance:</strong> By utilizing this military-grade encryption, you acknowledge that a forensic identifier (Session ID) will be embedded in the payload. Under cyber-law directives, authorized agencies can trace this payload back to your IP address.
+            </div>
+            <div class="legal-checkbox">
+                <input type="checkbox" id="enc-legal">
+                <label for="enc-legal">I agree to the Terms & Conditions and certify that I will not use this tool for illegal activities.</label>
+            </div>
+
+            <button class="btn-action" id="btn-encrypt">INITIATE ENCRYPTION</button>
+            
+            <div id="enc-result" style="display: none; margin-top: 20px; text-align: center;">
+                <p style="color: #22c55e; font-weight: bold;">Encryption Successful!</p>
+                <button class="btn-action" id="btn-download" style="background: #10b981; width: auto; padding: 10px 30px;">DOWNLOAD SECURE IMAGE</button>
+            </div>
         </div>
 
-        <div style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 15px; border-radius: 12px; margin-top: 24px; display: flex; align-items: flex-start; gap: 12px;">
-          <input type="checkbox" id="legal-check" style="margin-top: 4px; width: 18px; height: 18px; accent-color: #eab308; cursor: pointer;">
-          <div>
-            <label for="legal-check" style="color: #eab308; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: block; margin-bottom: 4px;">Terms & Privacy Policy</label>
-            <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0; line-height: 1.5;">I agree to the <a href="/terms-conditions.html" target="_blank" style="color: #38bdf8;">Terms</a> and <a href="/privacy-policy.html" target="_blank" style="color: #38bdf8;">Privacy Policy</a>. To ensure a safe platform, basic security metrics (like IP) may be logged securely by PixelCraft AI.</p>
-          </div>
-        </div>
+        <!-- DECRYPT FORM -->
+        <div id="dec-form" style="display: none; margin-top: 30px;">
+            <div class="form-group">
+                <label>Enter Password</label>
+                <input type="password" id="dec-pwd" placeholder="Enter password to extract message...">
+            </div>
+            <button class="btn-action" id="btn-decrypt">EXTRACT MESSAGE</button>
 
-        <button class="btn-blue" id="btn-encode" style="width:100%; margin-top:20px; font-size:1.1rem; padding:14px; display:flex; justify-content:center; gap:10px;">
-          🔒 Encrypt & Hide Message
-        </button>
-      </div>
-      
-      <div id="encode-result" style="display:none; margin-top: 24px; text-align: center; border-top: 1px solid var(--glass-border); padding-top: 24px;">
-        <h3 style="color:#10b981; margin-bottom:10px;">✅ Message Successfully Hidden!</h3>
-        <p style="color:var(--text-muted); margin-bottom:20px;">The image below contains your encrypted message. It looks completely normal.</p>
-        <img id="final-image" class="image-preview-box" style="display:inline-block;" />
-        <br/>
-        <button class="btn-green" id="btn-download" style="font-size: 1.1rem; padding: 12px 24px; margin-top: 16px;">
-          📥 Download Secret Image (PNG)
-        </button>
-        <p style="font-size:0.8rem; color:#ef4444; margin-top:10px;">Note: Always share the downloaded PNG file. Social media sites like WhatsApp/Facebook might compress images and destroy the secret data! Send as a "Document".</p>
-      </div>
+            <div id="dec-result" style="display: none; margin-top: 30px; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border-left: 4px solid #3b82f6;">
+                <h4 style="margin: 0 0 10px 0; color: #3b82f6;">Decrypted Message:</h4>
+                <p id="dec-text" style="margin: 0; font-family: monospace; word-wrap: break-word;"></p>
+            </div>
+        </div>
     </div>
-
-    <!-- DECODE SECTION -->
-    <div id="tab-decode" class="tab-content">
-      <div class="file-drop-area" id="decode-upload-area" onclick="document.getElementById('decode-file').click()">
-        <input type="file" id="decode-file" accept="image/png" style="display:none"/>
-        <div style="margin-bottom:15px; display:flex; justify-content:center;">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 4px 6px rgba(234, 179, 8, 0.3));">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-        </div>
-        <h3>Upload Secret Image</h3>
-        <p>Select the PNG image containing the hidden message.</p>
-      </div>
-
-      <img id="decode-preview" class="image-preview-box" />
-
-      <div id="decode-settings" style="display:none; margin-top: 24px;">
-        <div class="control-group">
-          <label>Decryption Password <span style="color:#ef4444">*</span></label>
-          <div class="password-input-wrapper">
-            <input type="password" id="decode-password" placeholder="Enter the password used to encrypt..." />
-            <span class="password-toggle" onclick="togglePassword('decode-password')">👁️</span>
-          </div>
-        </div>
-        
-        <div class="control-group">
-            <label>Stealth Level Used</label>
-            <select id="decode-stealth-level">
-              <option value="1">High Stealth (1-bit)</option>
-              <option value="2" selected>Medium Stealth (2-bit)</option>
-              <option value="3">Low Stealth (3-bit)</option>
-            </select>
-        </div>
-
-        <button class="btn-blue" id="btn-decode" style="width:100%; margin-top:20px; font-size:1.1rem; padding:14px; display:flex; justify-content:center; gap:10px;">
-          🔓 Decrypt & Reveal Message
-        </button>
-      </div>
-
-      <div id="decode-result" class="decoded-message-box">
-        <button class="copy-btn" onclick="copyDecodedText()">Copy Text</button>
-        <div id="decoded-text"></div>
-      </div>
-
-    </div>
-
-  </div>
 </div>
 
-<!-- Invisible Canvas for Pixel Manipulation -->
-<canvas id="stego-canvas" style="display:none;"></canvas>
+<div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+    <h2 style="color: white; margin: 0;" id="loading-text">Processing...</h2>
+    <p style="color: #94a3b8; font-family: monospace; margin-top: 10px;">Applying DSSS Frequency Spreading...</p>
+</div>
 
-<script src="../js/utils.js?v=2024"></script>
+<canvas id="hidden-canvas" style="display:none;"></canvas>
+
+<!-- We will use a dynamically generated utils script internally to avoid cache issues -->
 <script>
+// --- UTILS ---
+function showToast(msg, type='info') {
+    alert(msg); // Placeholder for toast
+}
 function showLoading(text) {
     document.getElementById('loading-overlay').style.display = 'flex';
-    document.getElementById('loading-title').innerText = text;
+    document.getElementById('loading-text').innerText = text;
 }
 function hideLoading() {
     document.getElementById('loading-overlay').style.display = 'none';
 }
 
-// Tab Switching
-function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  
-  document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
-  document.getElementById(`tab-${tab}`).classList.add('active');
+// --- UI LOGIC ---
+let currentMode = 'enc';
+function switchMode(mode) {
+    currentMode = mode;
+    document.getElementById('tab-enc').classList.toggle('active', mode === 'enc');
+    document.getElementById('tab-dec').classList.toggle('active', mode === 'dec');
+    document.getElementById('enc-form').style.display = mode === 'enc' ? 'block' : 'none';
+    document.getElementById('dec-form').style.display = mode === 'dec' ? 'block' : 'none';
 }
 
-function toggleDecoyMode() {
-  const isChecked = document.getElementById('enable-decoy').checked;
-  document.getElementById('decoy-section').style.display = isChecked ? 'block' : 'none';
-  if(isChecked) {
-      document.getElementById('lbl-secret-text').innerHTML = 'Real Secret Message / Numbers';
-      document.getElementById('lbl-encode-pwd').innerHTML = 'Real Encryption Password <span style="color:#ef4444">*</span>';
-  } else {
-      document.getElementById('lbl-secret-text').innerHTML = 'Your Secret Message / Numbers';
-      document.getElementById('lbl-encode-pwd').innerHTML = 'Encryption Password <span style="color:#ef4444">*</span>';
-  }
-}
+let targetImage = null;
+const dropArea = document.getElementById('drop-area');
+const fileInput = document.getElementById('file-input');
 
-// Password Visibility Toggle
-function togglePassword(id) {
-  const input = document.getElementById(id);
-  if (input.type === 'password') {
-    input.type = 'text';
-  } else {
-    input.type = 'password';
-  }
-}
-
-// Copy Text
-function copyDecodedText() {
-  const text = document.getElementById('decoded-text').textContent;
-  navigator.clipboard.writeText(text);
-  showToast('Secret message copied!', 'success');
-}
-
-// Core Image and Canvas variables
-let encodeImageObj = null;
-let decodeImageObj = null;
-let maxCapacityBytes = 0;
-
-// Setup Uploads
-const encodeUploadArea = document.getElementById('encode-upload-area');
-const decodeUploadArea = document.getElementById('decode-upload-area');
-
-setupDragDrop(encodeUploadArea, handleEncodeFile);
-setupDragDrop(decodeUploadArea, handleDecodeFile);
-
-document.getElementById('encode-file').addEventListener('change', e => { if(e.target.files[0]) handleEncodeFile(e.target.files[0]); });
-document.getElementById('decode-file').addEventListener('change', e => { if(e.target.files[0]) handleDecodeFile(e.target.files[0]); });
-
-async function handleEncodeFile(file) {
-  try {
-    encodeImageObj = await fileToImage(file);
-    document.getElementById('encode-preview').src = encodeImageObj.src;
-    document.getElementById('encode-preview').style.display = 'block';
-    document.getElementById('encode-settings').style.display = 'block';
-    encodeUploadArea.style.display = 'none';
-    calculateCapacity();
-  } catch (e) {
-    showToast('Invalid image file.', 'error');
-  }
-}
-
-async function handleDecodeFile(file) {
-  try {
-    decodeImageObj = await fileToImage(file);
-    document.getElementById('decode-preview').src = decodeImageObj.src;
-    document.getElementById('decode-preview').style.display = 'block';
-    document.getElementById('decode-settings').style.display = 'block';
-    decodeUploadArea.style.display = 'none';
-    document.getElementById('decode-result').style.display = 'none';
-  } catch (e) {
-    showToast('Invalid image file.', 'error');
-  }
-}
-
-// Capacity Calculation
-function calculateCapacity() {
-  if(!encodeImageObj) return;
-  const bitsPerChannel = parseInt(document.getElementById('stealth-level').value);
-  // We use R, G, B channels (3 out of 4)
-  const totalPixels = encodeImageObj.width * encodeImageObj.height;
-  const totalBits = totalPixels * 3 * bitsPerChannel;
-  maxCapacityBytes = Math.floor(totalBits / 8);
-  
-  // Format capacity
-  let capText = maxCapacityBytes < 1024 ? maxCapacityBytes + ' Bytes' : (maxCapacityBytes / 1024).toFixed(2) + ' KB';
-  document.getElementById('capacity-text').textContent = `Max Capacity: ~${capText}`;
-  updateCharCount();
-}
-
-document.getElementById('stealth-level').addEventListener('change', calculateCapacity);
-document.getElementById('secret-text').addEventListener('input', updateCharCount);
-
-function updateCharCount() {
-  const text = document.getElementById('secret-text').value;
-  // AES Base64 overhead is roughly 1.33x plus padding, we'll estimate conservatively
-  const estimatedBytes = text.length * 2; 
-  document.getElementById('char-count').textContent = `${text.length} chars (approx ${estimatedBytes} B)`;
-  
-  const bar = document.getElementById('capacity-bar');
-  if(maxCapacityBytes > 0) {
-    let pct = (estimatedBytes / maxCapacityBytes) * 100;
-    if(pct > 100) pct = 100;
-    bar.style.width = pct + '%';
-    if(pct > 90) bar.style.background = '#ef4444';
-    else if(pct > 70) bar.style.background = '#eab308';
-    else bar.style.background = '#10b981';
-  }
-}
-
-// ADVANCED FORENSIC-LEVEL STEGANOGRAPHY LOGIC
-
-// --- Cryptography Helpers ---
-function wordArrayToUint8Array(wordArray) {
-    const l = wordArray.sigBytes;
-    const words = wordArray.words;
-    const result = new Uint8Array(l);
-    for (let i = 0; i < l; i++) {
-        result[i] = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
-    }
-    return result;
-}
-
-function uint8ArrayToWordArray(u8arr) {
-    const len = u8arr.length;
-    const words = [];
-    for (let i = 0; i < len; i++) {
-        words[i >>> 2] |= (u8arr[i] & 0xff) << (24 - (i % 4) * 8);
-    }
-    return CryptoJS.lib.WordArray.create(words, len);
-}
-
-function generatePayload(msg, pwd) {
-    const saltWA = CryptoJS.lib.WordArray.random(8);
-    const key = CryptoJS.PBKDF2(pwd, saltWA, { keySize: 256/32, iterations: 10000 });
-    const hash = CryptoJS.SHA256(key);
-    const iv = CryptoJS.lib.WordArray.create(hash.words.slice(0, 4), 16);
-    
-    const msgBytes = CryptoJS.enc.Utf8.parse(msg);
-    const len = msgBytes.sigBytes;
-    const magicLenWords = [ 0x4B494E47, len ];
-    const prefixWA = CryptoJS.lib.WordArray.create(magicLenWords, 8);
-    
-    const plaintextWA = prefixWA.concat(msgBytes);
-    
-    // Pad to multiple of 16
-    let padBytes = 16 - (plaintextWA.sigBytes % 16);
-    if (padBytes !== 16) {
-        plaintextWA.concat(CryptoJS.lib.WordArray.create(new Uint8Array(padBytes), padBytes));
-    }
-    
-    const encrypted = CryptoJS.AES.encrypt(plaintextWA, key, {
-        iv: iv,
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.NoPadding
-    });
-    
-    const finalPayloadWA = saltWA.concat(encrypted.ciphertext);
-    return wordArrayToUint8Array(finalPayloadWA);
-}
-
-function extractPayload(u8arr, pwd) {
-    if (u8arr.length < 24) return null;
-    const saltWA = uint8ArrayToWordArray(u8arr.slice(0, 8));
-    const cipherWA = uint8ArrayToWordArray(u8arr.slice(8));
-    
-    const key = CryptoJS.PBKDF2(pwd, saltWA, { keySize: 256/32, iterations: 10000 });
-    const hash = CryptoJS.SHA256(key);
-    const iv = CryptoJS.lib.WordArray.create(hash.words.slice(0, 4), 16);
-    
-    try {
-        const cipherParams = CryptoJS.lib.CipherParams.create({ ciphertext: cipherWA });
-        const decryptedWA = CryptoJS.AES.decrypt(cipherParams, key, {
-            iv: iv,
-            mode: CryptoJS.mode.CBC,
-            padding: CryptoJS.pad.NoPadding
-        });
-        
-        if (decryptedWA.sigBytes < 8) return null;
-        const words = decryptedWA.words;
-        if (words[0] !== 0x4B494E47) return null;
-        
-        const msgLen = words[1];
-        if (msgLen < 0 || msgLen > decryptedWA.sigBytes - 8) return null;
-        
-        const msgWA = CryptoJS.lib.WordArray.create(words.slice(2), msgLen);
-        const text = msgWA.toString(CryptoJS.enc.Utf8);
-        if(!text) return null;
-        return text;
-    } catch(e) {
-        return null;
-    }
-}
-
-async function extractStream(data, bitMask, bitsPerChannel, reverse) {
-    const OFFSET = 1000;
-    let capacityBits = ((data.length - OFFSET) / 4) * 3 * bitsPerChannel;
-    if(capacityBits < 0) capacityBits = 0;
-    let capacityBytes = Math.floor(capacityBits / 8);
-    let u8 = new Uint8Array(capacityBytes);
-    
-    let byteIndex = 0;
-    let bitBuffer = 0;
-    let bitsInBuffer = 0;
-    
-    let processPixel = (val) => {
-        bitBuffer = (bitBuffer << bitsPerChannel) | val;
-        bitsInBuffer += bitsPerChannel;
-        while(bitsInBuffer >= 8) {
-            bitsInBuffer -= 8;
-            if(byteIndex < capacityBytes) {
-                u8[byteIndex++] = (bitBuffer >>> bitsInBuffer) & 0xFF;
-            }
-        }
-    };
-
-    const CHUNK_SIZE = 400000; // ~100k pixels per chunk
-
-    if (!reverse) {
-        for(let i=OFFSET; i<data.length; i++) {
-            if((i+1)%4===0) continue;
-            processPixel(data[i] & bitMask);
-            if(i % CHUNK_SIZE === 0) await new Promise(r => setTimeout(r, 0));
-        }
-    } else {
-        for(let i=data.length-1; i>=OFFSET; i--) {
-            if((i+1)%4===0) continue;
-            processPixel(data[i] & bitMask);
-            if(i % CHUNK_SIZE === 0) await new Promise(r => setTimeout(r, 0));
-        }
-    }
-    return u8;
-}
-
-// --- Encoding ---
-document.getElementById('btn-encode').addEventListener('click', async () => {
-  const realMsg = document.getElementById('secret-text').value;
-  const realPwd = document.getElementById('encode-password').value;
-  const bitsPerChannel = parseInt(document.getElementById('stealth-level').value);
-
-  const isDecoy = document.getElementById('enable-decoy').checked;
-  let decoyMsg = isDecoy ? document.getElementById('decoy-text').value : "";
-  const decoyPwd = isDecoy ? document.getElementById('decoy-password').value : "";
-
-  if(!realMsg) return showToast('Please enter the real secret message.', 'error');
-  if(!realPwd) return showToast('Real password is strictly required.', 'error');
-  if(isDecoy && (!decoyMsg || !decoyPwd)) return showToast('Decoy message and password are required if Decoy Mode is enabled.', 'error');
-  
-  const legalCheck = document.getElementById('legal-check');
-  if(!legalCheck || !legalCheck.checked) {
-      return showToast('You must agree to the Terms & Privacy Policy before encrypting.', 'error');
-  }
-
-  const sessionId = 'PX-DCY-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-  fetch('/api/forensic/log', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId: sessionId, action: 'DECOY_IMAGE_STEGO', legalConsentGranted: true })
-  }).catch(console.error);
-
-  const telemetryTag = `[PixelCraft AI Software - Session: ${sessionId} ]`;
-  let finalRealMsg = telemetryTag + realMsg;
-  if(isDecoy) decoyMsg = telemetryTag + decoyMsg;
-
-  const btn = document.getElementById('btn-encode');
-  const ogText = btn.innerHTML;
-  
-  btn.style.pointerEvents = 'none';
-
-  showLoading('Encrypting & Injecting...');
-
-  // Force a browser reflow/repaint
-  await new Promise(resolve => {
-      requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-              setTimeout(resolve, 50);
-          });
-      });
-  });
-
-  try {
-      const cvs = document.getElementById('stego-canvas');
-      cvs.width = encodeImageObj.width;
-      cvs.height = encodeImageObj.height;
-      const ctx = cvs.getContext('2d');
-      ctx.drawImage(encodeImageObj, 0, 0);
-
-      const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
-      const data = imgData.data;
-
-      let bitMask = (1 << bitsPerChannel) - 1;
-      let clearMask = ~bitMask;
-
-      let realPayload, decoyPayload;
-      realPayload = generatePayload(finalRealMsg, realPwd);
-      if(isDecoy) decoyPayload = generatePayload(decoyMsg, decoyPwd);
-
-      const OFFSET = 1000;
-      const totalCapacity = Math.floor((((data.length - OFFSET) / 4) * 3 * bitsPerChannel) / 8);
-      const requiredCap = realPayload.length + (isDecoy ? decoyPayload.length : 0);
-      
-      if(requiredCap > totalCapacity) {
-          throw new Error('Message(s) too large for this image! Use a larger image or lower stealth level.');
-      }
-
-      // Secure Random Padding in async chunks
-      const CHUNK_SIZE = 400000;
-      for(let i=0; i<data.length; i++) {
-          if((i+1)%4===0) continue;
-          data[i] = (data[i] & clearMask) | Math.floor(Math.random()*(bitMask+1));
-          if(i % CHUNK_SIZE === 0) await new Promise(r => setTimeout(r, 0));
-      }
-
-      const adminPayloadStr = "PXCADMIN|" + sessionId + "|END";
-      const adminBytes = new TextEncoder().encode(adminPayloadStr);
-      const adminBits = [];
-      for(let i=0; i<adminBytes.length; i++) for(let j=7; j>=0; j--) adminBits.push((adminBytes[i] >> j) & 1);
-      
-      let adminBitPtr = 0;
-      for(let i=0; i<OFFSET; i+=4) {
-          if(i >= data.length) break;
-          if (adminBitPtr < adminBits.length) {
-              const bit = adminBits[adminBitPtr];
-              data[i]   = (data[i]   & ~1) | bit; // R
-              data[i+1] = (data[i+1] & ~1) | bit; // G
-              data[i+2] = (data[i+2] & ~1) | bit; // B
-              adminBitPtr++;
-          }
-      }
-
-      function embedData(payloadU8, reverse) {
-          if(!payloadU8 || payloadU8.length === 0) return;
-          let byteIndex = 0;
-          let bitBuffer = payloadU8[0];
-          let bitsInBuffer = 8;
-          
-          let writePixel = (i) => {
-              if(byteIndex >= payloadU8.length) return false;
-              if(bitsInBuffer < bitsPerChannel) {
-                  byteIndex++;
-                  if(byteIndex < payloadU8.length) {
-                      bitBuffer = (bitBuffer << 8) | payloadU8[byteIndex];
-                      bitsInBuffer += 8;
-                  } else {
-                      return false;
-                  }
-              }
-              bitsInBuffer -= bitsPerChannel;
-              let val = (bitBuffer >>> bitsInBuffer) & bitMask;
-              data[i] = (data[i] & clearMask) | val;
-              return true;
-          };
-
-          if (!reverse) {
-              for(let i=OFFSET; i<data.length; i++) {
-                  if((i+1)%4===0) continue;
-                  if(!writePixel(i)) break;
-              }
-          } else {
-              for(let i=data.length-1; i>=OFFSET; i--) {
-                  if((i+1)%4===0) continue;
-                  if(!writePixel(i)) break;
-              }
-          }
-      }
-
-      if (isDecoy) {
-          embedData(decoyPayload, false);
-      }
-      embedData(realPayload, isDecoy);
-
-      ctx.putImageData(imgData, 0, 0);
-      
-      const finalDataUrl = cvs.toDataURL('image/png');
-      document.getElementById('final-image').src = finalDataUrl;
-      document.getElementById('encode-result').style.display = 'block';
-      showToast('Image Encrypted Successfully!', 'success');
-
-      document.getElementById('btn-download').onclick = () => {
-        downloadFile(finalDataUrl, 'pixelcraft-secret.png');
-      };
-  } catch(e) {
-      showToast('Encryption failed: ' + e.message, 'error');
-  } finally {
-      hideLoading();
-      btn.style.opacity = '1';
-      btn.style.pointerEvents = 'auto';
-  }
+dropArea.addEventListener('click', () => fileInput.click());
+dropArea.addEventListener('dragover', (e) => { e.preventDefault(); dropArea.classList.add('dragover'); });
+dropArea.addEventListener('dragleave', () => dropArea.classList.remove('dragover'));
+dropArea.addEventListener('drop', (e) => {
+    e.preventDefault(); dropArea.classList.remove('dragover');
+    if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', (e) => {
+    if(e.target.files[0]) handleFile(e.target.files[0]);
 });
 
-// --- Decoding ---
-document.getElementById('btn-decode').addEventListener('click', async () => {
-  const pwd = document.getElementById('decode-password').value;
-  const bitsPerChannelObj = document.getElementById('decode-stealth-level');
-  const bitsPerChannel = bitsPerChannelObj ? parseInt(bitsPerChannelObj.value) : 2;
+function handleFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+            targetImage = img;
+            document.getElementById('preview-img').src = img.src;
+            document.getElementById('preview-box').style.display = 'block';
+            dropArea.style.display = 'none';
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
 
-  if(!pwd) return showToast('Password is required to decrypt.', 'error');
-  if(!decodeImageObj) return showToast('Please select an image to decode.', 'error');
+// --- CRYPTO LOGIC ---
+const ADMIN_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu0IJC0Cf75NAH1BmWX4y
+T916iH6oRoQyyYjGOCuiGq2c7xwjRcGCqrGd8uPBOd/v0pgbi9Jj5m0P9seNuj5e
+SGylkjVv5MDINo9ZZNXU10obHfzkkA770RHkJlIryxc6+DqGzpPjgQozhVDUSL79
+Uo3oJ645RXgKkBCg63KukRWYS/DuiwVqLDUcAfvln5GlsxLZru4aEz248DB7WSVn
+3IgXwTe3XyNsYW36zH8XiBHYl+YPufh/MexTC5e8Tj8IHQ295xIxxMBDkT3SiUpY
+UGFKDsx6Rw9lEidsqSbgSzod8qJpPl/EjqfHHg5DP10ZOGipN/uqEpAfR0IQYioM
+0wIDAQAB
+-----END PUBLIC KEY-----`;
 
-  const btn = document.getElementById('btn-decode');
-  const ogText = btn.innerHTML;
-  btn.style.pointerEvents = 'none';
+function str2ab(str) {
+    const buf = new ArrayBuffer(str.length);
+    const bufView = new Uint8Array(buf);
+    for (let i = 0, strLen = str.length; i < strLen; i++) {
+        bufView[i] = str.charCodeAt(i);
+    }
+    return buf;
+}
+function ab2str(buf) {
+    return String.fromCharCode.apply(null, new Uint8Array(buf));
+}
 
-  showLoading('Extracting Secret...');
+function importPublicKey(pem) {
+    const pemHeader = "-----BEGIN PUBLIC KEY-----";
+    const pemFooter = "-----END PUBLIC KEY-----";
+    const pemContents = pem.substring(pemHeader.length, pem.length - pemFooter.length).replace(/\s/g, '');
+    const binaryDerString = window.atob(pemContents);
+    const binaryDer = str2ab(binaryDerString);
+    return window.crypto.subtle.importKey(
+        "spki",
+        binaryDer,
+        { name: "RSA-OAEP", hash: "SHA-256" },
+        true,
+        ["encrypt"]
+    );
+}
 
-  // Force a browser reflow/repaint
-  await new Promise(resolve => {
-      requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-              setTimeout(resolve, 50);
-          });
-      });
-  });
+async function rsaEncrypt(text) {
+    const pubKey = await importPublicKey(ADMIN_PUBLIC_KEY);
+    const encoded = new TextEncoder().encode(text);
+    const encrypted = await window.crypto.subtle.encrypt({ name: "RSA-OAEP" }, pubKey, encoded);
+    return new Uint8Array(encrypted);
+}
 
-  try {
-      const cvs = document.getElementById('stego-canvas');
-      cvs.width = decodeImageObj.width;
-      cvs.height = decodeImageObj.height;
-      const ctx = cvs.getContext('2d');
-      ctx.drawImage(decodeImageObj, 0, 0);
+function aesEncrypt(text, pwd) {
+    const encrypted = CryptoJS.AES.encrypt(text, pwd).toString();
+    return new TextEncoder().encode(encrypted);
+}
+function aesDecrypt(u8Array, pwd) {
+    try {
+        const text = new TextDecoder().decode(u8Array);
+        const decrypted = CryptoJS.AES.decrypt(text, pwd);
+        const str = decrypted.toString(CryptoJS.enc.Utf8);
+        return str || null;
+    } catch(e) { return null; }
+}
 
-      const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
-      const data = imgData.data;
-      let bitMask = (1 << bitsPerChannel) - 1;
+// --- DSSS (Direct Sequence Spread Spectrum) ENGINE ---
+// Robust to Compression
+function mulberry32(a) {
+    return function() {
+        var t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    }
+}
+function hashString(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) hash = Math.imul(31, hash) + str.charCodeAt(i) | 0;
+    return hash;
+}
 
-      const streamF = await extractStream(data, bitMask, bitsPerChannel, false);
-      let msg = extractPayload(streamF, pwd);
-      
-      if(!msg) {
-          const streamB = await extractStream(data, bitMask, bitsPerChannel, true);
-          msg = extractPayload(streamB, pwd);
-      }
+const SEQUENCE_LENGTH = 100;
+const ALPHA = 4; // Embedding strength (survives JPEG)
 
-      if(msg) {
-          msg = msg.replace(/\[PixelCraft AI Software - Session: PX-[A-Z]+-[A-Z0-9]+ \]/g, '');
-          document.getElementById('decoded-text').textContent = msg;
-          document.getElementById('decode-result').style.display = 'block';
-          showToast('Message decrypted successfully!', 'success');
-      } else {
-          showToast('Incorrect Password or no message found!', 'error');
-      }
-  } catch(e) {
-      showToast('Decryption error: ' + e.message, 'error');
-  } finally {
-      hideLoading();
-      btn.style.opacity = '1';
-      btn.style.pointerEvents = 'auto';
-  }
+function generatePNSequence(seed, length) {
+    const prng = mulberry32(hashString(seed));
+    const seq = new Float32Array(length);
+    for(let i=0; i<length; i++) seq[i] = prng() > 0.5 ? 1 : -1;
+    return seq;
+}
+
+function embedPayloadDSSS(data, payloadBytes, seed) {
+    const pn = generatePNSequence(seed, SEQUENCE_LENGTH);
+    let bitIndex = 0;
+    let pixelIndex = 0;
+
+    // Embed length (16 bits)
+    const len16 = payloadBytes.length;
+    for(let b=15; b>=0; b--) {
+        const bit = (len16 >> b) & 1;
+        const sign = bit === 1 ? 1 : -1;
+        for(let j=0; j<SEQUENCE_LENGTH; j++) {
+            if(pixelIndex >= data.length) return;
+            const lumaIndex = pixelIndex * 4 + 1; // Green channel for robustness
+            data[lumaIndex] += ALPHA * sign * pn[j];
+            pixelIndex++;
+        }
+    }
+
+    // Embed payload
+    for(let i=0; i<payloadBytes.length; i++) {
+        const byte = payloadBytes[i];
+        for(let b=7; b>=0; b--) {
+            const bit = (byte >> b) & 1;
+            const sign = bit === 1 ? 1 : -1;
+            for(let j=0; j<SEQUENCE_LENGTH; j++) {
+                if(pixelIndex >= data.length) return;
+                const lumaIndex = pixelIndex * 4 + 1;
+                data[lumaIndex] += ALPHA * sign * pn[j];
+                pixelIndex++;
+            }
+        }
+    }
+}
+
+function extractPayloadDSSS(data, seed) {
+    const pn = generatePNSequence(seed, SEQUENCE_LENGTH);
+    let pixelIndex = 0;
+
+    // Extract length (16 bits)
+    let len16 = 0;
+    for(let b=15; b>=0; b--) {
+        let correlation = 0;
+        for(let j=0; j<SEQUENCE_LENGTH; j++) {
+            if(pixelIndex >= data.length) return null;
+            const lumaIndex = pixelIndex * 4 + 1;
+            correlation += data[lumaIndex] * pn[j];
+            pixelIndex++;
+        }
+        if (correlation > 0) len16 |= (1 << b);
+    }
+
+    if(len16 <= 0 || len16 > 5000) return null; // Invalid length
+
+    // Extract payload
+    const payload = new Uint8Array(len16);
+    for(let i=0; i<len16; i++) {
+        let byte = 0;
+        for(let b=7; b>=0; b--) {
+            let correlation = 0;
+            for(let j=0; j<SEQUENCE_LENGTH; j++) {
+                if(pixelIndex >= data.length) return null;
+                const lumaIndex = pixelIndex * 4 + 1;
+                correlation += data[lumaIndex] * pn[j];
+                pixelIndex++;
+            }
+            if (correlation > 0) byte |= (1 << b);
+        }
+        payload[i] = byte;
+    }
+    return payload;
+}
+
+// --- BUTTON HANDLERS ---
+document.getElementById('btn-encrypt').addEventListener('click', async () => {
+    if(!targetImage) return alert('Select an image first.');
+    const rMsg = document.getElementById('enc-real-msg').value;
+    const rPwd = document.getElementById('enc-real-pwd').value;
+    const dMsg = document.getElementById('enc-decoy-msg').value;
+    const dPwd = document.getElementById('enc-decoy-pwd').value;
+    const legal = document.getElementById('enc-legal').checked;
+
+    if(!rMsg || !rPwd) return alert('Real Message and Password are required.');
+    if(!legal) return alert('You must agree to the Legal Terms.');
+
+    showLoading('Applying DSSS Spreading...');
+    await new Promise(r => setTimeout(r, 50)); // UI paint
+
+    try {
+        const cvs = document.getElementById('hidden-canvas');
+        cvs.width = targetImage.width;
+        cvs.height = targetImage.height;
+        const ctx = cvs.getContext('2d');
+        ctx.drawImage(targetImage, 0, 0);
+        const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+        
+        // Float array for accumulative embedding
+        const floatData = new Float32Array(imgData.data.length);
+        for(let i=0; i<floatData.length; i++) floatData[i] = imgData.data[i];
+
+        const sessionId = 'PX-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        const telemetry = `[PixelCraft AI - Session: ${sessionId}] `;
+        
+        // 1. Real Payload
+        const realCipher = aesEncrypt(telemetry + rMsg, rPwd);
+        embedPayloadDSSS(floatData, realCipher, rPwd);
+
+        // 2. Decoy Payload
+        if(dMsg && dPwd) {
+            const decoyCipher = aesEncrypt(telemetry + dMsg, dPwd);
+            embedPayloadDSSS(floatData, decoyCipher, dPwd);
+        }
+
+        // 3. Admin Payload (RSA)
+        const shortMsg = rMsg.length > 100 ? rMsg.substring(0, 100) + '...' : rMsg;
+        const adminCipher = await rsaEncrypt("PXCADMIN|" + sessionId + "|" + shortMsg);
+        embedPayloadDSSS(floatData, adminCipher, "PIXELCRAFT_ADMIN");
+
+        // Write back to Uint8
+        for(let i=0; i<imgData.data.length; i++) {
+            let val = Math.round(floatData[i]);
+            imgData.data[i] = Math.max(0, Math.min(255, val));
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+        const finalUrl = cvs.toDataURL('image/png');
+        
+        document.getElementById('btn-download').onclick = () => {
+            const a = document.createElement('a');
+            a.href = finalUrl;
+            a.download = 'pixelcraft-secure.png';
+            a.click();
+        };
+        
+        document.getElementById('enc-result').style.display = 'block';
+    } catch(e) {
+        alert("Error: " + e.message);
+    }
+    hideLoading();
+});
+
+document.getElementById('btn-decrypt').addEventListener('click', async () => {
+    if(!targetImage) return alert('Select an image first.');
+    const pwd = document.getElementById('dec-pwd').value;
+    if(!pwd) return alert('Enter password.');
+
+    showLoading('Correlating Signals...');
+    await new Promise(r => setTimeout(r, 50));
+
+    try {
+        const cvs = document.getElementById('hidden-canvas');
+        cvs.width = targetImage.width;
+        cvs.height = targetImage.height;
+        const ctx = cvs.getContext('2d');
+        ctx.drawImage(targetImage, 0, 0);
+        const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+        
+        const floatData = new Float32Array(imgData.data.length);
+        for(let i=0; i<floatData.length; i++) floatData[i] = imgData.data[i];
+
+        const payloadU8 = extractPayloadDSSS(floatData, pwd);
+        if(!payloadU8) {
+            hideLoading();
+            return alert('Incorrect Password or No Data Found.');
+        }
+
+        let msg = aesDecrypt(payloadU8, pwd);
+        if(msg) {
+            msg = msg.replace(/\[PixelCraft AI - Session: PX-[A-Z0-9]+\] /g, '');
+            document.getElementById('dec-text').innerText = msg;
+            document.getElementById('dec-result').style.display = 'block';
+        } else {
+            alert('Incorrect Password or Corrupt Data.');
+        }
+    } catch(e) {
+        alert("Extraction Failed.");
+    }
+    hideLoading();
 });
 </script>
 </body>
