@@ -235,7 +235,12 @@
         const blocksY = Math.floor(height / BLOCK_SIZE);
         const totalBlocks = blocksX * blocksY;
         
-        if (totalBlocks < binaryStr.length * REDUNDANCY) throw new Error("Image too small.");
+        let fullBinaryStr = '';
+        const len16 = Math.floor(binaryStr.length / 8); // length in bytes
+        for(let b=15; b>=0; b--) fullBinaryStr += ((len16 >> b) & 1).toString();
+        fullBinaryStr += binaryStr;
+        
+        if (totalBlocks < fullBinaryStr.length * REDUNDANCY) throw new Error("Image too small.");
 
         let prng = mulberry32(hashString(seedStr));
         let indices = new Uint32Array(totalBlocks);
@@ -246,9 +251,9 @@
         }
 
         let ptr = 0;
-        for(let r=0; r<REDUNDANCY; r++) {
-            for(let i=0; i<binaryStr.length; i++) {
-                const bit = parseInt(binaryStr[i]);
+        for(let i=0; i<fullBinaryStr.length; i++) {
+            const bit = parseInt(fullBinaryStr[i]);
+            for(let r=0; r<REDUNDANCY; r++) {
                 const idx = indices[ptr++];
                 const bx = idx % blocksX;
                 const by = Math.floor(idx / blocksX);
@@ -276,7 +281,7 @@
         }
     }
 
-    function extractQIM(data, width, height, seedStr, maxBits) {
+    function extractQIM(data, width, height, seedStr) {
         const blocksX = Math.floor(width / BLOCK_SIZE);
         const blocksY = Math.floor(height / BLOCK_SIZE);
         const totalBlocks = blocksX * blocksY;
@@ -289,36 +294,45 @@
             const t = indices[i]; indices[i] = indices[j]; indices[j] = t;
         }
 
-        let votes = new Int32Array(maxBits);
-        let ptr = 0;
-        
-        for(let r=0; r<REDUNDANCY; r++) {
-            for(let i=0; i<maxBits; i++) {
-                if (ptr >= totalBlocks) break;
-                const idx = indices[ptr++];
-                const bx = idx % blocksX;
-                const by = Math.floor(idx / blocksX);
-                const sx = bx * BLOCK_SIZE;
-                const sy = by * BLOCK_SIZE;
-
-                let sum=0, count=0;
-                for(let y=sy; y<sy+BLOCK_SIZE; y++) {
-                    for(let x=sx; x<sx+BLOCK_SIZE; x++) {
-                        sum += data[(y*width+x)*4+2];
-                        count++;
-                    }
+        const extractBit = (idx) => {
+            const bx = idx % blocksX;
+            const by = Math.floor(idx / blocksX);
+            const sx = bx * BLOCK_SIZE;
+            const sy = by * BLOCK_SIZE;
+            let sum=0, count=0;
+            for(let y=sy; y<sy+BLOCK_SIZE; y++) {
+                for(let x=sx; x<sx+BLOCK_SIZE; x++) {
+                    sum += data[(y*width+x)*4+2];
+                    count++;
                 }
-                const avg = sum/count;
-                const v0 = Math.round(avg/Q_STEP)*Q_STEP;
-                const v1 = Math.round((avg-Q_STEP/2)/Q_STEP)*Q_STEP + Q_STEP/2;
-                
-                if (Math.abs(avg-v1) < Math.abs(avg-v0)) votes[i]++;
-                else votes[i]--;
             }
+            const avg = sum/count;
+            const v0 = Math.round(avg/Q_STEP)*Q_STEP;
+            const v1 = Math.round((avg-Q_STEP/2)/Q_STEP)*Q_STEP + Q_STEP/2;
+            return Math.abs(avg-v1) < Math.abs(avg-v0) ? 1 : 0;
+        };
+
+        let ptr = 0;
+        let len16 = 0;
+        for(let b=15; b>=0; b--) {
+            let votes = 0;
+            for(let r=0; r<REDUNDANCY; r++) {
+                if (ptr >= totalBlocks) return null;
+                votes += extractBit(indices[ptr++]) ? 1 : -1;
+            }
+            if(votes > 0) len16 |= (1 << b);
         }
+        
+        if (len16 <= 0 || len16 > 5000 || ptr + (len16 * 8 * REDUNDANCY) > totalBlocks) return null;
 
         let bin = '';
-        for(let i=0; i<maxBits; i++) bin += (votes[i] > 0) ? '1' : '0';
+        for(let i=0; i<len16 * 8; i++) {
+            let votes = 0;
+            for(let r=0; r<REDUNDANCY; r++) {
+                votes += extractBit(indices[ptr++]) ? 1 : -1;
+            }
+            bin += (votes > 0) ? '1' : '0';
+        }
         return bin;
     }
 
@@ -388,8 +402,11 @@
             ctx.drawImage(decryptImage, 0, 0);
             const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
 
-            const maxBits = 8000; // 1000 characters
-            const bin = extractQIM(imgData.data, cvs.width, cvs.height, pwd, maxBits);
+            const bin = extractQIM(imgData.data, cvs.width, cvs.height, pwd);
+            if(!bin) {
+                hideLoading();
+                return alert('Wrong password or corrupted image.');
+            }
             
             let cipher = '';
             for(let i=0; i<bin.length; i+=8) {
