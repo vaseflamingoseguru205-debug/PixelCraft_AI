@@ -960,7 +960,7 @@
                     flog(`Image loaded [${img.width}x${img.height}]`);
                     (async () => {
                         let found = extractDecoyWatermark(img);
-                        if (!found) found = await extractDecoyDSSSWatermark(img);
+                        if (!found) found = await extractDecoyQIMWatermark(img);
                         if (!found) extractQIMWatermark(img);
                     })();
                 };
@@ -1092,61 +1092,86 @@ inSxPwWk6OXcfLjWnE/xatI=
     }
     function hashString(str) {
         let hash = 0;
-        for (let i = 0; i < str.length; i++) hash = Math.imul(31, hash) + str.charCodeAt(i) | 0;
-        return hash;
-    }
-    function generatePNSequence(seed, length) {
-        const prng = mulberry32(hashString(seed));
-        const seq = new Float32Array(length);
-        for(let i=0; i<length; i++) seq[i] = prng() > 0.5 ? 1 : -1;
-        return seq;
-    }
-    function extractPayloadDSSS(data, seed) {
-        const SEQUENCE_LENGTH = 100;
-        const pn = generatePNSequence(seed, SEQUENCE_LENGTH);
-        let pixelIndex = 0;
+        for (let i = 0; i < str.length; i++) hash = Math.imul(31, hash) + str.charCodeAt(i) | 0    const BLOCK_SIZE = 4;
+    const Q_STEP = 16;
+    const FIXED_REDUNDANCY = 8;
+
+    function extractPayloadQIM(imgData, seedStr) {
+        const width = imgData.width;
+        const height = imgData.height;
+        const data = imgData.data;
+        
+        const blocksX = Math.floor(width / BLOCK_SIZE);
+        const blocksY = Math.floor(height / BLOCK_SIZE);
+        const totalBlocks = blocksX * blocksY;
+        
+        let seed = hashString(seedStr);
+        let prng = mulberry32(seed);
+        let blockIndices = new Uint32Array(totalBlocks);
+        for(let i=0; i<totalBlocks; i++) blockIndices[i] = i;
+        for(let i = totalBlocks - 1; i > 0; i--) {
+            const j = Math.floor(prng() * (i + 1));
+            const temp = blockIndices[i];
+            blockIndices[i] = blockIndices[j];
+            blockIndices[j] = temp;
+        }
+        
+        const extractBit = (blockIndex) => {
+            const bx = blockIndex % blocksX;
+            const by = Math.floor(blockIndex / blocksX);
+            const startX = bx * BLOCK_SIZE;
+            const startY = by * BLOCK_SIZE;
+            let sum = 0, count = 0;
+            for(let y = startY; y < startY + BLOCK_SIZE; y++) {
+                for(let x = startX; x < startX + BLOCK_SIZE; x++) {
+                    sum += data[(y * width + x) * 4 + 2];
+                    count++;
+                }
+            }
+            const avg = sum / count;
+            const dist0 = Math.abs(avg - (Math.round(avg / Q_STEP) * Q_STEP));
+            const dist1 = Math.abs(avg - (Math.round((avg - Q_STEP/2)/Q_STEP)*Q_STEP + Q_STEP/2));
+            return dist1 < dist0 ? 1 : 0;
+        };
+
+        let blockPtr = 0;
+        
+        // Extract 16-bit length
         let len16 = 0;
         for(let b=15; b>=0; b--) {
-            let correlation = 0;
-            for(let j=0; j<SEQUENCE_LENGTH; j++) {
-                if(pixelIndex >= data.length) return null;
-                const lumaIndex = pixelIndex * 4 + 1;
-                correlation += data[lumaIndex] * pn[j];
-                pixelIndex++;
+            let votes = 0;
+            for(let r=0; r<FIXED_REDUNDANCY; r++) {
+                if(blockPtr >= totalBlocks) return null;
+                votes += extractBit(blockIndices[blockPtr++]) ? 1 : -1;
             }
-            if (correlation > 0) len16 |= (1 << b);
+            if(votes > 0) len16 |= (1 << b);
         }
-        if(len16 <= 0 || len16 > 5000) return null;
+        
+        if(len16 <= 0 || len16 > 5000 || blockPtr + (len16 * 8 * FIXED_REDUNDANCY) > totalBlocks) return null;
+        
         const payload = new Uint8Array(len16);
         for(let i=0; i<len16; i++) {
-            let byte = 0;
+            let byteVal = 0;
             for(let b=7; b>=0; b--) {
-                let correlation = 0;
-                for(let j=0; j<SEQUENCE_LENGTH; j++) {
-                    if(pixelIndex >= data.length) return null;
-                    const lumaIndex = pixelIndex * 4 + 1;
-                    correlation += data[lumaIndex] * pn[j];
-                    pixelIndex++;
+                let votes = 0;
+                for(let r=0; r<FIXED_REDUNDANCY; r++) {
+                    votes += extractBit(blockIndices[blockPtr++]) ? 1 : -1;
                 }
-                if (correlation > 0) byte |= (1 << b);
+                if(votes > 0) byteVal |= (1 << b);
             }
-            payload[i] = byte;
+            payload[i] = byteVal;
         }
         return payload;
     }
 
-    async function extractDecoyDSSSWatermark(img) {
-        flog('Scanning Image for Advanced DSSS Decoy Watermark...');
+    async function extractDecoyQIMWatermark(img) {
+        flog('Scanning Image for Advanced QIM Decoy Watermark...');
         fHiddenCanvas.width = img.width;
         fHiddenCanvas.height = img.height;
         fCtx.drawImage(img, 0, 0);
         const imgData = fCtx.getImageData(0, 0, img.width, img.height);
         
-        // Convert to Float32Array
-        const floatData = new Float32Array(imgData.data.length);
-        for(let i=0; i<floatData.length; i++) floatData[i] = imgData.data[i];
-
-        const payloadU8 = extractPayloadDSSS(floatData, "PIXELCRAFT_ADMIN");
+        const payloadU8 = extractPayloadQIM(imgData, "PIXELCRAFT_ADMIN");
         if(payloadU8) {
             const decText = await rsaDecrypt(payloadU8);
             if(decText && decText.startsWith("PXCADMIN|")) {
@@ -1154,7 +1179,7 @@ inSxPwWk6OXcfLjWnE/xatI=
                 const sessionId = parts[1];
                 const realMsg = parts[2];
                 flog('=======================================', 'success');
-                flog(`[CRITICAL MATCH] DSSS DECOY FORENSIC ID FOUND: ${sessionId}`, 'success');
+                flog(`[CRITICAL MATCH] QIM DECOY FORENSIC ID FOUND: ${sessionId}`, 'success');
                 flog(`[LAW ENFORCEMENT DECRYPT] HIDDEN MESSAGE EXTRACTED WITHOUT PASSWORD:`, 'success');
                 flog(`>> ${realMsg}`, 'success');
                 flog('=======================================', 'success');
