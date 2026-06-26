@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <!-- Google tag (gtag.js) -->
@@ -521,6 +521,7 @@
           ctx.lineTo(i, y);
         }
         ctx.strokeStyle = '#38bdf8';
+        ctx.strokeStyle = '#38bdf8';
         ctx.lineWidth = 2;
         ctx.stroke();
         t += 0.1;
@@ -529,25 +530,37 @@
       draw();
     }
 
-    // Advanced Spread Spectrum (DSSS) Audio Encoding (Robust to MP3/WhatsApp compression)
+    // Advanced Audio Steganography Engine (Robust QIM)
     function encodeSpreadSpectrumToAudio(audioBuffer, bits, password) {
         const prng = mulberry32(hashString(password));
         const channelData = audioBuffer.getChannelData(0);
-        const sequenceLength = 200; // Spread each bit over 200 samples
-        const alpha = 0.025; // Amplitude of the hidden sequence (inaudible noise)
-        
-        // Generate pseudo-random noise sequence
-        const pnSequence = new Float32Array(sequenceLength);
-        for(let i=0; i<sequenceLength; i++) pnSequence[i] = (prng() > 0.5 ? 1 : -1);
+        const Q_STEP = 0.008; // Step size for robust embedding
+        const REDUNDANCY = 5;
 
-        if(bits.length * sequenceLength > channelData.length) throw new Error("Audio too short for this payload length!");
+        // Embed 16-bit length prefix first
+        let fullBits = [];
+        const len16 = Math.floor(bits.length / 8);
+        for(let b=15; b>=0; b--) fullBits.push((len16 >> b) & 1);
+        fullBits = fullBits.concat(bits);
 
-        for(let i=0; i<bits.length; i++) {
-            const bit = bits[i];
-            const startIdx = i * sequenceLength;
-            for(let j=0; j<sequenceLength; j++) {
-                // If bit=1, add PN sequence. If bit=0, subtract PN sequence.
-                channelData[startIdx + j] += alpha * pnSequence[j] * (bit === 1 ? 1 : -1);
+        if(fullBits.length * REDUNDANCY > channelData.length) throw new Error("Audio too short for this payload length!");
+
+        let indices = new Uint32Array(channelData.length);
+        for(let i=0; i<channelData.length; i++) indices[i] = i;
+        for(let i = channelData.length - 1; i > 0; i--) {
+            const j = Math.floor(prng() * (i + 1));
+            const temp = indices[i]; indices[i] = indices[j]; indices[j] = temp;
+        }
+
+        let ptr = 0;
+        for(let i=0; i<fullBits.length; i++) {
+            const bit = fullBits[i];
+            for(let r=0; r<REDUNDANCY; r++) {
+                const idx = indices[ptr++];
+                const val = channelData[idx];
+                // Quantize
+                const q_val = Math.round((val - bit*(Q_STEP/2))/Q_STEP)*Q_STEP + bit*(Q_STEP/2);
+                channelData[idx] = q_val;
             }
         }
     }
@@ -555,26 +568,47 @@
     function attemptSpreadSpectrumDecode(audioBuffer, password) {
         const prng = mulberry32(hashString(password));
         const channelData = audioBuffer.getChannelData(0);
-        const sequenceLength = 200;
+        const Q_STEP = 0.008;
+        const REDUNDANCY = 5;
         
-        const pnSequence = new Float32Array(sequenceLength);
-        for(let i=0; i<sequenceLength; i++) pnSequence[i] = (prng() > 0.5 ? 1 : -1);
+        let indices = new Uint32Array(channelData.length);
+        for(let i=0; i<channelData.length; i++) indices[i] = i;
+        for(let i = channelData.length - 1; i > 0; i--) {
+            const j = Math.floor(prng() * (i + 1));
+            const temp = indices[i]; indices[i] = indices[j]; indices[j] = temp;
+        }
 
-        const extractBits = Math.floor(channelData.length / sequenceLength);
-        const extractedBytes = [];
-        let currentByte = 0; let bitCount = 0;
-        
-        for(let i=0; i<extractBits; i++) {
-            const startIdx = i * sequenceLength;
-            let correlation = 0;
-            for(let j=0; j<sequenceLength; j++) {
-                correlation += channelData[startIdx + j] * pnSequence[j];
+        const extractBit = (idx) => {
+            const val = channelData[idx];
+            const v0 = Math.round(val/Q_STEP)*Q_STEP;
+            const v1 = Math.round((val-Q_STEP/2)/Q_STEP)*Q_STEP + Q_STEP/2;
+            return Math.abs(val-v1) < Math.abs(val-v0) ? 1 : 0;
+        };
+
+        let ptr = 0;
+        let len16 = 0;
+        for(let b=15; b>=0; b--) {
+            let votes = 0;
+            for(let r=0; r<REDUNDANCY; r++) {
+                if (ptr >= channelData.length) return null;
+                votes += extractBit(indices[ptr++]) ? 1 : -1;
             }
-            const bit = correlation > 0 ? 1 : 0;
-            
-            currentByte = (currentByte << 1) | bit;
-            bitCount++;
-            if(bitCount === 8){ extractedBytes.push(currentByte); currentByte = 0; bitCount = 0; }
+            if(votes > 0) len16 |= (1 << b);
+        }
+        
+        if (len16 <= 0 || len16 > 10000 || ptr + (len16 * 8 * REDUNDANCY) > channelData.length) return null;
+
+        const extractedBytes = [];
+        for(let i=0; i<len16; i++) {
+            let currentByte = 0;
+            for(let b=7; b>=0; b--) {
+                let votes = 0;
+                for(let r=0; r<REDUNDANCY; r++) {
+                    votes += extractBit(indices[ptr++]) ? 1 : -1;
+                }
+                if(votes > 0) currentByte |= (1 << b);
+            }
+            extractedBytes.push(currentByte);
         }
 
         const rawStr = bytesToStr(extractedBytes);
@@ -588,7 +622,6 @@
             try {
               const decrypted = CryptoJS.AES.decrypt(encryptedMsg, password).toString(CryptoJS.enc.Utf8);
               if(decrypted) {
-                  // Remove telemetry tag from display output if present
                   return decrypted.replace(/\[PixelCraft AI Software - Session: PX-[A-Z]+-[A-Z0-9]+ \]/g, '');
               }
             } catch(e){ }
