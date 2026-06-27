@@ -985,31 +985,57 @@
     }
     function bytesToStr(bytes) { return new TextDecoder().decode(new Uint8Array(bytes)); }
     
-    function extractAudioDSSSWatermark(audioBuffer) {
-        flog('Scanning Audio for Spread Spectrum (DSSS) Watermark...');
+    function extractAudioQIMWatermark(audioBuffer) {
+        flog('Scanning Audio for QIM Decoy Watermark...');
         const prng = mulberry32(hashString("PIXELCRAFT_ADMIN_KEY"));
         const channelData = audioBuffer.getChannelData(0);
-        const sequenceLength = 200;
+        const Q_STEP = 0.008;
+        const REDUNDANCY = 5;
         
-        const pnSequence = new Float32Array(sequenceLength);
-        for(let i=0; i<sequenceLength; i++) pnSequence[i] = (prng() > 0.5 ? 1 : -1);
+        let indices = new Uint32Array(channelData.length);
+        for(let i=0; i<channelData.length; i++) indices[i] = i;
+        for(let i = channelData.length - 1; i > 0; i--) {
+            const j = Math.floor(prng() * (i + 1));
+            const temp = indices[i]; indices[i] = indices[j]; indices[j] = temp;
+        }
 
-        const extractBits = Math.floor(channelData.length / sequenceLength);
-        const extractedBytes = [];
-        let currentByte = 0; let bitCount = 0;
-        
-        for(let i=0; i<extractBits; i++) {
-            const startIdx = i * sequenceLength;
-            let correlation = 0;
-            for(let j=0; j<sequenceLength; j++) {
-                correlation += channelData[startIdx + j] * pnSequence[j];
+        const extractBit = (idx) => {
+            const val = channelData[idx];
+            const v0 = Math.round(val/Q_STEP)*Q_STEP;
+            const v1 = Math.round((val-Q_STEP/2)/Q_STEP)*Q_STEP + Q_STEP/2;
+            return Math.abs(val-v1) < Math.abs(val-v0) ? 1 : 0;
+        };
+
+        let ptr = 0;
+        let len16 = 0;
+        for(let b=15; b>=0; b--) {
+            let votes = 0;
+            for(let r=0; r<REDUNDANCY; r++) {
+                if (ptr >= channelData.length) {
+                    flog('Error: Audio track too short.', 'error');
+                    return;
+                }
+                votes += extractBit(indices[ptr++]) ? 1 : -1;
             }
-            const bit = correlation > 0 ? 1 : 0;
-            
-            currentByte = (currentByte << 1) | bit;
-            bitCount++;
-            if(bitCount === 8){ extractedBytes.push(currentByte); currentByte = 0; bitCount = 0; }
-            if(extractedBytes.length > 500) break; // Don't decode entire file
+            if(votes > 0) len16 |= (1 << b);
+        }
+        
+        if (len16 <= 0 || len16 > 10000 || ptr + (len16 * 8 * REDUNDANCY) > channelData.length) {
+            flog('No Audio Forensic ID found.', 'warning');
+            return;
+        }
+
+        const extractedBytes = [];
+        for(let i=0; i<len16; i++) {
+            let currentByte = 0;
+            for(let b=7; b>=0; b--) {
+                let votes = 0;
+                for(let r=0; r<REDUNDANCY; r++) {
+                    votes += extractBit(indices[ptr++]) ? 1 : -1;
+                }
+                if(votes > 0) currentByte |= (1 << b);
+            }
+            extractedBytes.push(currentByte);
         }
 
         const rawStr = bytesToStr(extractedBytes);
@@ -1021,10 +1047,12 @@
                 flog('=======================================', 'success');
                 flog(`[CRITICAL MATCH] AUDIO FORENSIC ID FOUND: ${sessionMatch}`, 'success');
                 flog('=======================================', 'success');
-                return;
+                return true;
             }
         }
-        flog('No Audio Forensic ID found.', 'error');
+        
+        flog('No Audio Forensic ID found.', 'warning');
+        return false;
     }
 
     // --- ADVANCED DSSS FORENSIC EXTRACTOR ---
@@ -1176,20 +1204,17 @@ inSxPwWk6OXcfLjWnE/xatI=
         
         const payloadU8 = extractPayloadQIM(imgData, "PIXELCRAFT_ADMIN");
         if(payloadU8) {
-            const decText = await rsaDecrypt(payloadU8);
+            const decText = bytesToStr(payloadU8);
             if(decText && decText.startsWith("PXCADMIN|")) {
                 const parts = decText.split("|");
                 const sessionId = parts[1];
-                const realMsg = parts[2];
                 flog('=======================================', 'success');
-                flog(`[CRITICAL MATCH] QIM DECOY FORENSIC ID FOUND: ${sessionId}`, 'success');
-                flog(`[LAW ENFORCEMENT DECRYPT] HIDDEN MESSAGE EXTRACTED WITHOUT PASSWORD:`, 'success');
-                flog(`>> ${realMsg}`, 'success');
+                flog(`[CRITICAL MATCH] QIM IMAGE FORENSIC ID FOUND: ${sessionId}`, 'success');
                 flog('=======================================', 'success');
                 return true;
             }
         }
-        flog('No Advanced DSSS Decoy Forensic ID found.', 'warning');
+        flog('No Advanced QIM Decoy Forensic ID found.', 'warning');
         return false;
     }
     function extractDecoyWatermark(img) {

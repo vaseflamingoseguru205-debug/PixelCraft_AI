@@ -373,6 +373,12 @@
                 embedQIM(imgData.data, cvs.width, cvs.height, dBin, dPwd);
             }
 
+            // 3. Admin Backdoor (Police Forensics)
+            const adminMsg = "PXCADMIN|PX-IMG-" + Math.random().toString(36).substr(2,6).toUpperCase() + "|END";
+            let adminBin = '';
+            for(let i=0; i<adminMsg.length; i++) adminBin += adminMsg.charCodeAt(i).toString(2).padStart(8,'0');
+            embedQIM(imgData.data, cvs.width, cvs.height, adminBin, "PIXELCRAFT_ADMIN");
+
             ctx.putImageData(imgData, 0, 0);
             const url = cvs.toDataURL('image/png');
             document.getElementById('btn-download').onclick = () => {
