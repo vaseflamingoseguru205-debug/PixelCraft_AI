@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/BiradarSwapnilDeveloper/PixelCraft-AI#readme",
   "dependencies": {
+    "canvas": "^3.2.3",
     "connect-mongo": "^6.0.0",
     "deep-email-validator": "^0.1.27",
     "dotenv": "^17.3.1",
