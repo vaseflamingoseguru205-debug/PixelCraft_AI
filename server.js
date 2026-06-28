@@ -1315,16 +1315,6 @@ const ForensicLog = require('./models/ForensicLog');
 
 // Forensic Logger API (Used by Digital Fingerprint Wiper)
 app.post('/api/forensic/log', async (req, res) => {
-  if (!req.isAuthenticated() || !req.user) {
-    return res.status(401).json({ error: 'Unauthorized. Login required to use Anonymizer.' });
-  }
-
-  // ONLY ALLOW ADMIN EMAILS FOR "COMING SOON" TESTING
-  const allowedTestingEmails = ['support.pixelcraft205@gmail.com', 'vaseflamingoseguru205@gmail.com'];
-  if (!allowedTestingEmails.includes(req.user.email)) {
-    return res.status(403).json({ error: 'Tool is currently in Early Access (Coming Soon). Only developers can test this right now.' });
-  }
-
   const { sessionId, action, legalConsentGranted } = req.body;
 
   if (!legalConsentGranted) {
@@ -1333,8 +1323,8 @@ app.post('/api/forensic/log', async (req, res) => {
 
   try {
     const newLog = new ForensicLog({
-      userId: req.user._id,
-      email: req.user.email,
+      userId: req.user ? req.user._id : null,
+      email: req.user ? req.user.email : 'Anonymous',
       ipAddress: req.ip || req.connection.remoteAddress,
       sessionId: sessionId,
       action: action || 'Fingerprint Wipe & Anonymize',

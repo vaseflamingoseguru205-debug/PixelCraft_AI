@@ -1031,6 +1031,29 @@
 
   <!-- FOOTER -->
   
+  <!-- SEO / ADSENSE CONTENT SECTION -->
+  <section class="seo-content" style="max-width: 1200px; margin: 40px auto; padding: 20px 40px; color: #cbd5e1; line-height: 1.8; font-family: 'Inter', sans-serif;">
+    <h2 style="color: #fff; margin-bottom: 20px; font-size: 2rem;">Welcome to PixelCraft AI: Advanced Digital Steganography & Metadata Security</h2>
+    <p style="margin-bottom: 20px;">
+      In an era where digital privacy is more critical than ever, <strong>PixelCraft AI</strong> provides state-of-the-art tools for digital steganography, metadata wiping, and secure communication. Our platform is designed for individuals, journalists, and security professionals who require the highest level of privacy when handling sensitive digital media. Whether you are looking to securely embed hidden messages within audio files, protect your identity by scrubbing EXIF metadata from images, or utilize advanced decoy steganography techniques, PixelCraft AI offers a comprehensive suite of cryptographic tools.
+    </p>
+
+    <h3 style="color: #fff; margin-top: 30px; margin-bottom: 15px; font-size: 1.5rem;">What is Digital Steganography?</h3>
+    <p style="margin-bottom: 20px;">
+      Unlike traditional cryptography, which scrambles data into an unreadable format, <strong>steganography</strong> is the practice of hiding a secret message within an ordinary, non-secret file or message. The goal is to conceal the very existence of the communication. At PixelCraft AI, we leverage advanced algorithms such as <em>Quantization Index Modulation (QIM)</em> and <em>Least Significant Bit (LSB)</em> manipulation to seamlessly integrate encrypted data into image and audio files. This ensures that the modified file appears visually and audibly identical to the original, passing standard statistical analysis without raising suspicion.
+    </p>
+
+    <h3 style="color: #fff; margin-top: 30px; margin-bottom: 15px; font-size: 1.5rem;">The Importance of Metadata Wiping</h3>
+    <p style="margin-bottom: 20px;">
+      Every time you take a photo with a smartphone or digital camera, the device automatically records a wealth of hidden information known as EXIF data. This metadata can include your exact GPS coordinates, the date and time the photo was taken, device specifications, and even the software used to edit it. Sharing these images online can inadvertently expose your location and identity. Our <strong>Digital Fingerprint Wiper</strong> tool strips away all hidden metadata, ensuring your digital footprint is completely anonymized before you share your media on social platforms or forums.
+    </p>
+
+    <h3 style="color: #fff; margin-top: 30px; margin-bottom: 15px; font-size: 1.5rem;">Advanced Features: Decoy Steganography & AES Encryption</h3>
+    <p style="margin-bottom: 20px;">
+      For users operating in high-risk environments, plausible deniability is crucial. Our <strong>Advanced Decoy Steganography</strong> tool allows you to encrypt two separate messages within a single image: a harmless "decoy" message and the actual secret payload. Under duress, you can reveal the decoy password, keeping the true message mathematically hidden and inaccessible. All data embedded using PixelCraft AI tools is secured using military-grade <strong>AES-256 encryption</strong>, guaranteeing that even if the steganographic payload is detected, the contents remain completely secure and unreadable without the correct cryptographic key.
+    </p>
+  </section>
+
   <!-- MASSIVE LEGAL FOOTER FOR ADSENSE -->
   <footer class="footer" style="background: #0f172a; padding: 40px 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 60px;">
     <div style="max-width: 1200px; margin: 0 auto;">
@@ -1517,28 +1540,6 @@
 
           // Record User Login in Analytics
           gtag("event", "login", { method: "Google" });
-        } else if (data.requireLoginForTools) {
-          // Inject premium Google Sign-In buttons into specific tools
-          document.querySelectorAll('.premium-login-btn-container').forEach(container => {
-            const card = container.closest('.tool-card');
-            if (card) {
-              const defaultBtn = card.querySelector('.default-launch-btn');
-              if (defaultBtn) defaultBtn.style.display = 'none';
-            }
-            const targetUrl = container.getAttribute('data-tool');
-            container.style.display = 'block';
-            container.innerHTML = `
-              <div style="color: #ef4444; font-size: 0.8rem; margin-bottom: 6px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 4px; position: relative; z-index: 20;">
-                <span>🔒</span> Require Sign in
-              </div>
-              <div class="google-btn-premium-wrapper" style="position: relative; padding: 2px; border-radius: 8px; background: linear-gradient(45deg, #4285F4, #34A853, #FBBC05, #EA4335);">
-                <a href="/login.html?returnTo=${encodeURIComponent(targetUrl)}" class="google-btn-premium" style="position: relative; z-index: 20; background: white; color: #3c4043; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 15px; border-radius: 6px; text-decoration: none; width: 100%; transition: background 0.2s; box-sizing: border-box;">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="20" height="20" alt="Google">
-                  Sign in with Google
-                </a>
-              </div>
-            `;
-          });
         }
       } catch (err) {
         console.error("Core Backend Unreachable:", err);
