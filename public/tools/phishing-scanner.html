@@ -510,19 +510,7 @@
     }
   });
 </script>
-  <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      try {
-        const res = await fetch("/api/auth/status");
-        const data = await res.json();
-        if (!data.authenticated && data.requireLoginForTools) {
-          window.location.href = '/login.html?returnTo=' + encodeURIComponent(window.location.pathname);
-        }
-      } catch (err) {
-        console.error("Auth check failed:", err);
-      }
-    });
-  </script>
+  
 
   <!-- SEO/ADSENSE RICH TEXT INJECTION -->
   <div style="margin-top: 60px; padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); color: #cbd5e1; line-height: 1.8; margin-bottom: 40px;">
