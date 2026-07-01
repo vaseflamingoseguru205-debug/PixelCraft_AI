@@ -31,7 +31,7 @@ jobs:
       # Step 3: Gate 2 - SCA / Dependency Scan (Snyk)
       # Ye check karega ki kisi package me koi vulnerability to nahi hai
       - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/cli@master
+        uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
