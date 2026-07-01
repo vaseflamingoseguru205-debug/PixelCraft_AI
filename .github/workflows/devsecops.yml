@@ -15,7 +15,7 @@ jobs:
     steps:
       # Step 1: Tumhara code GitHub server par clone hoga
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -36,4 +36,4 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: test
-          args: --severity-threshold=high # Sirf High/Critical bugs par fail karega
+          args: --severity-threshold=high # Sirf High/Critical bugs par fail karega okay
