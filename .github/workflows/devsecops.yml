@@ -17,7 +17,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-dept: 0
 
       # Step 2: Gate 1 - Secret Scanning (TruffleHog)
       # Ye check karega ki galti se koi AWS Key ya password to code me nahi hai
@@ -36,4 +36,4 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: test
-          args: --severity-threshold=high # Sirf High/Critical bugs par fail karega okay
+          args: --severity-threshold=high # Sirf High/Critical bugs par fail karega
