@@ -22,9 +22,12 @@ jobs:
       # Step 2: Gate 1 - Secret Scanning (TruffleHog)
       # Ye check karega ki galti se koi AWS Key ya password to code me nahi hai
       - name: Run TruffleHog Secret Scanner
+        if: ${{ (github.event_name == 'push' && github.event.before != github.event.after && !startsWith(github.event.before, '00000000')) || (github.event_name == 'pull_request' && github.event.pull_request.base.sha != github.event.pull_request.head.sha) }}
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.event.after }}
 
       # Step 3: Gate 2 - SCA / Dependency Scan (Snyk)
       # Ye check karega ki kisi package me koi vulnerability to nahi hai
