@@ -1,6 +1,5 @@
 name: PixelCraft AI DevSecOps Pipeline
 
-# Pipeline kab chalegi? Jab bhi koi 'main' branch par code push karega
 on:
   push:
     branches: [ "main" ]
@@ -13,28 +12,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Tumhara code GitHub server par clone hoga
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Step 2: Gate 1 - Secret Scanning (TruffleHog)
-      # Ye check karega ki galti se koi AWS Key ya password to code me nahi hai
+      # Gate 1: Secret Scanning (Full Repository Scan)
+      # 'base' aur 'head' hata diya gaya hai taaki pure folder ka safe snapshot scan ho sake
       - name: Run TruffleHog Secret Scanner
-        if: ${{ (github.event_name == 'push' && github.event.before != github.event.after && !startsWith(github.event.before, '00000000')) || (github.event_name == 'pull_request' && github.event.pull_request.base.sha != github.event.pull_request.head.sha) }}
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
-          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.event.after }}
 
-      # Step 3: Gate 2 - SCA / Dependency Scan (Snyk)
-      # Ye check karega ki kisi package me koi vulnerability to nahi hai
+      # Gate 2: SCA / Dependency Scan (Snyk)
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: test
-          args: --severity-threshold=high # Sirf High/Critical bugs par fail karega okay
+          args: --severity-threshold=high
