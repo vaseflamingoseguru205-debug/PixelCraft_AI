@@ -1,6 +1,5 @@
 name: PixelCraft AI DevSecOps Pipeline
 
-# Pipeline kab chalegi? Jab bhi koi 'main' branch par code push karega
 on:
   push:
     branches: [ "main" ]
@@ -13,21 +12,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Tumhara code GitHub server par clone hoga
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-dept: 0
 
-      # Step 2: Gate 1 - Secret Scanning (TruffleHog)
-      # Ye check karega ki galti se koi AWS Key ya password to code me nahi hai
+      # Gate 1: Secret Scanning (Full Repository Scan)
+      # 'base' aur 'head' hata diya gaya hai taaki pure folder ka safe snapshot scan ho sake
       - name: Run TruffleHog Secret Scanner
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
 
-      # Step 3: Gate 2 - SCA / Dependency Scan (Snyk)
-      # Ye check karega ki kisi package me koi vulnerability to nahi hai
+      # Gate 2: SCA / Dependency Scan (Snyk)
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
