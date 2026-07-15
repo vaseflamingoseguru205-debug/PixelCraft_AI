@@ -25,7 +25,7 @@ jobs:
           path: ./
 
       # Gate 2: SCA / Dependency Scan (Snyk)
-      - name: Run Snyk to check for vulnerabilities
+      - name: Run Snyk to czsk for vulnerabilities
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}

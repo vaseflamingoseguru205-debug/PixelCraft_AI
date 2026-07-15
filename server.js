@@ -704,23 +704,13 @@ app.post('/api/admin/settings', requireAdminAuth, (req, res) => {
   res.json({ success: true, settings: appSettings });
 });
 
-// Middleware to Protect the Specific Premium Tools (Requires Sign-In to use tools)
+// Middleware to Protect ALL Tools (Requires Sign-In to use tools)
 app.use('/tools', (req, res, next) => {
-  if (!appSettings.requireLoginForTools) {
-    return next();
-  }
-  
-  // Only protect the Decoy Steganography and Phishing Scanner tools
-  const isPremiumTool = req.url.includes('secret-image.html') || req.url.includes('phishing-scanner.html');
-  if (!isPremiumTool) {
-    return next();
-  }
-
   if (req.isAuthenticated()) {
     // Allow tool access
     return next();
   }
-  // If not logged in and they try to visit a premium tool, redirect to login page
+  // If not logged in and they try to visit any tool, redirect to login page
   res.redirect('/login.html?returnTo=' + encodeURIComponent('/tools' + req.url));
 });
 
