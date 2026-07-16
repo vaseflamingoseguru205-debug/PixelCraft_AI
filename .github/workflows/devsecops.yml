@@ -15,7 +15,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-dept: 0
+          fetch-depth: 0
 
       # Gate 1: Secret Scanning (Full Repository Scan)
       # 'base' aur 'head' hata diya gaya hai taaki pure folder ka safe snapshot scan ho sake
@@ -25,10 +25,22 @@ jobs:
           path: ./
 
       # Gate 2: SCA / Dependency Scan (Snyk)
-      - name: Run Snyk to czsk for vulnerabilities
+      - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: test
           args: --severity-threshold=high # Sirf High/Critical bugs par fail karega
+
+      # Gate 3: Trivy Scanner (AI Auto-Remediation ke liye JSON report generate karega)
+      - name: Run Trivy Vulnerability Scanner
+        # if: always() # Agar tu chahta hai ki Snyk fail hone ke baad bhi Trivy chale, toh yeh line uncomment kar dena
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'json'
+          output: 'trivy-results.json'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
