@@ -33,8 +33,8 @@ RULES:
 Report:
 {bug_details}"""
 
-    # Define the Gemini API endpoint
-    url = f"[https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=](https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=){GEMINI_API_KEY}"
+    # Define the Gemini API endpoint (Clean URL without any markdown or brackets)
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
     
     headers = {
         "Content-Type": "application/json"
