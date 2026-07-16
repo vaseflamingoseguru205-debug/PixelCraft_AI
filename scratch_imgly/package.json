@@ -11,6 +11,8 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@imgly/background-removal": "^1.2.0"
+    "@imgly/background-removal": "^1.2.0",
+    "lodash": "^4.18.1",
+    "zod": "^4.4.3"
   }
 }
