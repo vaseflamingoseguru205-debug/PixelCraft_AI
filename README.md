@@ -23,12 +23,14 @@ graph TD
     D -->|Passed| F{Gate 2: Snyk SCA}
     F -->|High/Crit Vulns| G[Pipeline FAILED]
     F -->|Passed| H{Gate 3: Trivy Scan}
-    H -->|Vulns Detected| I[Trivy JSON Report]
+    H -->|Vulns Detected| I[Auto Download Trivy JSON Report]
     H -->|Passed| J[Deployment Ready]
     
-    I --> K[Gemini AI Auto-Remediator]
-    K --> L[Generate Patch/Fix Instructions]
-    L --> M[Notify Developer / Create Auto-Fix PR]
+    I --> K[Gemini AI Auto-Remediator via API Key]
+    K --> L[Generate Exact Patch/Fix Commands]
+    L --> M[Auto Apply Fixes via Subprocess]
+    M --> N[Auto Commit & Push Fixes]
+    N --> O[Developer Auto Pulls Updated Code]
 ```
 
 ### 🛡️ Deep Dive: Security Gates & Automation
@@ -47,12 +49,13 @@ Our CI/CD pipeline orchestrates the following security gates synchronously upon 
 
 #### 3. AI-Powered Auto-Remediation (Custom Gemini Script)
 - **Script**: `scripts/ai_remediator.py`
-- **Objective**: Not just finding vulnerabilities, but automatically fixing them.
+- **Objective**: Not just finding vulnerabilities, but automatically fixing them without human intervention.
 - **Mechanism**: 
-  1. Reads output from **Trivy** vulnerability scanners (`trivy-results.json`).
-  2. Ingests the JSON payload and interfaces with the **Google Gemini 1.5 Flash API**.
-  3. The LLM acts as an automated DevSecOps engineer, analyzing the vulnerability and generating exact CLI commands or code snippets to patch the issue.
-  4. This drastically reduces Mean Time To Remediation (MTTR).
+  1. **Auto JSON Download**: Automatically reads the output from **Trivy** vulnerability scanners (`trivy-results.json`).
+  2. **AI Code Fix**: Ingests the JSON payload and interfaces with the **Google Gemini 1.5 Flash API** (secured via `GEMINI_API_KEY`).
+  3. The LLM acts as an automated DevSecOps engineer, generating exact CLI commands to patch the issue.
+  4. **Auto Fix Execution**: The script automatically executes the AI-generated commands using Python's `subprocess`.
+  5. **Auto Pull / Sync**: The workflow commits and pushes the fixes automatically, allowing developers to seamlessly **auto pull** the secured code back to their local environments.
 
 ### 📂 CI/CD Directory Structure
 
