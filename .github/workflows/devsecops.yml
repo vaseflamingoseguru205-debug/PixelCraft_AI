@@ -38,7 +38,7 @@ jobs:
           format: 'json'
           output: 'trivy-results.json'
           exit-code: '0'
-          severity: 'CRITICAL,HIGH'
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
           scanners: 'vuln'
 
       # Gate 3: Generate Markdown Report in GitHub Summary
