@@ -51,7 +51,8 @@ RULES:
 Vulnerabilities:
 {vuln_details}"""
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    api_key = GEMINI_API_KEY.strip() if GEMINI_API_KEY else ""
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={api_key}"
     headers = {"Content-Type": "application/json"}
     data = {"contents": [{"parts": [{"text": prompt}]}]}
 
