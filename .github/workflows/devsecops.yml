@@ -84,13 +84,19 @@ jobs:
       - name: Commit and Push AI Fixes
         if: always()
         run: |
+          # Clean up generated files so they aren't committed
+          rm -rf .cache trivy-results.json trivy-report.html trivy-report.pdf html.tpl
+          
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add .
+          
           # Check if there are any changes (like package.json updates)
           if ! git diff-index --quiet HEAD; then
             git commit -m "Auto-fix vulnerabilities by Gemini AI [skip ci]"
-            git push
+            # Use HEAD:branch_name to push from detached HEAD
+            BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
+            git push origin HEAD:$BRANCH_NAME
           else
             echo "No fixes were applied by AI."
           fi
