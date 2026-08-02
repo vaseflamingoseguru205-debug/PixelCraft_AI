@@ -10,6 +10,8 @@ jobs:
   security-gates:
     name: Automated Security Scans
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # 👈 This is required so the bot can push code back
 
     steps:
       - name: Checkout Code
