@@ -74,6 +74,14 @@ jobs:
           pip install requests --quiet
           python scripts/ai_remediator.py
 
+      - name: "Upload AI Debug Log"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-debug-log
+          path: ai_debug.log
+          retention-days: 1
+
       # Gate 5: Commit and Push AI Fixes back
       - name: "🚀 Push AI Fixes to Branch"
         if: always()
