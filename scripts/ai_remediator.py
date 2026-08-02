@@ -10,29 +10,47 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 def read_trivy_report():
     try:
         with open('trivy-results.json', 'r') as file:
-            report = json.load(file)
-            return report
+            return json.load(file)
     except FileNotFoundError:
         print("No Trivy report found. Everything looks secure!")
         return None
 
-def ask_gemini_for_fix(report):
+def extract_vulnerabilities(report):
+    # Extract only the relevant vulnerability info to save tokens
+    vuln_summary = []
+    
+    if "Results" in report:
+        for result in report["Results"]:
+            if "Vulnerabilities" in result:
+                for vuln in result["Vulnerabilities"]:
+                    pkg = vuln.get("PkgName", "unknown")
+                    installed = vuln.get("InstalledVersion", "unknown")
+                    fixed = vuln.get("FixedVersion", "unknown")
+                    severity = vuln.get("Severity", "unknown")
+                    
+                    # Store a concise string
+                    vuln_summary.append(f"Package: {pkg}, Installed: {installed}, Fixed in: {fixed}, Severity: {severity}")
+                    
+    return "\n".join(set(vuln_summary)) # Remove duplicates
+
+def ask_gemini_for_fix(vuln_details):
+    if not vuln_details:
+        print("No high severity vulnerabilities found to send to AI.")
+        return None
+        
     print("Sending vulnerability data to Gemini AI...")
     
-    # Truncate the report to prevent exceeding API token limits
-    bug_details = str(report)[:1500] 
-    
     # STRICT PROMPT to ensure we only get valid npm install commands
-    prompt = f"""You are a DevSecOps Expert. Read this Trivy vulnerability report.
-Your ONLY job is to provide the exact terminal commands needed to fix these vulnerabilities in a Node.js project.
+    prompt = f"""You are a DevSecOps Expert. Read this list of vulnerabilities found in our Node.js project.
+Your ONLY job is to provide the exact terminal commands needed to update these vulnerable packages to their fixed versions.
 RULES:
 1. ONLY output raw 'npm install package@version --save' commands.
 2. NO markdown formatting, NO backticks (```), NO explanations.
 3. Put each command on a new line.
-4. Do NOT include 'npm audit fix' as it is unreliable for specific versions.
+4. Do NOT include 'npm audit fix'.
 
-Report:
-{bug_details}"""
+Vulnerabilities:
+{vuln_details}"""
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
     
@@ -67,7 +85,6 @@ def apply_ai_fix(commands_text):
         if cmd.startswith("npm install"):
             print(f"Running Command: {cmd}")
             try:
-                # Command ko terminal mein execute karna
                 subprocess.run(cmd, shell=True, check=True)
                 print("✅ Success!")
             except subprocess.CalledProcessError as e:
@@ -76,13 +93,19 @@ def apply_ai_fix(commands_text):
              print(f"⚠️ Ignored non-npm command: {cmd}")
 
 if __name__ == "__main__":
-    # Execute the workflow
     trivy_data = read_trivy_report()
     if trivy_data:
-        ai_solution = ask_gemini_for_fix(trivy_data)
+        vuln_details = extract_vulnerabilities(trivy_data)
+        print("\n--- EXTRACTED VULNERABILITIES ---\n")
+        print(vuln_details)
         
-        print("\n--- GEMINI AI SUGGESTED COMMANDS ---\n")
-        print(ai_solution)
+        ai_solution = ask_gemini_for_fix(vuln_details)
         
-        # Apply fixes
-        apply_ai_fix(ai_solution)
+        if ai_solution:
+            print("\n--- GEMINI AI SUGGESTED COMMANDS ---\n")
+            print(ai_solution)
+            
+            # Apply fixes
+            apply_ai_fix(ai_solution)
+        else:
+            print("No AI solution provided.")
