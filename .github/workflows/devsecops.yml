@@ -38,26 +38,58 @@ jobs:
           format: 'json'
           output: 'trivy-results.json'
           exit-code: '0'
-          severity: 'CRITICAL,HIGH'
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+          scanners: 'vuln'
 
-      # Gate 3: Generate Human-Readable HTML Report
-      - name: "📊 Generate HTML Report"
+      # Gate 3: Generate Markdown Report in GitHub Summary
+      - name: "📊 Generate Markdown Report"
         if: always()
         run: |
+          echo "## 🛡️ Trivy Vulnerability Report" >> $GITHUB_STEP_SUMMARY
+          echo '```text' >> $GITHUB_STEP_SUMMARY
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+          trivy fs . --scanners vuln >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "✅ Markdown Report added to Job Summary!"
+
+      # Gate 3b: Generate and Upload HTML Report (for downloading)
+      - name: "📄 Generate & Upload HTML Report"
+        if: always()
+        run: |
           wget -q https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
-          trivy fs . --format template --template "@html.tpl" -o trivy-report.html
+          trivy fs . --scanners vuln --format template --template "@html.tpl" -o trivy-report.html
           echo "✅ HTML Report generated!"
 
-      # Upload HTML Report
-      - name: "📤 Upload HTML Report"
+      - name: "📤 Upload HTML Artifact"
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: trivy-report-html
           path: trivy-report.html
 
-      # Upload JSON Report
+      # Send WhatsApp Notification if Vulnerabilities exist
+      - name: "📱 Send WhatsApp Notification"
+        if: always()
+        env:
+          WHATSAPP_PHONE: ${{ secrets.WHATSAPP_PHONE }}
+          WHATSAPP_API_KEY: ${{ secrets.WHATSAPP_API_KEY }}
+        run: |
+          # Check if Trivy found any vulnerabilities
+          if grep -q '"Vulnerabilities":' trivy-results.json; then
+             RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+             MESSAGE="🚨 *PixelCraft AI Alert!* 🚨%0A%0AHigh/Critical Vulnerabilities found in the latest push!%0A%0AThe AI is attempting to auto-fix them. Check the full report directly here (No ZIP required):%0A$RUN_URL"
+             
+             if [ -n "$WHATSAPP_PHONE" ] && [ -n "$WHATSAPP_API_KEY" ]; then
+                curl -s -X GET "https://api.callmebot.com/whatsapp.php?phone=$WHATSAPP_PHONE&text=$MESSAGE&apikey=$WHATSAPP_API_KEY"
+                echo "✅ WhatsApp notification sent!"
+             else
+                echo "ℹ️ WhatsApp credentials not found in secrets. Skipping notification."
+             fi
+          else
+             echo "ℹ️ No vulnerabilities found. No WhatsApp message sent."
+          fi
+
+      # Upload JSON Report (Hidden, used by AI)
       - name: "📤 Upload JSON Report"
         if: always()
         uses: actions/upload-artifact@v4
@@ -95,13 +127,13 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add package.json package-lock.json
           
-          # Check if package.json or package-lock.json changed
-          if ! git diff-index --quiet HEAD; then
+          # Check if any staged changes exist (e.g. package.json/package-lock.json modified)
+          if ! git diff --staged --quiet; then
             git commit -m "🤖 Auto-fix: AI patched vulnerabilities [skip ci]"
             BRANCH_NAME="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
             
             # Pull with rebase to avoid rejected pushes if the remote advanced
-            git pull --rebase origin $BRANCH_NAME
+            git pull --rebase origin $BRANCH_NAME || true
             
             git push origin HEAD:$BRANCH_NAME
             echo "✅ AI fixes pushed to branch: $BRANCH_NAME"
