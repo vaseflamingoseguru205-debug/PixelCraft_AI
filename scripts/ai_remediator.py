@@ -25,32 +25,8 @@ def read_trivy_report():
         log_debug(f"Error reading Trivy report: {e}")
         return None
 
-def strip_markdown(text):
-    text = text.strip()
-    if text.startswith("```"):
-        lines = text.split('\n')
-        if len(lines) > 1:
-            lines = lines[1:] # remove first line
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]
-        text = "\n".join(lines)
-    return text.strip() + "\n"
-
-def ask_gemini(prompt):
-    api_key = GEMINI_API_KEY.strip() if GEMINI_API_KEY else ""
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={api_key}"
-    headers = {"Content-Type": "application/json"}
-    data = {"contents": [{"parts": [{"text": prompt}]}]}
-    try:
-        response = requests.post(url, headers=headers, json=data)
-        response.raise_for_status()
-        return response.json()['candidates'][0]['content']['parts'][0]['text']
-    except Exception as e:
-        log_debug(f"Gemini API Error: {e}")
-        return None
-
-def process_dependencies(report):
-    vulns = []
+def extract_vulnerabilities(report):
+    vuln_summary = []
     if "Results" in report:
         for result in report["Results"]:
             if "Vulnerabilities" in result:
@@ -58,85 +34,73 @@ def process_dependencies(report):
                     pkg = vuln.get("PkgName", "unknown")
                     installed = vuln.get("InstalledVersion", "unknown")
                     fixed = vuln.get("FixedVersion", "unknown")
+                    severity = vuln.get("Severity", "unknown")
+                    
                     if fixed != "unknown" and fixed != "":
-                        vulns.append(f"{pkg}@{fixed}")
-    
-    vulns = list(set(vulns))
-    if not vulns:
-        return
+                        vuln_summary.append(f"Package: {pkg}, Installed: {installed}, Fixed in: {fixed}, Severity: {severity}")
+    return "\n".join(set(vuln_summary))
 
-    log_debug(f"Found dependencies to fix: {vulns}")
-    prompt = f"""You are a DevSecOps Expert. Generate the exact terminal commands to install these secure packages:
-{', '.join(vulns)}
+def ask_gemini_for_fix(vuln_details):
+    if not vuln_details:
+        log_debug("No fixable vulnerabilities found.")
+        return None
+        
+    log_debug("Sending to Gemini:\n" + vuln_details)
+    
+    prompt = f"""You are a DevSecOps Expert. Read this list of vulnerabilities.
+Your ONLY job is to provide the exact terminal commands to update the vulnerable packages to their 'Fixed in' versions.
 RULES:
 1. ONLY output raw 'npm install package@version --save --legacy-peer-deps' commands.
 2. NO markdown, NO backticks, NO explanations.
-3. Put each command on a new line."""
+3. Put each command on a new line.
 
-    cmds = ask_gemini(prompt)
-    if cmds:
-        for cmd in cmds.strip().split('\n'):
-            cmd = cmd.replace("`", "").strip()
-            if cmd.startswith("npm "):
-                log_debug(f"Running: {cmd}")
-                try:
-                    subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
-                except subprocess.CalledProcessError as e:
-                    log_debug(f"Failed: {e.stderr}")
-
-def process_sast_code(report):
-    file_issues = {}
-    if "Results" in report:
-        for result in report["Results"]:
-            target = result.get("Target", "")
-            if not target or target.endswith("package-lock.json") or target.endswith("package.json"):
-                continue
-            
-            issues = []
-            if "Secrets" in result:
-                for sec in result["Secrets"]:
-                    issues.append(f"- Secret found: {sec.get('Title')} (Match: {sec.get('Match')}) at line {sec.get('StartLine')}")
-            if "Misconfigurations" in result:
-                for mis in result["Misconfigurations"]:
-                    issues.append(f"- Vulnerability: {mis.get('Title')} - {mis.get('Message')}")
-            
-            if issues:
-                if target not in file_issues:
-                    file_issues[target] = []
-                file_issues[target].extend(issues)
-                
-    for filepath, issues in file_issues.items():
-        if not os.path.exists(filepath):
-            continue
-            
-        log_debug(f"Fixing SAST issues in {filepath}...")
-        with open(filepath, 'r', encoding='utf-8') as f:
-            code = f.read()
-            
-        prompt = f"""You are an expert Security Engineer. Fix the following vulnerabilities in the code below.
-File: {filepath}
 Vulnerabilities:
-{chr(10).join(issues)}
+{vuln_details}"""
 
-RULES:
-1. Output the ENTIRE fixed file content.
-2. Ensure the code is functionally identical, but secure (e.g., remove hardcoded secrets, sanitize input for injection).
-3. DO NOT wrap the code in markdown blocks like ```javascript. Just output the raw code.
-4. DO NOT include any explanations or apologies.
+    api_key = GEMINI_API_KEY.strip() if GEMINI_API_KEY else ""
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={api_key}"
+    headers = {"Content-Type": "application/json"}
+    data = {"contents": [{"parts": [{"text": prompt}]}]}
 
-Code:
-{code}"""
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()
+        res_text = response.json()['candidates'][0]['content']['parts'][0]['text']
+        log_debug("Gemini Response:\n" + res_text)
+        return res_text
+    except Exception as e:
+        log_debug(f"Gemini API Error: {e}")
+        return None
+
+def apply_ai_fix(commands_text):
+    if not commands_text:
+        return
         
-        fixed_code = ask_gemini(prompt)
-        if fixed_code:
-            clean_code = strip_markdown(fixed_code)
-            with open(filepath, 'w', encoding='utf-8') as f:
-                f.write(clean_code)
-            log_debug(f"Successfully patched {filepath}")
-            subprocess.run(f'git add "{filepath}"', shell=True)
+    commands = commands_text.strip().split('\n')
+    success_count = 0
+    
+    for cmd in commands:
+        cmd = cmd.strip().replace("`", "")
+        if cmd.startswith("npm "):
+            log_debug(f"Running Command: {cmd}")
+            try:
+                result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+                log_debug(f"Success! Output:\n{result.stdout}")
+                success_count += 1
+            except subprocess.CalledProcessError as e:
+                log_debug(f"Failed! Output:\n{e.stderr}")
+                sys.exit(1)
+        elif cmd:
+             log_debug(f"Ignored non-npm command: {cmd}")
+             
+    if success_count == 0:
+        log_debug("No valid npm commands were executed!")
+        sys.exit(1)
 
 if __name__ == "__main__":
     trivy_data = read_trivy_report()
     if trivy_data:
-        process_dependencies(trivy_data)
-        process_sast_code(trivy_data)
+        vuln_details = extract_vulnerabilities(trivy_data)
+        ai_solution = ask_gemini_for_fix(vuln_details)
+        if ai_solution:
+            apply_ai_fix(ai_solution)
