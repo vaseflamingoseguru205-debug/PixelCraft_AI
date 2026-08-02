@@ -40,7 +40,7 @@ jobs:
           exit-code: '0'
           severity: 'CRITICAL,HIGH'
 
-      # Gate 3: Generate Markdown Report in GitHub Summary (No ZIP needed!)
+      # Gate 3: Generate Markdown Report in GitHub Summary
       - name: "📊 Generate Markdown Report"
         if: always()
         run: |
@@ -50,6 +50,21 @@ jobs:
           trivy fs . >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "✅ Markdown Report added to Job Summary!"
+
+      # Gate 3b: Generate and Upload HTML Report (for downloading)
+      - name: "📄 Generate & Upload HTML Report"
+        if: always()
+        run: |
+          wget -q https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
+          trivy fs . --format template --template "@html.tpl" -o trivy-report.html
+          echo "✅ HTML Report generated!"
+
+      - name: "📤 Upload HTML Artifact"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report-html
+          path: trivy-report.html
 
       # Send WhatsApp Notification if Vulnerabilities exist
       - name: "📱 Send WhatsApp Notification"
