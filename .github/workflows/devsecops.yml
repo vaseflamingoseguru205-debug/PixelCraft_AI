@@ -125,7 +125,7 @@ jobs:
           
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add package.json package-lock.json
           
           # Check if any files were changed by AI
           if [ -n "$(git status --porcelain)" ]; then

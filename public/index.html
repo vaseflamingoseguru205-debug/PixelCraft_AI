@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-V78ZLHJLR8"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V78ZLHJLR8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
 
-  gtag('config', 'G-V78ZLHJLR8');
-</script>
+    gtag('config', 'G-V78ZLHJLR8');
+  </script>
   <!-- ===== SEO META TAGS ===== -->
   <title>
     PixelCraft AI - Free AI Image Editing Tools Online |
@@ -48,7 +48,7 @@
   <meta name="twitter:title"
     content="PixelCraft AI - Free AI Image Editing Tools Online |  Compressor & More | Best Free AI Tool" />
   <meta name="twitter:description"
-    content="PixelCraft AI offers 20+ free professional AI image tools -  compress images, add watermarks, convert formats, colorize photos and more. No signup. Works in browser. Experience the best AI image processing instantly for free!" />
+    content="PixelCraft AI offers 20+ free professional AI tools - compress images, add watermarks, convert formats, colorize photos and more. No signup. Works in browser. Experience the best AI image processing instantly for free!" />
   <meta name="twitter:image" content="https://pixelcraft-ai-94y5.onrender.com/og-image.png" />
 
   <!-- Extra Technical SEO -->
@@ -104,7 +104,7 @@
       }
     </script>
   <!-- ===== END SEO ===== -->
-      <meta charset="UTF-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- PWA Support -->
@@ -117,13 +117,18 @@
   <!-- Google AdSense -->
   <meta name="google-adsense-account" content="ca-pub-3788374704176398">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3788374704176398"
-     crossorigin="anonymous"></script>
+    crossorigin="anonymous"></script>
 
   <style>
     .premium-login-btn-container {
-      margin-top: auto; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;
-      display: none; /* Hidden by default, toggled via JS */
+      margin-top: auto;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 12px;
+      display: none;
+      /* Hidden by default, toggled via JS */
     }
+
     .google-btn-premium-wrapper {
       display: inline-block;
       padding: 2px;
@@ -134,21 +139,41 @@
       position: relative;
       z-index: 20;
     }
+
     .google-btn-premium {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      background: #fff; color: #1e293b; padding: 10px 18px; border-radius: 8px;
-      font-size: 0.9rem; font-weight: 600; text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #fff;
+      color: #1e293b;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
       transition: transform 0.2s, box-shadow 0.2s;
     }
+
     .google-btn-premium-wrapper:hover .google-btn-premium {
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4);
     }
+
     @keyframes borderGradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
     }
+
     /* Safe Mobile Responsiveness */
     @media (max-width: 768px) {
       .tools-grid {
@@ -156,18 +181,24 @@
         gap: 12px;
         padding: 0;
       }
+
       .tool-card {
         padding: 12px;
       }
+
       .tool-card h3 {
         font-size: 1.1rem;
         margin-bottom: 6px;
       }
+
       .tool-card p {
         font-size: 0.85rem;
         margin-bottom: 10px;
       }
-      .launch-btn, .default-launch-btn, .google-btn-premium {
+
+      .launch-btn,
+      .default-launch-btn,
+      .google-btn-premium {
         padding: 8px;
         font-size: 0.85rem;
       }
@@ -177,7 +208,7 @@
 
 <body>
   <!-- AMP Auto Ads Body -->
-<!-- TOAST -->
+  <!-- TOAST -->
   <div id="toast-container" class="toast-container"></div>
 
   <!-- NAVBAR -->
@@ -207,7 +238,8 @@
         Advanced Security &amp; Utility Tools With <span>AI</span><br />- Free &amp; Private
       </h1>
       <p>
-        Detect phishing, hide secret messages, convert PDFs, and edit images instantly. All processing runs securely in your browser. 100% free.
+        Detect phishing, hide secret messages, convert PDFs, and edit images instantly. All processing runs securely in
+        your browser. 100% free.
       </p>
       <div class="hero-actions">
         <a href="#tools" class="btn-primary">🚀 Explore All Tools</a>
@@ -264,17 +296,29 @@
         <button class="btn btn-outline filter-btn" data-filter="convert">
           Convert
         </button>
-        
+
       </div>
 
       <div class="tools-grid" id="tools-grid">
 
         <style>
           @keyframes premiumFloat {
-            0% { box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2); transform: translateY(-2px); }
-            50% { box-shadow: 0 15px 40px rgba(56, 189, 248, 0.4); transform: translateY(-8px); }
-            100% { box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2); transform: translateY(-2px); }
+            0% {
+              box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+              transform: translateY(-2px);
+            }
+
+            50% {
+              box-shadow: 0 15px 40px rgba(56, 189, 248, 0.4);
+              transform: translateY(-8px);
+            }
+
+            100% {
+              box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+              transform: translateY(-2px);
+            }
           }
+
           .premium-floating-card {
             border: 1px solid rgba(56, 189, 248, 0.6) !important;
             background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8)) !important;
@@ -282,11 +326,13 @@
             z-index: 10;
             position: relative;
           }
+
           .premium-floating-card:hover {
             transform: translateY(-12px) scale(1.02) !important;
             box-shadow: 0 20px 50px rgba(56, 189, 248, 0.6) !important;
             border-color: #38bdf8 !important;
           }
+
           .most-used-badge {
             background: linear-gradient(90deg, #3b82f6, #06b6d4);
             color: white;
@@ -295,17 +341,21 @@
             letter-spacing: 1px;
             box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
           }
-          
+
           /* Colorful Looping Border Animation for Decoy Card */
           @keyframes spinGradient {
-            100% { transform: rotate(360deg); }
+            100% {
+              transform: rotate(360deg);
+            }
           }
+
           #animated-border-card {
             background: transparent !important;
             border: none !important;
             position: relative;
             z-index: 1;
           }
+
           #animated-border-card::before {
             content: '';
             position: absolute;
@@ -313,19 +363,18 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: conic-gradient(
-              transparent 0deg, 
-              #38bdf8 90deg, 
-              #a78bfa 180deg, 
-              transparent 200deg,
-              transparent 270deg,
-              #34d399 320deg,
-              #38bdf8 360deg
-            );
+            background: conic-gradient(transparent 0deg,
+                #38bdf8 90deg,
+                #a78bfa 180deg,
+                transparent 200deg,
+                transparent 270deg,
+                #34d399 320deg,
+                #38bdf8 360deg);
             animation: spinGradient 3s linear infinite;
             z-index: -2;
             transition: opacity 0.3s;
           }
+
           #animated-border-card::after {
             content: '';
             position: absolute;
@@ -334,66 +383,103 @@
             background: linear-gradient(145deg, #0f172a, #1e293b);
             z-index: -1;
           }
+
           /* Subtle hover glow */
           #animated-border-card:hover::before {
             filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.8));
           }
         </style>
-        
+
         <!-- NEW: AUDIO & VIDEO STEGANOGRAPHY (Moved to 1st) -->
-        <div id="animated-border-card" class="tool-card premium-floating-card" data-cat="security" style="position: relative; padding-bottom: 20px;">
-          <a href="/tools/audio-steganography.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></a>
+        <div id="animated-border-card" class="tool-card premium-floating-card" data-cat="security"
+          style="position: relative; padding-bottom: 20px;">
+          <a href="/tools/audio-steganography.html"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></a>
           <div style="position: relative; z-index: 2; pointer-events: none; flex-grow: 1;">
             <div class="tool-badge most-used-badge">MOST USED</div>
-            <div class="tool-icon" style="font-size: 2.8rem; text-shadow: 0 0 15px rgba(139, 92, 246, 0.4); margin-top: 25px; white-space: nowrap;">🎥</div>
+            <div class="tool-icon"
+              style="font-size: 2.8rem; text-shadow: 0 0 15px rgba(139, 92, 246, 0.4); margin-top: 25px; white-space: nowrap;">
+              🎥</div>
             <h3 style="color: #38bdf8; font-size: 1.3rem;">Audio & Video Steganography</h3>
             <p style="font-size: 0.95rem; color: #cbd5e1; font-weight: 400; line-height: 1.6;">
-              Hide Secret Text in MP3/WAV/MP4 using AES-256. Features LSB Bit-Scattering for Audio and High-Speed Payload Injection for Video.
+              Hide Secret Text in MP3/WAV/MP4 using AES-256. Features LSB Bit-Scattering for Audio and High-Speed
+              Payload Injection for Video.
             </p>
           </div>
-          
+
           <div class="premium-login-btn-container" data-tool="/tools/audio-steganography.html"></div>
-          <div class="tool-arrow default-launch-btn" style="font-weight: bold; position: relative; z-index: 2; pointer-events: none; margin-top: auto; color: #c4b5fd;">Launch Tool →</div>
+          <div class="tool-arrow default-launch-btn"
+            style="font-weight: bold; position: relative; z-index: 2; pointer-events: none; margin-top: auto; color: #c4b5fd;">
+            Launch Tool →</div>
         </div>
 
         <!-- DIGITAL FINGERPRINT WIPER -->
-        <div class="tool-card premium-floating-card gray-pulse-anim" data-cat="security" style="position: relative; padding-bottom: 20px; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);">
-          <a href="/tools/digital-fingerprint-wiper.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></a>
+        <div class="tool-card premium-floating-card gray-pulse-anim" data-cat="security"
+          style="position: relative; padding-bottom: 20px; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);">
+          <a href="/tools/digital-fingerprint-wiper.html"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></a>
           <div style="position: relative; z-index: 2; pointer-events: none; flex-grow: 1;">
-            <div class="tool-badge" style="position: absolute; top: -10px; right: 0px; background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.5);">🟢 NEW</div>
-            <div class="tool-icon icon-blue" style="font-size: 2.8rem; text-shadow: 0 0 15px rgba(16, 185, 129, 0.4); margin-top: 25px;">🛡️</div>
+            <div class="tool-badge"
+              style="position: absolute; top: -10px; right: 0px; background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.5);">
+              🟢 NEW</div>
+            <div class="tool-icon icon-blue"
+              style="font-size: 2.8rem; text-shadow: 0 0 15px rgba(16, 185, 129, 0.4); margin-top: 25px;">🛡️</div>
             <h3 style="color: #6ee7b7; font-size: 1.3rem;">Digital Fingerprint Wiper</h3>
             <p style="font-size: 0.95rem; color: #cbd5e1; font-weight: 400; line-height: 1.6;">
-              Instantly scrub all hidden metadata, EXIF tags, GPS locations, and PRNU sensor noise from your photos before sharing online. Total anonymity.
+              Instantly scrub all hidden metadata, EXIF tags, GPS locations, and PRNU sensor noise from your photos
+              before sharing online. Total anonymity.
             </p>
           </div>
-          
+
           <div class="premium-login-btn-container" data-tool="/tools/digital-fingerprint-wiper.html"></div>
-          <div class="tool-arrow default-launch-btn" style="font-weight: bold; position: relative; z-index: 2; pointer-events: none; margin-top: auto; color: #6ee7b7;">Launch Tool →</div>
+          <div class="tool-arrow default-launch-btn"
+            style="font-weight: bold; position: relative; z-index: 2; pointer-events: none; margin-top: auto; color: #6ee7b7;">
+            Launch Tool →</div>
         </div>
 
         <!-- NEW ADVANCED DECOY STEGANOGRAPHY -->
-        <div class="tool-card premium-floating-card" data-cat="edit" style="position: relative; padding-bottom: 20px; background: linear-gradient(145deg, #1e1b4b, #312e81); border: 1px solid rgba(99, 102, 241, 0.5); box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);">
-          <a href="/tools/advanced-decoy.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></a>
+        <div class="tool-card premium-floating-card" data-cat="edit"
+          style="position: relative; padding-bottom: 20px; background: linear-gradient(145deg, #1e1b4b, #312e81); border: 1px solid rgba(99, 102, 241, 0.5); box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);">
+          <a href="/tools/advanced-decoy.html"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></a>
           <div style="position: relative; z-index: 2; pointer-events: none; flex-grow: 1;">
-            <div class="tool-badge" style="position: absolute; top: -10px; right: 0px; background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.5);">✨ PRO</div>
-            <div class="tool-icon icon-blue" style="font-size: 3rem; text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);">🕵️‍♂️</div>
+            <div class="tool-badge"
+              style="position: absolute; top: -10px; right: 0px; background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.5);">
+              ✨ PRO</div>
+            <div class="tool-icon icon-blue" style="font-size: 3rem; text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);">
+              🕵️‍♂️</div>
             <h3 style="color: #c4b5fd; font-size: 1.3rem;">Advanced Decoy Steganography</h3>
             <p style="font-size: 0.95rem; color: #cbd5e1; font-weight: 400; line-height: 1.6;">
-              Hide secret messages with plausible deniability using our brand new QIM-based AES-256 encryption engine. Survives compression!
+              Hide secret messages with plausible deniability using our brand new QIM-based AES-256 encryption engine.
+              Survives compression!
             </p>
           </div>
-          
+
           <div class="premium-login-btn-container" data-tool="/tools/advanced-decoy.html"></div>
-          <div class="tool-arrow default-launch-btn" style="font-weight: bold; position: relative; z-index: 2; pointer-events: none; margin-top: auto;">Launch Tool →</div>
+          <div class="tool-arrow default-launch-btn"
+            style="font-weight: bold; position: relative; z-index: 2; pointer-events: none; margin-top: auto;">Launch
+            Tool →</div>
         </div>
 
         <style>
           @keyframes grayPulse {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); }
-            50% { box-shadow: 0 0 10px 0 rgba(16, 185, 129, 0.4); border-color: #34d399; color: #cbd5e1; }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); }
+            0% {
+              box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2);
+              border-color: rgba(16, 185, 129, 0.4);
+            }
+
+            50% {
+              box-shadow: 0 0 10px 0 rgba(16, 185, 129, 0.4);
+              border-color: #34d399;
+              color: #cbd5e1;
+            }
+
+            100% {
+              box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2);
+              border-color: rgba(16, 185, 129, 0.4);
+            }
           }
+
           .gray-pulse-anim {
             animation: grayPulse 2s infinite;
           }
@@ -405,7 +491,8 @@
           <div class="tool-badge" style="background: #eab308; color: black; font-weight: bold;">UPDATING</div>
           <div class="tool-icon icon-blue">🔍</div>
           <h3 style="color: #38bdf8; font-size: 1.3rem;">Phishing &amp; Malware Link Scanner</h3>
-          <p>AI-powered heuristic scanner. Proactively detects homograph attacks, typosquatting & hidden malware. Fast & secure. All processing happens locally.</p>
+          <p>AI-powered heuristic scanner. Proactively detects homograph attacks, typosquatting & hidden malware. Fast &
+            secure. All processing happens locally.</p>
           <div class="tool-arrow" style="font-weight: bold;">Launch Tool →</div>
         </a>
 
@@ -414,7 +501,9 @@
           <div class="tool-badge" style="background: #ef4444; color: white;">Popular</div>
           <div class="tool-icon icon-blue">🔗</div>
           <h3>PDF to Link Converter</h3>
-          <p>Upload any PDF document and instantly get a shareable URL and QR code. Fast & secure. All processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free and without any registration.</p>
+          <p>Upload any PDF document and instantly get a shareable URL and QR code. Fast & secure. All processing
+            happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free
+            and without any registration.</p>
           <div class="tool-arrow" style="font-weight: bold;">Launch Tool →</div>
         </a>
 
@@ -422,7 +511,9 @@
           <div class="tool-badge" style="background: #ef4444; color: white;">Popular</div>
           <div class="tool-icon icon-violet">📄</div>
           <h3>Images to PDF</h3>
-          <p>Convert multiple images into a secure PDF. Drag to reorder & add password protection. Fast & secure. All processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free and without any registration.</p>
+          <p>Convert multiple images into a secure PDF. Drag to reorder & add password protection. Fast & secure. All
+            processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly,
+            completely free and without any registration.</p>
           <div class="tool-arrow" style="font-weight: bold;">Launch Tool →</div>
         </a>
 
@@ -433,28 +524,36 @@
         <a href="tools/image-filters.html" class="tool-card" data-cat="edit">
           <div class="tool-icon icon-violet">🎨</div>
           <h3>Filters &amp; Effects</h3>
-          <p>Adjust brightness, contrast, saturation, blur, and apply artistic filters. Fast & secure. All processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free and without any registration.</p>
+          <p>Adjust brightness, contrast, saturation, blur, and apply artistic filters. Fast & secure. All processing
+            happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free
+            and without any registration.</p>
           <div class="tool-arrow" style="font-weight: bold;">Launch Tool →</div>
         </a>
 
         <a href="tools/watermark-adder.html" class="tool-card" data-cat="edit">
           <div class="tool-icon icon-green">🖊️</div>
           <h3>Watermark Adder</h3>
-          <p>Add text or image watermark. Control position, opacity, and font style. Fast & secure. All processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free and without any registration.</p>
+          <p>Add text or image watermark. Control position, opacity, and font style. Fast & secure. All processing
+            happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free
+            and without any registration.</p>
           <div class="tool-arrow" style="font-weight: bold;">Launch Tool →</div>
         </a>
 
         <a href="tools/exif-viewer.html" class="tool-card" data-cat="edit">
           <div class="tool-icon icon-teal">📋</div>
           <h3>EXIF Data Viewer</h3>
-          <p>View hidden metadata: camera model, GPS location, date taken and more. Fast & secure. All processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free and without any registration.</p>
+          <p>View hidden metadata: camera model, GPS location, date taken and more. Fast & secure. All processing
+            happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free
+            and without any registration.</p>
           <div class="tool-arrow" style="font-weight: bold;">Launch Tool →</div>
         </a>
 
         <a href="tools/color-palette.html" class="tool-card" data-cat="edit">
           <div class="tool-icon icon-yellow">🎨</div>
           <h3>Color Palette Extractor</h3>
-          <p>Extract dominant colors from any image. Copy HEX codes instantly. Fast & secure. All processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free and without any registration.</p>
+          <p>Extract dominant colors from any image. Copy HEX codes instantly. Fast & secure. All processing happens
+            locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free and
+            without any registration.</p>
           <div class="tool-arrow" style="font-weight: bold;">Launch Tool →</div>
         </a>
 
@@ -462,28 +561,36 @@
         <a href="tools/qr-generator.html" class="tool-card" data-cat="convert">
           <div class="tool-icon icon-cyan">🔲</div>
           <h3>Custom QR Generator</h3>
-          <p>Transform any link into a scannable QR code. Custom colors, rounded dots & logo. Fast & secure. All processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free and without any registration.</p>
+          <p>Transform any link into a scannable QR code. Custom colors, rounded dots & logo. Fast & secure. All
+            processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly,
+            completely free and without any registration.</p>
           <div class="tool-arrow" style="font-weight: bold;">Launch Tool →</div>
         </a>
 
         <a href="tools/image-compressor.html" class="tool-card" data-cat="convert">
           <div class="tool-icon icon-orange">🗜️</div>
           <h3>Image Compressor</h3>
-          <p>Reduce image file size without visible quality loss. See before/after size. Fast & secure. All processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free and without any registration.</p>
+          <p>Reduce image file size without visible quality loss. See before/after size. Fast & secure. All processing
+            happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free
+            and without any registration.</p>
           <div class="tool-arrow" style="font-weight: bold;">Launch Tool →</div>
         </a>
 
         <a href="tools/format-converter.html" class="tool-card" data-cat="convert">
           <div class="tool-icon icon-cyan">🔄</div>
           <h3>Format Converter</h3>
-          <p>Convert between PNG, JPG, WebP, AVIF formats instantly in your browser. Fast & secure. All processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free and without any registration.</p>
+          <p>Convert between PNG, JPG, WebP, AVIF formats instantly in your browser. Fast & secure. All processing
+            happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free
+            and without any registration.</p>
           <div class="tool-arrow" style="font-weight: bold;">Launch Tool →</div>
         </a>
 
         <a href="tools/smart-resize.html" class="tool-card" data-cat="convert">
           <div class="tool-icon icon-green">📐</div>
           <h3>Smart Social Resize</h3>
-          <p>Resize one image for ALL social platforms: Instagram, YouTube, LinkedIn &amp; more. Fast & secure. All processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly, completely free and without any registration.</p>
+          <p>Resize one image for ALL social platforms: Instagram, YouTube, LinkedIn &amp; more. Fast & secure. All
+            processing happens locally on your device ensuring absolute privacy. Enjoy premium features instantly,
+            completely free and without any registration.</p>
           <div class="tool-arrow" style="font-weight: bold;">Launch Tool →</div>
         </a>
       </div>
@@ -679,37 +786,63 @@
     </div>
   </section>
 
-  
-  
-  
-    <!-- END SEO RICH CONTENT BLOCK -->
+
+
+
+  <!-- END SEO RICH CONTENT BLOCK -->
 
 
   <!-- SEO / ADSENSE CONTENT SECTION -->
-  <section class="seo-content" style="max-width: 1200px; margin: 40px auto; padding: 20px 40px; color: #cbd5e1; line-height: 1.8; font-family: 'Inter', sans-serif;">
-    <h2 style="color: #fff; margin-bottom: 20px; font-size: 2rem;">Welcome to PixelCraft AI: Advanced Digital Steganography & Metadata Security</h2>
+  <section class="seo-content"
+    style="max-width: 1200px; margin: 40px auto; padding: 20px 40px; color: #cbd5e1; line-height: 1.8; font-family: 'Inter', sans-serif;">
+    <h2 style="color: #fff; margin-bottom: 20px; font-size: 2rem;">Welcome to PixelCraft AI: Advanced Digital
+      Steganography & Metadata Security</h2>
     <p style="margin-bottom: 20px;">
-      In an era where digital privacy is more critical than ever, <strong>PixelCraft AI</strong> provides state-of-the-art tools for digital steganography, metadata wiping, and secure communication. Our platform is designed for individuals, journalists, and security professionals who require the highest level of privacy when handling sensitive digital media. Whether you are looking to securely embed hidden messages within audio files, protect your identity by scrubbing EXIF metadata from images, or utilize advanced decoy steganography techniques, PixelCraft AI offers a comprehensive suite of cryptographic tools.
+      In an era where digital privacy is more critical than ever, <strong>PixelCraft AI</strong> provides
+      state-of-the-art tools for digital steganography, metadata wiping, and secure communication. Our platform is
+      designed for individuals, journalists, and security professionals who require the highest level of privacy when
+      handling sensitive digital media. Whether you are looking to securely embed hidden messages within audio files,
+      protect your identity by scrubbing EXIF metadata from images, or utilize advanced decoy steganography techniques,
+      PixelCraft AI offers a comprehensive suite of cryptographic tools.
     </p>
 
-    <h3 style="color: #fff; margin-top: 30px; margin-bottom: 15px; font-size: 1.5rem;">What is Digital Steganography?</h3>
+    <h3 style="color: #fff; margin-top: 30px; margin-bottom: 15px; font-size: 1.5rem;">What is Digital Steganography?
+    </h3>
     <p style="margin-bottom: 20px;">
-      Unlike traditional cryptography, which scrambles data into an unreadable format, <strong>steganography</strong> is the practice of hiding a secret message within an ordinary, non-secret file or message. The goal is to conceal the very existence of the communication. At PixelCraft AI, we leverage advanced algorithms such as <em>Quantization Index Modulation (QIM)</em> and <em>Least Significant Bit (LSB)</em> manipulation to seamlessly integrate encrypted data into image and audio files. This ensures that the modified file appears visually and audibly identical to the original, passing standard statistical analysis without raising suspicion.
+      Unlike traditional cryptography, which scrambles data into an unreadable format, <strong>steganography</strong> is
+      the practice of hiding a secret message within an ordinary, non-secret file or message. The goal is to conceal the
+      very existence of the communication. At PixelCraft AI, we leverage advanced algorithms such as <em>Quantization
+        Index Modulation (QIM)</em> and <em>Least Significant Bit (LSB)</em> manipulation to seamlessly integrate
+      encrypted data into image and audio files. This ensures that the modified file appears visually and audibly
+      identical to the original, passing standard statistical analysis without raising suspicion.
     </p>
 
-    <h3 style="color: #fff; margin-top: 30px; margin-bottom: 15px; font-size: 1.5rem;">The Importance of Metadata Wiping</h3>
+    <h3 style="color: #fff; margin-top: 30px; margin-bottom: 15px; font-size: 1.5rem;">The Importance of Metadata Wiping
+    </h3>
     <p style="margin-bottom: 20px;">
-      Every time you take a photo with a smartphone or digital camera, the device automatically records a wealth of hidden information known as EXIF data. This metadata can include your exact GPS coordinates, the date and time the photo was taken, device specifications, and even the software used to edit it. Sharing these images online can inadvertently expose your location and identity. Our <strong>Digital Fingerprint Wiper</strong> tool strips away all hidden metadata, ensuring your digital footprint is completely anonymized before you share your media on social platforms or forums.
+      Every time you take a photo with a smartphone or digital camera, the device automatically records a wealth of
+      hidden information known as EXIF data. This metadata can include your exact GPS coordinates, the date and time the
+      photo was taken, device specifications, and even the software used to edit it. Sharing these images online can
+      inadvertently expose your location and identity. Our <strong>Digital Fingerprint Wiper</strong> tool strips away
+      all hidden metadata, ensuring your digital footprint is completely anonymized before you share your media on
+      social platforms or forums.
     </p>
 
-    <h3 style="color: #fff; margin-top: 30px; margin-bottom: 15px; font-size: 1.5rem;">Advanced Features: Decoy Steganography & AES Encryption</h3>
+    <h3 style="color: #fff; margin-top: 30px; margin-bottom: 15px; font-size: 1.5rem;">Advanced Features: Decoy
+      Steganography & AES Encryption</h3>
     <p style="margin-bottom: 20px;">
-      For users operating in high-risk environments, plausible deniability is crucial. Our <strong>Advanced Decoy Steganography</strong> tool allows you to encrypt two separate messages within a single image: a harmless "decoy" message and the actual secret payload. Under duress, you can reveal the decoy password, keeping the true message mathematically hidden and inaccessible. All data embedded using PixelCraft AI tools is secured using military-grade <strong>AES-256 encryption</strong>, guaranteeing that even if the steganographic payload is detected, the contents remain completely secure and unreadable without the correct cryptographic key.
+      For users operating in high-risk environments, plausible deniability is crucial. Our <strong>Advanced Decoy
+        Steganography</strong> tool allows you to encrypt two separate messages within a single image: a harmless
+      "decoy" message and the actual secret payload. Under duress, you can reveal the decoy password, keeping the true
+      message mathematically hidden and inaccessible. All data embedded using PixelCraft AI tools is secured using
+      military-grade <strong>AES-256 encryption</strong>, guaranteeing that even if the steganographic payload is
+      detected, the contents remain completely secure and unreadable without the correct cryptographic key.
     </p>
   </section>
 
   <!-- CONTACT SECTION -->
-  <section class="section section-alt" id="contact" style="background: var(--bg-dark); border-top: 1px solid var(--glass-border);">
+  <section class="section section-alt" id="contact"
+    style="background: var(--bg-dark); border-top: 1px solid var(--glass-border);">
     <div class="container">
       <div class="contact-glass-section" style="
           display: flex;
@@ -737,7 +870,7 @@
           margin-bottom: 40px;
           line-height: 1.6;
         ">Reach out to me directly through any of these platforms. I'm always open to new opportunities.</p>
-        
+
         <div style="
           display: flex;
           justify-content: center;
@@ -763,7 +896,8 @@
             text-decoration: none;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-          " onmouseover="this.style.transform='translateY(-10px)'; this.style.borderColor='rgba(16, 185, 129, 0.5)'; this.style.boxShadow='0 20px 40px rgba(16, 185, 129, 0.2), inset 0 0 0 1px rgba(16, 185, 129, 0.2)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(16, 185, 129, 0.2)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.2)';">
+          " onmouseover="this.style.transform='translateY(-10px)'; this.style.borderColor='rgba(16, 185, 129, 0.5)'; this.style.boxShadow='0 20px 40px rgba(16, 185, 129, 0.2), inset 0 0 0 1px rgba(16, 185, 129, 0.2)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(16, 185, 129, 0.2)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.2)';">
             <div style="
               width: 70px;
               height: 70px;
@@ -777,8 +911,11 @@
               color: #10b981;
               box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.2);
               transition: transform 0.4s ease;
-            " onmouseover="this.style.transform='scale(1.1) rotate(5deg)'" onmouseout="this.style.transform='scale(1)'">✉️</div>
-            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; color: #fff; margin-bottom: 8px; font-weight: 600;">Email</h3>
+            " onmouseover="this.style.transform='scale(1.1) rotate(5deg)'"
+              onmouseout="this.style.transform='scale(1)'">✉️</div>
+            <h3
+              style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; color: #fff; margin-bottom: 8px; font-weight: 600;">
+              Email</h3>
             <p style="color: var(--text-muted, #94a3b8); font-size: 0.95rem; text-align: center;">Drop me a line</p>
           </a>
         </div>
@@ -858,11 +995,12 @@
   -->
 
   <!-- FOOTER -->
-  
-  
+
+
 
   <!-- MASSIVE LEGAL FOOTER FOR ADSENSE -->
-  <footer class="footer" style="background: #0f172a; padding: 40px 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 60px;">
+  <footer class="footer"
+    style="background: #0f172a; padding: 40px 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 60px;">
     <div style="max-width: 1200px; margin: 0 auto;">
       <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 20px;">
         <a href="about.html" style="color: #94a3b8; text-decoration: none; font-weight: 500;">About Us</a>
@@ -882,127 +1020,181 @@
   <!-- Terms & Conditions Modal - Redesigned -->
   <style>
     .tc-modal-unique {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        width: 320px;
-        background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(30, 41, 59, 0.8) 100%);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        padding: 24px;
-        z-index: 10000;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.05);
-        animation: slideUpModal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        overflow: hidden;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 320px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(30, 41, 59, 0.8) 100%);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 24px;
+      z-index: 10000;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.05);
+      animation: slideUpModal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      overflow: hidden;
     }
-    
+
     @keyframes slideUpModal {
-        0% { transform: translateY(100%); opacity: 0; }
-        100% { transform: translateY(0); opacity: 1; }
+      0% {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     .tc-water-drop {
-        position: absolute;
-        background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
-        border-radius: 50%;
-        box-shadow: inset 0 0 5px rgba(255,255,255,0.5);
-        animation: floatUp 4s infinite ease-in-out;
-        z-index: 0;
-        pointer-events: none;
+      position: absolute;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1));
+      border-radius: 50%;
+      box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5);
+      animation: floatUp 4s infinite ease-in-out;
+      z-index: 0;
+      pointer-events: none;
     }
-    
-    .tc-water-drop:nth-child(1) { width: 14px; height: 14px; left: 15%; animation-duration: 4s; animation-delay: 0s; }
-    .tc-water-drop:nth-child(2) { width: 8px; height: 8px; left: 85%; animation-duration: 3.5s; animation-delay: 1.5s; }
-    .tc-water-drop:nth-child(3) { width: 10px; height: 10px; left: 55%; animation-duration: 4.5s; animation-delay: 2.5s; }
-    .tc-water-drop:nth-child(4) { width: 6px; height: 6px; left: 35%; animation-duration: 3s; animation-delay: 0.5s; }
+
+    .tc-water-drop:nth-child(1) {
+      width: 14px;
+      height: 14px;
+      left: 15%;
+      animation-duration: 4s;
+      animation-delay: 0s;
+    }
+
+    .tc-water-drop:nth-child(2) {
+      width: 8px;
+      height: 8px;
+      left: 85%;
+      animation-duration: 3.5s;
+      animation-delay: 1.5s;
+    }
+
+    .tc-water-drop:nth-child(3) {
+      width: 10px;
+      height: 10px;
+      left: 55%;
+      animation-duration: 4.5s;
+      animation-delay: 2.5s;
+    }
+
+    .tc-water-drop:nth-child(4) {
+      width: 6px;
+      height: 6px;
+      left: 35%;
+      animation-duration: 3s;
+      animation-delay: 0.5s;
+    }
 
     @keyframes floatUp {
-        0% { transform: translateY(150px) scale(0.8); opacity: 0; }
-        30% { opacity: 0.7; }
-        70% { opacity: 0.7; }
-        100% { transform: translateY(-50px) scale(1.2); opacity: 0; }
+      0% {
+        transform: translateY(150px) scale(0.8);
+        opacity: 0;
+      }
+
+      30% {
+        opacity: 0.7;
+      }
+
+      70% {
+        opacity: 0.7;
+      }
+
+      100% {
+        transform: translateY(-50px) scale(1.2);
+        opacity: 0;
+      }
     }
 
     .tc-content {
-        position: relative;
-        z-index: 2;
-        text-align: center;
+      position: relative;
+      z-index: 2;
+      text-align: center;
     }
 
     .glass-btn-unique {
-        position: relative;
-        padding: 0;
-        border: none;
-        border-radius: 30px;
-        cursor: pointer;
-        overflow: hidden;
-        margin: 0 auto;
-        display: inline-flex;
-        background: transparent;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        transition: transform 0.2s;
+      position: relative;
+      padding: 0;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      overflow: hidden;
+      margin: 0 auto;
+      display: inline-flex;
+      background: transparent;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s;
     }
-    
+
     .glass-btn-unique:hover {
-        transform: translateY(-2px);
+      transform: translateY(-2px);
     }
+
     .glass-btn-unique:active {
-        transform: translateY(0);
+      transform: translateY(0);
     }
 
     /* Colorful animated border layer */
     .glass-btn-unique::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: conic-gradient(from 0deg, transparent 0%, transparent 40%, #00f2fe 45%, #4facfe 50%, #f093fb 55%, transparent 60%, transparent 100%);
-        animation: rotateBorder 2s linear infinite;
-        z-index: 0;
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg, transparent 0%, transparent 40%, #00f2fe 45%, #4facfe 50%, #f093fb 55%, transparent 60%, transparent 100%);
+      animation: rotateBorder 2s linear infinite;
+      z-index: 0;
     }
-    
+
     .glass-inner {
-        position: relative;
-        z-index: 1;
-        margin: 2px;
-        padding: 8px 30px;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-radius: 28px;
-        color: #fff;
-        font-size: 0.9rem;
-        font-family: 'Outfit', sans-serif;
-        font-weight: 500;
-        letter-spacing: 0.5px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.15);
+      position: relative;
+      z-index: 1;
+      margin: 2px;
+      padding: 8px 30px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 28px;
+      color: #fff;
+      font-size: 0.9rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     @keyframes rotateBorder {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
     }
-    
+
     @media (max-width: 768px) {
-        .tc-modal-unique {
-            width: calc(100% - 32px);
-            left: 16px;
-            right: 16px;
-            bottom: 16px;
-            padding: 20px;
-        }
-        .glass-inner {
-            padding: 6px 24px;
-            font-size: 0.85rem;
-        }
+      .tc-modal-unique {
+        width: calc(100% - 32px);
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        padding: 20px;
+      }
+
+      .glass-inner {
+        padding: 6px 24px;
+        font-size: 0.85rem;
+      }
     }
   </style>
 
@@ -1012,11 +1204,20 @@
     <div class="tc-water-drop"></div>
     <div class="tc-water-drop"></div>
     <div class="tc-water-drop"></div>
-    
+
     <div class="tc-content">
-      <h3 style="color: #fff; margin-bottom: 10px; font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 500; text-shadow: 0 2px 5px rgba(0,0,0,0.5);">Terms &amp; Conditions</h3>
-      <p style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.6;">By using our tools, you agree to our <a href="terms-conditions.html" target="_blank" style="color: #38bdf8; text-decoration: none; border-bottom: 1px dotted #38bdf8; transition: 0.3s;">Terms</a>, <a href="privacy-policy.html" target="_blank" style="color: #38bdf8; text-decoration: none; border-bottom: 1px dotted #38bdf8; transition: 0.3s;">Privacy</a>, and <a href="cookies-policy.html" target="_blank" style="color: #38bdf8; text-decoration: none; border-bottom: 1px dotted #38bdf8; transition: 0.3s;">Cookies</a>.</p>
-      
+      <h3
+        style="color: #fff; margin-bottom: 10px; font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 500; text-shadow: 0 2px 5px rgba(0,0,0,0.5);">
+        Terms &amp; Conditions</h3>
+      <p style="color: #cbd5e1; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.6;">By using our tools, you
+        agree to our <a href="terms-conditions.html" target="_blank"
+          style="color: #38bdf8; text-decoration: none; border-bottom: 1px dotted #38bdf8; transition: 0.3s;">Terms</a>,
+        <a href="privacy-policy.html" target="_blank"
+          style="color: #38bdf8; text-decoration: none; border-bottom: 1px dotted #38bdf8; transition: 0.3s;">Privacy</a>,
+        and <a href="cookies-policy.html" target="_blank"
+          style="color: #38bdf8; text-decoration: none; border-bottom: 1px dotted #38bdf8; transition: 0.3s;">Cookies</a>.
+      </p>
+
       <button id="tc-accept-btn" class="glass-btn-unique">
         <span class="glass-inner">I Accept</span>
       </button>
@@ -1038,37 +1239,48 @@
       z-index: 10;
       transition: all 0.3s;
     }
+
     .btn-secret:hover {
       background: rgba(255, 255, 255, 0.2);
       transform: translateY(-2px);
     }
-    
+
     .auth-modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: rgba(0, 0, 0, 0.85);
       backdrop-filter: blur(10px);
       z-index: 9999;
-      justify-content: center; align-items: center;
-      display: none; transition: opacity 0.3s;
+      justify-content: center;
+      align-items: center;
+      display: none;
+      transition: opacity 0.3s;
     }
+
     .auth-modal-overlay.active {
       display: flex;
     }
-    
+
     .auth-modal {
       background: #0f172a;
       border: 1px solid #334155;
       border-radius: 16px;
-      width: 90%; max-width: 500px;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
       overflow: hidden;
-      transform: translateY(20px); transition: transform 0.3s;
+      transform: translateY(20px);
+      transition: transform 0.3s;
       position: relative;
     }
+
     .auth-modal-overlay.active .auth-modal {
       transform: translateY(0);
     }
-    
+
     .auth-terminal {
       background: #000;
       padding: 20px;
@@ -1078,41 +1290,74 @@
       border-bottom: 1px solid #334155;
       display: none;
     }
+
     .auth-content {
       padding: 30px;
       display: none;
     }
-    .auth-content.active { display: block; }
-    
+
+    .auth-content.active {
+      display: block;
+    }
+
     .auth-input {
-      width: 100%; padding: 12px; margin-bottom: 15px;
-      background: #1e293b; border: 1px solid #475569;
-      color: white; border-radius: 8px;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: white;
+      border-radius: 8px;
     }
-    .auth-input:focus { outline: none; border-color: #3b82f6; }
-    
+
+    .auth-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+
     .auth-checkbox {
-      display: flex; gap: 10px; align-items: flex-start;
-      margin-bottom: 20px; font-size: 0.8rem; color: var(--text-muted);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
     }
+
     .auth-btn {
       background: linear-gradient(135deg, #3b82f6, #2563eb);
-      color: white; border: none; padding: 14px;
-      width: 100%; border-radius: 8px; font-weight: bold; font-size: 1.1rem;
-      cursor: pointer; transition: all 0.3s;
+      color: white;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s;
     }
-    .auth-btn:hover { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+
+    .auth-btn:hover {
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    }
+
     .close-modal {
-      position: absolute; top: 15px; right: 15px;
-      background: none; border: none; color: white;
-      font-size: 1.5rem; cursor: pointer; z-index: 10;
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 10;
     }
   </style>
 
   <div class="auth-modal-overlay" id="auth-overlay">
     <div class="auth-modal">
       <button class="close-modal" onclick="closeAuthModal()">&times;</button>
-      
+
       <!-- Terminal Animation -->
       <div class="auth-terminal" id="auth-terminal">
         <div>> INITIATING SECURE CONNECTION...</div>
@@ -1122,27 +1367,28 @@
           > LEVEL-3 AUTHORIZATION REQUIRED.
         </div>
       </div>
-      
+
       <!-- Authorization Form -->
       <div class="auth-content" id="auth-form-content">
         <h2 style="margin-bottom: 10px; color: #f8fafc;" id="auth-title">Request Access</h2>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
           This is an Ultra Premium tool. Generate a free Device-Bound Secret Key to access it.
         </p>
-        
+
         <input type="text" id="auth-name" class="auth-input" placeholder="Your Name" required>
         <input type="email" id="auth-email" class="auth-input" placeholder="Your Email Address" required>
-        
+
         <label class="auth-checkbox">
           <input type="checkbox" id="auth-agree" style="margin-top:3px;">
           <span>
-            I agree to the Terms & Conditions. I allow PixelCraft AI to generate a secure Zero-Knowledge Hash bound to my device. No plain-text emails are stored.
+            I agree to the Terms & Conditions. I allow PixelCraft AI to generate a secure Zero-Knowledge Hash bound to
+            my device. No plain-text emails are stored.
           </span>
         </label>
-        
+
         <button class="auth-btn" onclick="generateSecretKey()">Generate Instant Key</button>
       </div>
-      
+
       <!-- Success View -->
       <div class="auth-content" id="auth-success-content" style="text-align:center;">
         <div style="font-size:4rem; margin-bottom:10px;">✅</div>
@@ -1150,7 +1396,9 @@
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">
           Your Device-Bound Secret Key has been generated. Redirecting to the secure tool...
         </p>
-        <div style="font-family:monospace; background:#1e293b; padding:10px; border-radius:6px; color:#3b82f6; word-break:break-all; font-size:0.8rem;" id="generated-key-display">
+        <div
+          style="font-family:monospace; background:#1e293b; padding:10px; border-radius:6px; color:#3b82f6; word-break:break-all; font-size:0.8rem;"
+          id="generated-key-display">
           ...
         </div>
       </div>
@@ -1163,26 +1411,26 @@
     function openAuthModal(toolFile, toolName) {
       currentToolFile = toolFile;
       document.getElementById('auth-title').innerText = `Access: ${toolName}`;
-      
+
       document.getElementById('auth-overlay').classList.add('active');
       document.getElementById('auth-form-content').classList.remove('active');
       document.getElementById('auth-success-content').classList.remove('active');
-      
+
       const term = document.getElementById('auth-terminal');
       const prog = document.getElementById('term-progress');
       const denied = document.getElementById('term-denied');
-      
+
       term.style.display = 'block';
       denied.style.display = 'none';
-      
+
       // Fake Terminal Animation
       let p = 0;
       let interval = setInterval(() => {
         p += 20;
-        let bars = '='.repeat(p/10) + '.'.repeat(10 - p/10);
+        let bars = '='.repeat(p / 10) + '.'.repeat(10 - p / 10);
         prog.innerText = `> [${bars}] ${p}%`;
-        
-        if(p >= 100) {
+
+        if (p >= 100) {
           clearInterval(interval);
           setTimeout(() => {
             denied.style.display = 'block';
@@ -1203,30 +1451,30 @@
       const name = document.getElementById('auth-name').value.trim();
       const email = document.getElementById('auth-email').value.trim();
       const agree = document.getElementById('auth-agree').checked;
-      
-      if(!name || !email) return showToast('Please enter your Name and Email', 'error');
-      if(!email.includes('@')) return showToast('Please enter a valid Email', 'error');
-      if(!agree) return showToast('You must accept the Terms & Conditions', 'error');
-      
+
+      if (!name || !email) return showToast('Please enter your Name and Email', 'error');
+      if (!email.includes('@')) return showToast('Please enter a valid Email', 'error');
+      if (!agree) return showToast('You must accept the Terms & Conditions', 'error');
+
       // Zero-Knowledge Hashing (SHA-256)
       const encoder = new TextEncoder();
       const data = encoder.encode(email.toLowerCase());
       const hashBuffer = await crypto.subtle.digest('SHA-256', data);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16).toUpperCase();
-      
+
       // Example unique token: G-SEC-205-[HASH]
       const secretToken = `G-SEC-205-${hashHex}`;
-      
+
       // Save local device binding
       localStorage.setItem('pixelcraft_auth_email', email.toLowerCase());
       localStorage.setItem('pixelcraft_auth_token', secretToken);
-      
+
       // Show Success
       document.getElementById('auth-form-content').classList.remove('active');
       document.getElementById('auth-success-content').classList.add('active');
       document.getElementById('generated-key-display').innerText = `Token: ${secretToken}`;
-      
+
       // Redirect to the tool with auth parameter
       setTimeout(() => {
         window.location.href = `tools/${currentToolFile}?auth_token=${secretToken}`;
@@ -1263,7 +1511,7 @@
       if (!sessionStorage.getItem("tc_accepted")) {
         document.getElementById("tc-modal").style.display = "block";
         const toolsSec = document.getElementById("tools");
-        if(toolsSec) {
+        if (toolsSec) {
           toolsSec.style.filter = "blur(5px)";
           toolsSec.style.pointerEvents = "none";
           toolsSec.style.userSelect = "none";
@@ -1274,7 +1522,7 @@
         sessionStorage.setItem("tc_accepted", "true");
         document.getElementById("tc-modal").style.display = "none";
         const toolsSec = document.getElementById("tools");
-        if(toolsSec) {
+        if (toolsSec) {
           toolsSec.style.filter = "none";
           toolsSec.style.pointerEvents = "auto";
           toolsSec.style.userSelect = "auto";
@@ -1284,50 +1532,50 @@
       const urlParams = new URLSearchParams(window.location.search);
       async function updateAuthStatus() {
         try {
-            const response = await fetch("/api/auth/status");
-            if (response.status === 403 || response.status === 401) {
-                // User is banned or session invalid, reload to trigger strict middleware
-                window.location.reload();
-                return;
-            }
-            const data = await response.json();
-            
-            const loginBtn = document.getElementById('login-btn');
-            const userProfile = document.getElementById('user-profile');
-            const userName = document.getElementById('user-name');
-            const userAvatar = document.getElementById('user-avatar');
+          const response = await fetch("/api/auth/status");
+          if (response.status === 403 || response.status === 401) {
+            // User is banned or session invalid, reload to trigger strict middleware
+            window.location.reload();
+            return;
+          }
+          const data = await response.json();
 
-            if (data.authenticated && data.user) {
-                loginBtn.style.display = 'none';
-                userProfile.style.display = 'flex';
-                userName.textContent = data.user.name;
-                userAvatar.src = data.user.avatar || 'https://lh3.googleusercontent.com/a/default-user';
-                
-                // Track usage on load
-                if (!window.usageTracked) {
-                    trackUsage('Home', 0);
-                    window.usageTracked = true;
-                }
-            } else {
-                loginBtn.style.display = 'flex';
-                userProfile.style.display = 'none';
+          const loginBtn = document.getElementById('login-btn');
+          const userProfile = document.getElementById('user-profile');
+          const userName = document.getElementById('user-name');
+          const userAvatar = document.getElementById('user-avatar');
+
+          if (data.authenticated && data.user) {
+            loginBtn.style.display = 'none';
+            userProfile.style.display = 'flex';
+            userName.textContent = data.user.name;
+            userAvatar.src = data.user.avatar || 'https://lh3.googleusercontent.com/a/default-user';
+
+            // Track usage on load
+            if (!window.usageTracked) {
+              trackUsage('Home', 0);
+              window.usageTracked = true;
             }
+          } else {
+            loginBtn.style.display = 'flex';
+            userProfile.style.display = 'none';
+          }
         } catch (error) {
-            console.error("Auth status error:", error);
+          console.error("Auth status error:", error);
         }
-    }
+      }
 
-    document.addEventListener('DOMContentLoaded', updateAuthStatus);
+      document.addEventListener('DOMContentLoaded', updateAuthStatus);
 
-    // Poll every 10 seconds to instantly kick banned users
-    setInterval(async () => {
+      // Poll every 10 seconds to instantly kick banned users
+      setInterval(async () => {
         try {
-            const res = await fetch("/api/auth/status");
-            if (res.status === 403) {
-                window.location.reload();
-            }
-        } catch(e) {}
-    }, 10000);
+          const res = await fetch("/api/auth/status");
+          if (res.status === 403) {
+            window.location.reload();
+          }
+        } catch (e) { }
+      }, 10000);
 
       if (urlParams.get("error") === "login_failed") {
         showToast("❌ Login Failed. Please try again.", "error");
@@ -1448,322 +1696,368 @@
           }, 3000);
         }, 1500);
       });
-    </script>
-    
-    <!-- Premium Interactive QR Generator -->
-    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        // Creative, working QR Code with Premium Aesthetics
-        const qrCode = new QRCodeStyling({
-          width: 250,
-          height: 250,
-          type: "svg",
-          data: "upi://pay?pa=9067693696@axl&pn=PixelCraft%20AI",
-          dotsOptions: {
-            type: "rounded", // Not a standard square black/white!
-            gradient: {
-              type: "linear",
-              rotation: 0.785398, // 45 deg angle
-              colorStops: [
-                { offset: 0, color: "#1a56db" }, // Brand Blue
-                { offset: 1, color: "#10b981" }  // Brand Emerald
-              ]
-            }
-          },
-          cornersSquareOptions: {
-            type: "extra-rounded",
-            color: "#1e3a8a" // Deep Accent
-          },
-          cornersDotOptions: {
-            type: "dot",
-            color: "#10b981" // Emerald
-          },
-          backgroundOptions: {
-            color: "transparent",
+  </script>
+
+  <!-- Premium Interactive QR Generator -->
+  <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Creative, working QR Code with Premium Aesthetics
+      const qrCode = new QRCodeStyling({
+        width: 250,
+        height: 250,
+        type: "svg",
+        data: "upi://pay?pa=9067693696@axl&pn=PixelCraft%20AI",
+        dotsOptions: {
+          type: "rounded", // Not a standard square black/white!
+          gradient: {
+            type: "linear",
+            rotation: 0.785398, // 45 deg angle
+            colorStops: [
+              { offset: 0, color: "#1a56db" }, // Brand Blue
+              { offset: 1, color: "#10b981" }  // Brand Emerald
+            ]
           }
-        });
-        
-        qrCode.append(document.getElementById("donate-qr-canvas"));
-      });
-    </script>
-<!-- PWA Install Banner -->
-<div id="pwa-install-banner" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; background:var(--card-bg, #fff); border-radius:16px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.15); z-index:9999; border:1px solid var(--border, #eee); display:none; align-items:center; gap:16px; justify-content:space-between; animation: slideUp 0.5s ease forwards;">
-  <div style="display:flex; align-items:center; gap:12px;">
-    <div style="width:48px; height:48px; background:#2563EB; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:24px;">🎨</div>
-    <div>
-      <h4 style="margin:0; font-size:16px; color:var(--dark, #111);">Install PixelCraft</h4>
-      <p style="margin:2px 0 0; font-size:12px; color:var(--text-light, #666);">Fast, Free, No Ads app</p>
-    </div>
-  </div>
-  <button id="pwa-install-btn" class="btn-primary" style="padding:8px 16px; font-size:14px; border-radius:8px;">Install</button>
-  <button id="pwa-close-btn" style="position:absolute; top:-10px; right:-10px; width:24px; height:24px; border-radius:12px; border:none; background:#eee; cursor:pointer; font-weight:bold; color:#666;">&times;</button>
-</div>
-
-<style>
-@keyframes slideUp {
-  from { bottom: -100px; opacity: 0; }
-  to { bottom: 20px; opacity: 1; }
-}
-</style>
-
-<script>
-  // Service Worker Registration
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').then(registration => {
-        console.log('SW registered: ', registration);
-      }).catch(registrationError => {
-        console.log('SW registration failed: ', registrationError);
-      });
-    });
-  }
-
-  // PWA Install Prompt Logic
-  let deferredPrompt;
-  const pwaInstallBanner = document.getElementById('pwa-install-banner');
-  const pwaInstallBtn = document.getElementById('pwa-install-btn');
-  const pwaCloseBtn = document.getElementById('pwa-close-btn');
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent the mini-infobar from appearing on mobile
-    e.preventDefault();
-    // Stash the event so it can be triggered later.
-    deferredPrompt = e;
-    // Update UI notify the user they can install the PWA
-    pwaInstallBanner.style.display = 'flex';
-  });
-
-  pwaInstallBtn.addEventListener('click', async () => {
-    // Hide the app provided install promotion
-    pwaInstallBanner.style.display = 'none';
-    // Show the install prompt
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      // Wait for the user to respond to the prompt
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`User response to the install prompt: ${outcome}`);
-      // We've used the prompt, and can't use it again, throw it away
-      deferredPrompt = null;
-    }
-  });
-
-  pwaCloseBtn.addEventListener('click', () => {
-    pwaInstallBanner.style.display = 'none';
-  });
-</script>
-
-<!-- Cyber Security Loading Animation -->
-<div id="cyber-loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 10001; justify-content: center; align-items: center; flex-direction: column; font-family: 'Courier New', monospace; color: #10b981;">
-  <div style="font-size: 1.5rem; margin-bottom: 20px; color: #ef4444; text-shadow: 0 0 10px #ef4444; animation: cyber-blink 1s infinite; text-align: center; font-weight: bold;">[ SYSTEM WARNING: SECURE CONNECTION REQUIRED ]</div>
-  <div style="width: 90%; max-width: 600px; text-align: left; background: #050505; padding: 20px; border: 1px solid #10b981; border-radius: 4px; box-shadow: 0 0 15px rgba(16, 185, 129, 0.2), inset 0 0 10px rgba(16, 185, 129, 0.1);">
-    <div id="cyber-loading-lines" style="line-height: 1.6; font-size: 0.9rem;"></div>
-    <div style="margin-top: 15px; color: #ef4444; font-weight: bold; font-size: 0.95rem;">> Please wait... Initializing secure terminal... <span style="animation: cyber-blink 1s infinite;">_</span></div>
-  </div>
-</div>
-<style>
-  @keyframes cyber-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-</style>
-      <li>We hold the right to revoke access if automated abuse or spam is detected.</li>
-    </ul>
-
-    <h3 style="color: #cbd5e1; margin-bottom: 10px; font-size: 1.2rem;">🔒 Privacy Policy</h3>
-    <ul style="margin-bottom: 25px; padding-left: 20px; color: #94a3b8; font-size: 0.95rem; line-height: 1.6;">
-      <li style="margin-bottom: 10px;"><b>Form Details:</b> The name and email you provide are sent securely directly to our administrator's email via FormSubmit. This is strictly to verify genuine users and prevent bot spam.</li>
-      <li style="margin-bottom: 10px;"><b>No Database Storage:</b> We do not save your name or email in any central user database. We do not use them for marketing, nor do we sell them to third parties.</li>
-      <li><b>Local Image Processing:</b> The images you encrypt or decrypt using this tool are processed 100% locally in your browser. Your images are NEVER uploaded to our servers.</li>
-    </ul>
-
-    <h3 style="color: #cbd5e1; margin-bottom: 10px; font-size: 1.2rem;">❓ FAQ</h3>
-    <div style="margin-bottom: 15px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px;">
-      <strong style="color: #f8fafc; font-size: 0.95rem; display: block; margin-bottom: 5px;">Why do you need my email?</strong>
-      <p style="color: #94a3b8; font-size: 0.9rem; margin: 0; line-height: 1.5;">Because this tool uses advanced steganography algorithms, we want to ensure it is not abused by automated bots. Manually requesting a key helps keep the platform secure for real users.</p>
-    </div>
-    <div style="margin-bottom: 25px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px;">
-      <strong style="color: #f8fafc; font-size: 0.95rem; display: block; margin-bottom: 5px;">Who sees my email?</strong>
-      <p style="color: #94a3b8; font-size: 0.9rem; margin: 0; line-height: 1.5;">Only the site administrator. It is delivered directly to their secure inbox and is kept strictly confidential.</p>
-    </div>
-    
-    <button type="button" onclick="closeToolTermsModal()" style="width: 100%; padding: 14px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.05rem; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">I Understand</button>
-  </div>
-</div>
-
-<!-- Home Success Activation Modal -->
-<div id="home-success-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 11000; justify-content: center; align-items: center; backdrop-filter: blur(10px);">
-  <div style="background: linear-gradient(135deg, rgba(6, 78, 59, 0.95) 0%, rgba(2, 44, 34, 0.95) 100%); padding: 40px; border-radius: 20px; max-width: 450px; width: 90%; text-align: center; border: 1px solid #10b981; box-shadow: 0 0 40px rgba(16, 185, 129, 0.4); animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);">
-    <div style="font-size: 4rem; margin-bottom: 10px; animation: bounce 2s infinite;">✅</div>
-    <h2 style="color: #10b981; font-size: 1.8rem; margin-bottom: 10px;">Secret Key is Activated!</h2>
-    <p style="color: #a7f3d0; margin-bottom: 25px; font-size: 1rem;">Your unique 10-character key has been generated and locked to this device.</p>
-    
-    <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; border: 1px dashed #34d399; margin-bottom: 25px; overflow-wrap: break-word;">
-      <span id="home-display-generated-key" style="color: #34d399; font-size: 1.2rem; font-family: monospace; font-weight: bold; letter-spacing: 1px; text-shadow: 0 0 10px rgba(52, 211, 153, 0.5);">205XXXXXXX</span>
-    </div>
-    
-    <button onclick="goToTool()" style="background: #10b981; color: #022c22; border: none; padding: 14px 30px; font-size: 1.1rem; cursor: pointer; border-radius: 8px; font-weight: bold; width: 100%; transition: all 0.3s; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Open Secret Tool 🚀</button>
-  </div>
-</div>
-
-<script>
-function openToolTermsModal(e) {
-    if (e) e.preventDefault();
-    document.getElementById('tool-terms-modal').style.display = 'flex';
-}
-function closeToolTermsModal() {
-    document.getElementById('tool-terms-modal').style.display = 'none';
-}
-
-function handleSecretToolClick(event) {
-    event.preventDefault();
-    openHomePopup();
-}
-
-function openHomePopup() {
-    const overlay = document.getElementById('cyber-loading-overlay');
-    const linesContainer = document.getElementById('cyber-loading-lines');
-    overlay.style.display = 'flex';
-    linesContainer.innerHTML = '';
-    
-    const lines = [
-      "Accessing secure server network...",
-      "Bypassing standard protocols...",
-      "Establishing AES-256 encrypted connection...",
-      "Verifying identity constraints...",
-      "Connection secured. Access Granted."
-    ];
-    
-    let currentLine = 0;
-    const interval = setInterval(() => {
-        if (currentLine < lines.length) {
-            linesContainer.innerHTML += `<div><span style="color: #64748b;">[${new Date().toISOString().split('T')[1].substring(0, 8)}]</span> > <span style="color: #10b981;">${lines[currentLine]}</span></div>`;
-            currentLine++;
-        } else {
-            clearInterval(interval);
+        },
+        cornersSquareOptions: {
+          type: "extra-rounded",
+          color: "#1e3a8a" // Deep Accent
+        },
+        cornersDotOptions: {
+          type: "dot",
+          color: "#10b981" // Emerald
+        },
+        backgroundOptions: {
+          color: "transparent",
         }
-    }, 300);
+      });
 
-    setTimeout(() => {
+      qrCode.append(document.getElementById("donate-qr-canvas"));
+    });
+  </script>
+  <!-- PWA Install Banner -->
+  <div id="pwa-install-banner"
+    style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; background:var(--card-bg, #fff); border-radius:16px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.15); z-index:9999; border:1px solid var(--border, #eee); display:none; align-items:center; gap:16px; justify-content:space-between; animation: slideUp 0.5s ease forwards;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div
+        style="width:48px; height:48px; background:#2563EB; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:24px;">
+        🎨</div>
+      <div>
+        <h4 style="margin:0; font-size:16px; color:var(--dark, #111);">Install PixelCraft</h4>
+        <p style="margin:2px 0 0; font-size:12px; color:var(--text-light, #666);">Fast, Free, No Ads app</p>
+      </div>
+    </div>
+    <button id="pwa-install-btn" class="btn-primary"
+      style="padding:8px 16px; font-size:14px; border-radius:8px;">Install</button>
+    <button id="pwa-close-btn"
+      style="position:absolute; top:-10px; right:-10px; width:24px; height:24px; border-radius:12px; border:none; background:#eee; cursor:pointer; font-weight:bold; color:#666;">&times;</button>
+  </div>
+
+  <style>
+    @keyframes slideUp {
+      from {
+        bottom: -100px;
+        opacity: 0;
+      }
+
+      to {
+        bottom: 20px;
+        opacity: 1;
+      }
+    }
+  </style>
+
+  <script>
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+          console.log('SW registered: ', registration);
+        }).catch(registrationError => {
+          console.log('SW registration failed: ', registrationError);
+        });
+      });
+    }
+
+    // PWA Install Prompt Logic
+    let deferredPrompt;
+    const pwaInstallBanner = document.getElementById('pwa-install-banner');
+    const pwaInstallBtn = document.getElementById('pwa-install-btn');
+    const pwaCloseBtn = document.getElementById('pwa-close-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      deferredPrompt = e;
+      // Update UI notify the user they can install the PWA
+      pwaInstallBanner.style.display = 'flex';
+    });
+
+    pwaInstallBtn.addEventListener('click', async () => {
+      // Hide the app provided install promotion
+      pwaInstallBanner.style.display = 'none';
+      // Show the install prompt
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        // We've used the prompt, and can't use it again, throw it away
+        deferredPrompt = null;
+      }
+    });
+
+    pwaCloseBtn.addEventListener('click', () => {
+      pwaInstallBanner.style.display = 'none';
+    });
+  </script>
+
+  <!-- Cyber Security Loading Animation -->
+  <div id="cyber-loading-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 10001; justify-content: center; align-items: center; flex-direction: column; font-family: 'Courier New', monospace; color: #10b981;">
+    <div
+      style="font-size: 1.5rem; margin-bottom: 20px; color: #ef4444; text-shadow: 0 0 10px #ef4444; animation: cyber-blink 1s infinite; text-align: center; font-weight: bold;">
+      [ SYSTEM WARNING: SECURE CONNECTION REQUIRED ]</div>
+    <div
+      style="width: 90%; max-width: 600px; text-align: left; background: #050505; padding: 20px; border: 1px solid #10b981; border-radius: 4px; box-shadow: 0 0 15px rgba(16, 185, 129, 0.2), inset 0 0 10px rgba(16, 185, 129, 0.1);">
+      <div id="cyber-loading-lines" style="line-height: 1.6; font-size: 0.9rem;"></div>
+      <div style="margin-top: 15px; color: #ef4444; font-weight: bold; font-size: 0.95rem;">> Please wait...
+        Initializing secure terminal... <span style="animation: cyber-blink 1s infinite;">_</span></div>
+    </div>
+  </div>
+  <style>
+    @keyframes cyber-blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0;
+      }
+    }
+  </style>
+  <li>We hold the right to revoke access if automated abuse or spam is detected.</li>
+  </ul>
+
+  <h3 style="color: #cbd5e1; margin-bottom: 10px; font-size: 1.2rem;">🔒 Privacy Policy</h3>
+  <ul style="margin-bottom: 25px; padding-left: 20px; color: #94a3b8; font-size: 0.95rem; line-height: 1.6;">
+    <li style="margin-bottom: 10px;"><b>Form Details:</b> The name and email you provide are sent securely directly to
+      our administrator's email via FormSubmit. This is strictly to verify genuine users and prevent bot spam.</li>
+    <li style="margin-bottom: 10px;"><b>No Database Storage:</b> We do not save your name or email in any central user
+      database. We do not use them for marketing, nor do we sell them to third parties.</li>
+    <li><b>Local Image Processing:</b> The images you encrypt or decrypt using this tool are processed 100% locally in
+      your browser. Your images are NEVER uploaded to our servers.</li>
+  </ul>
+
+  <h3 style="color: #cbd5e1; margin-bottom: 10px; font-size: 1.2rem;">❓ FAQ</h3>
+  <div style="margin-bottom: 15px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px;">
+    <strong style="color: #f8fafc; font-size: 0.95rem; display: block; margin-bottom: 5px;">Why do you need my
+      email?</strong>
+    <p style="color: #94a3b8; font-size: 0.9rem; margin: 0; line-height: 1.5;">Because this tool uses advanced
+      steganography algorithms, we want to ensure it is not abused by automated bots. Manually requesting a key helps
+      keep the platform secure for real users.</p>
+  </div>
+  <div style="margin-bottom: 25px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px;">
+    <strong style="color: #f8fafc; font-size: 0.95rem; display: block; margin-bottom: 5px;">Who sees my email?</strong>
+    <p style="color: #94a3b8; font-size: 0.9rem; margin: 0; line-height: 1.5;">Only the site administrator. It is
+      delivered directly to their secure inbox and is kept strictly confidential.</p>
+  </div>
+
+  <button type="button" onclick="closeToolTermsModal()"
+    style="width: 100%; padding: 14px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.05rem; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); transition: transform 0.2s;"
+    onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">I
+    Understand</button>
+  </div>
+  </div>
+
+  <!-- Home Success Activation Modal -->
+  <div id="home-success-modal"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 11000; justify-content: center; align-items: center; backdrop-filter: blur(10px);">
+    <div
+      style="background: linear-gradient(135deg, rgba(6, 78, 59, 0.95) 0%, rgba(2, 44, 34, 0.95) 100%); padding: 40px; border-radius: 20px; max-width: 450px; width: 90%; text-align: center; border: 1px solid #10b981; box-shadow: 0 0 40px rgba(16, 185, 129, 0.4); animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);">
+      <div style="font-size: 4rem; margin-bottom: 10px; animation: bounce 2s infinite;">✅</div>
+      <h2 style="color: #10b981; font-size: 1.8rem; margin-bottom: 10px;">Secret Key is Activated!</h2>
+      <p style="color: #a7f3d0; margin-bottom: 25px; font-size: 1rem;">Your unique 10-character key has been generated
+        and locked to this device.</p>
+
+      <div
+        style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; border: 1px dashed #34d399; margin-bottom: 25px; overflow-wrap: break-word;">
+        <span id="home-display-generated-key"
+          style="color: #34d399; font-size: 1.2rem; font-family: monospace; font-weight: bold; letter-spacing: 1px; text-shadow: 0 0 10px rgba(52, 211, 153, 0.5);">205XXXXXXX</span>
+      </div>
+
+      <button onclick="goToTool()"
+        style="background: #10b981; color: #022c22; border: none; padding: 14px 30px; font-size: 1.1rem; cursor: pointer; border-radius: 8px; font-weight: bold; width: 100%; transition: all 0.3s; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);"
+        onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Open Secret Tool
+        🚀</button>
+    </div>
+  </div>
+
+  <script>
+    function openToolTermsModal(e) {
+      if (e) e.preventDefault();
+      document.getElementById('tool-terms-modal').style.display = 'flex';
+    }
+    function closeToolTermsModal() {
+      document.getElementById('tool-terms-modal').style.display = 'none';
+    }
+
+    function handleSecretToolClick(event) {
+      event.preventDefault();
+      openHomePopup();
+    }
+
+    function openHomePopup() {
+      const overlay = document.getElementById('cyber-loading-overlay');
+      const linesContainer = document.getElementById('cyber-loading-lines');
+      overlay.style.display = 'flex';
+      linesContainer.innerHTML = '';
+
+      const lines = [
+        "Accessing secure server network...",
+        "Bypassing standard protocols...",
+        "Establishing AES-256 encrypted connection...",
+        "Verifying identity constraints...",
+        "Connection secured. Access Granted."
+      ];
+
+      let currentLine = 0;
+      const interval = setInterval(() => {
+        if (currentLine < lines.length) {
+          linesContainer.innerHTML += `<div><span style="color: #64748b;">[${new Date().toISOString().split('T')[1].substring(0, 8)}]</span> > <span style="color: #10b981;">${lines[currentLine]}</span></div>`;
+          currentLine++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 300);
+
+      setTimeout(() => {
         clearInterval(interval);
         overlay.style.display = 'none';
         document.getElementById('home-key-modal').style.display = 'flex';
-    }, 2000);
-}
-function closeHomePopup() {
-    document.getElementById('home-key-modal').style.display = 'none';
-}
-function generateHomeRandomKey() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = 'pc_live_205_';
-    // Generate 18 random characters to make total length exactly 30
-    for (let i = 0; i < 18; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }, 2000);
     }
-    return result;
-}
+    function closeHomePopup() {
+      document.getElementById('home-key-modal').style.display = 'none';
+    }
+    function generateHomeRandomKey() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = 'pc_live_205_';
+      // Generate 18 random characters to make total length exactly 30
+      for (let i = 0; i < 18; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
 
-function isFakeEmail(email) {
-    const e = email.toLowerCase();
-    // Basic fake checks
-    const fakePatterns = [/^test@/, /^fake@/, /^abc@/, /^123/, /^admin@/, /@test\.com$/, /@example\.com$/];
-    if (fakePatterns.some(pattern => pattern.test(e))) return true;
-    
-    // Require common valid domains to be strict
-    const validDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com'];
-    const domain = e.split('@')[1];
-    if (!validDomains.includes(domain)) return true;
-    
-    // Check if username part is too short or looks like keyboard smash
-    const username = e.split('@')[0];
-    if (username.length < 5) return true;
-    
-    return false;
-}
+    function isFakeEmail(email) {
+      const e = email.toLowerCase();
+      // Basic fake checks
+      const fakePatterns = [/^test@/, /^fake@/, /^abc@/, /^123/, /^admin@/, /@test\.com$/, /@example\.com$/];
+      if (fakePatterns.some(pattern => pattern.test(e))) return true;
 
-async function submitHomeKeyRequest(e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('home-req-name').value;
-    const email = document.getElementById('home-req-email').value;
-    const errorDiv = document.getElementById('home-email-error');
-    
-    // Strict fake email check with the requested joke
-    if (isFakeEmail(email)) {
+      // Require common valid domains to be strict
+      const validDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com'];
+      const domain = e.split('@')[1];
+      if (!validDomains.includes(domain)) return true;
+
+      // Check if username part is too short or looks like keyboard smash
+      const username = e.split('@')[0];
+      if (username.length < 5) return true;
+
+      return false;
+    }
+
+    async function submitHomeKeyRequest(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('home-req-name').value;
+      const email = document.getElementById('home-req-email').value;
+      const errorDiv = document.getElementById('home-email-error');
+
+      // Strict fake email check with the requested joke
+      if (isFakeEmail(email)) {
         errorDiv.textContent = "Did you really think entering a random fake email would unlock this tool? Nice try! Please enter a real, valid email.";
         errorDiv.style.display = 'block';
         return;
-    }
-    
-    errorDiv.style.display = 'none';
-    const btn = document.getElementById('home-submit-key-btn');
-    btn.textContent = 'Verifying Account...';
-    btn.disabled = true;
+      }
 
-    try {
+      errorDiv.style.display = 'none';
+      const btn = document.getElementById('home-submit-key-btn');
+      btn.textContent = 'Verifying Account...';
+      btn.disabled = true;
+
+      try {
         // Strict verification: Ensure the email literally exists in our Google Auth DB
         const verifyRes = await fetch('/api/verify-registered-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: email })
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email })
         });
         const verifyData = await verifyRes.json();
-        
-        if (!verifyData.exists) {
-            errorDiv.innerHTML = "Did you really think entering a random fake email would unlock this tool? Nice try!<br><br><span style='font-size: 0.8rem; color: #cbd5e1;'>For strict security, only 100% accurate, existing Google Accounts that have logged into this site can access this tool. If even one word is changed, access is denied.</span>";
-            errorDiv.style.display = 'block';
-            btn.textContent = 'Get Secret Key';
-            btn.disabled = false;
-            return;
-        }
-    } catch (e) {
-        console.error("Verification failed", e);
-    }
 
-    btn.textContent = 'Processing...';
-    
-    const YOUR_EMAIL_ADDRESS = "support.pixelcraft205@gmail.com";
-    const newSecretKey = generateHomeRandomKey();
-    
-    try {
-        const response = await fetch(`https://formsubmit.co/ajax/${YOUR_EMAIL_ADDRESS}`, {
-            method: "POST",
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                _subject: "New Secret Key Access - PixelCraft",
-                Name: name,
-                Email: email,
-                GeneratedKey: newSecretKey,
-                Tool: "Secret Image Hider"
-            })
-        });
-        
-        if(response.ok || response.status === 200) {
-            localStorage.setItem('pc_stealth_key', newSecretKey);
-            localStorage.setItem('pc_stealth_generated', 'true');
-            localStorage.setItem('pc_stealth_last_used', Date.now());
-            
-            // Redirect instantly instead of showing green popup
-            window.location.href = 'tools/secret-image.html';
-        } else {
-            alert("Email service needs activation. Check your inbox.");
+        if (!verifyData.exists) {
+          errorDiv.innerHTML = "Did you really think entering a random fake email would unlock this tool? Nice try!<br><br><span style='font-size: 0.8rem; color: #cbd5e1;'>For strict security, only 100% accurate, existing Google Accounts that have logged into this site can access this tool. If even one word is changed, access is denied.</span>";
+          errorDiv.style.display = 'block';
+          btn.textContent = 'Get Secret Key';
+          btn.disabled = false;
+          return;
         }
-    } catch(err) {
+      } catch (e) {
+        console.error("Verification failed", e);
+      }
+
+      btn.textContent = 'Processing...';
+
+      const YOUR_EMAIL_ADDRESS = "support.pixelcraft205@gmail.com";
+      const newSecretKey = generateHomeRandomKey();
+
+      try {
+        const response = await fetch(`https://formsubmit.co/ajax/${YOUR_EMAIL_ADDRESS}`, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            _subject: "New Secret Key Access - PixelCraft",
+            Name: name,
+            Email: email,
+            GeneratedKey: newSecretKey,
+            Tool: "Secret Image Hider"
+          })
+        });
+
+        if (response.ok || response.status === 200) {
+          localStorage.setItem('pc_stealth_key', newSecretKey);
+          localStorage.setItem('pc_stealth_generated', 'true');
+          localStorage.setItem('pc_stealth_last_used', Date.now());
+
+          // Redirect instantly instead of showing green popup
+          window.location.href = 'tools/secret-image.html';
+        } else {
+          alert("Email service needs activation. Check your inbox.");
+        }
+      } catch (err) {
         console.error(err);
         localStorage.setItem('pc_stealth_key', newSecretKey);
         localStorage.setItem('pc_stealth_generated', 'true');
         localStorage.setItem('pc_stealth_last_used', Date.now());
-        
+
         // Redirect instantly instead of showing green popup
         window.location.href = 'tools/secret-image.html';
-    } finally {
+      } finally {
         btn.textContent = 'Get Secret Key';
         btn.disabled = false;
+      }
     }
-}
-function goToTool() {
-    window.location.href = "tools/secret-image.html";
-}
-</script>
-  </body>
+    function goToTool() {
+      window.location.href = "tools/secret-image.html";
+    }
+  </script>
+</body>
+
 </html>
