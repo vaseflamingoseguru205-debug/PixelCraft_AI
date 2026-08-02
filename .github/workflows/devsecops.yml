@@ -55,23 +55,21 @@ jobs:
           name: trivy-report-json
           path: trivy-results.json
 
-      # Generate HTML and PDF Report
-      - name: Generate PDF Report
+      # Generate HTML Report
+      - name: Generate HTML Report
         if: always()
         run: |
-          sudo apt-get update && sudo apt-get install -y wkhtmltopdf curl
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
           wget https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
           trivy fs . --format template --template "@html.tpl" -o trivy-report.html
-          wkhtmltopdf trivy-report.html trivy-report.pdf
 
-      # Upload Trivy PDF Report Artifact
-      - name: Upload Trivy PDF Report
+      # Upload Trivy HTML Report Artifact
+      - name: Upload Trivy HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: trivy-report-pdf
-          path: trivy-report.pdf
+          name: trivy-report-html
+          path: trivy-report.html
 
       # Run AI Auto-Remediator Python Script
       - name: Run AI Auto-Remediator
