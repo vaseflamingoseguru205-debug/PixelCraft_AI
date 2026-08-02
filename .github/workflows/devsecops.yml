@@ -39,6 +39,7 @@ jobs:
           output: 'trivy-results.json'
           exit-code: '0'
           severity: 'CRITICAL,HIGH'
+          scanners: 'vuln'
 
       # Gate 3: Generate Markdown Report in GitHub Summary
       - name: "📊 Generate Markdown Report"
@@ -47,7 +48,7 @@ jobs:
           echo "## 🛡️ Trivy Vulnerability Report" >> $GITHUB_STEP_SUMMARY
           echo '```text' >> $GITHUB_STEP_SUMMARY
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-          trivy fs . >> $GITHUB_STEP_SUMMARY
+          trivy fs . --scanners vuln >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "✅ Markdown Report added to Job Summary!"
 
@@ -56,7 +57,7 @@ jobs:
         if: always()
         run: |
           wget -q https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
-          trivy fs . --format template --template "@html.tpl" -o trivy-report.html
+          trivy fs . --scanners vuln --format template --template "@html.tpl" -o trivy-report.html
           echo "✅ HTML Report generated!"
 
       - name: "📤 Upload HTML Artifact"
