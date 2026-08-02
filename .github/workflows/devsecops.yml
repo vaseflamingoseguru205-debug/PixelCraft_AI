@@ -35,7 +35,7 @@ jobs:
 
       # Gate 3: Trivy Scanner (AI Auto-Remediation ke liye JSON report generate karega)
       - name: Run Trivy Vulnerability Scanner
-        # if: always() # Agar tu chahta hai ki Snyk fail hone ke baad bhi Trivy chale, toh yeh line uncomment kar dena
+        if: always() # Agar tu chahta hai ki Snyk fail hone ke baad bhi Trivy chale, toh yeh line uncomment kar dena
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
@@ -47,6 +47,7 @@ jobs:
 
       # Upload Trivy JSON Report Artifact
       - name: Upload Trivy JSON Report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: trivy-report-json
@@ -54,6 +55,7 @@ jobs:
 
       # Generate HTML and PDF Report
       - name: Generate PDF Report
+        if: always()
         run: |
           sudo apt-get update && sudo apt-get install -y wkhtmltopdf curl
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
@@ -63,6 +65,7 @@ jobs:
 
       # Upload Trivy PDF Report Artifact
       - name: Upload Trivy PDF Report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: trivy-report-pdf
@@ -70,6 +73,7 @@ jobs:
 
       # Run AI Auto-Remediator Python Script
       - name: Run AI Auto-Remediator
+        if: always()
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
@@ -78,6 +82,7 @@ jobs:
 
       # Commit and Push AI Fixes back to the repository
       - name: Commit and Push AI Fixes
+        if: always()
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
