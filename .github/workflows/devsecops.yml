@@ -2,42 +2,35 @@ name: PixelCraft AI DevSecOps Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "feature/*" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
-  security-gates:
-    name: Automated Security Scans
+  # ============================================================
+  # JOB 1: Scan karo, AI se fix karwao, aur wapas push karo
+  # ============================================================
+  scan-and-fix:
+    name: "🔍 Scan & 🤖 AI Auto-Fix"
     runs-on: ubuntu-latest
     permissions:
-      contents: write # 👈 This is required so the bot can push code back
+      contents: write
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Gate 1: Secret Scanning (Full Repository Scan)
-      # 'base' aur 'head' hata diya gaya hai taaki pure folder ka safe snapshot scan ho sake
-      - name: Run TruffleHog Secret Scanner
+      # Gate 1: Secret Scanning
+      - name: "🔑 Secret Scanner (TruffleHog)"
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
 
-      # Gate 2: SCA / Dependency Scan (Snyk)
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: test
-          args: --severity-threshold=high # Sirf High/Critical bugs par fail karega
-
-      # Gate 3: Trivy Scanner (AI Auto-Remediation ke liye JSON report generate karega)
-      - name: Run Trivy Vulnerability Scanner
-        if: always() # Agar tu chahta hai ki Snyk fail hone ke baad bhi Trivy chale, toh yeh line uncomment kar dena
+      # Gate 2: Trivy Scan - Generate JSON report for AI
+      - name: "🛡️ Trivy Vulnerability Scan"
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
@@ -47,56 +40,84 @@ jobs:
           exit-code: '0'
           severity: 'CRITICAL,HIGH'
 
-      # Upload Trivy JSON Report Artifact
-      - name: Upload Trivy JSON Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-report-json
-          path: trivy-results.json
-
-      # Generate HTML Report
-      - name: Generate HTML Report
+      # Gate 3: Generate Human-Readable HTML Report
+      - name: "📊 Generate HTML Report"
         if: always()
         run: |
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-          wget https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
+          wget -q https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
           trivy fs . --format template --template "@html.tpl" -o trivy-report.html
+          echo "✅ HTML Report generated!"
 
-      # Upload Trivy HTML Report Artifact
-      - name: Upload Trivy HTML Report
+      # Upload HTML Report
+      - name: "📤 Upload HTML Report"
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: trivy-report-html
           path: trivy-report.html
 
-      # Run AI Auto-Remediator Python Script
-      - name: Run AI Auto-Remediator
+      # Upload JSON Report
+      - name: "📤 Upload JSON Report"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report-json
+          path: trivy-results.json
+
+      # Gate 4: AI Auto-Remediator
+      - name: "🤖 AI Auto-Remediator (Gemini)"
         if: always()
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          pip install requests
+          pip install requests --quiet
           python scripts/ai_remediator.py
 
-      # Commit and Push AI Fixes back to the repository
-      - name: Commit and Push AI Fixes
+      # Gate 5: Commit and Push AI Fixes back
+      - name: "🚀 Push AI Fixes to Branch"
         if: always()
         run: |
-          # Clean up generated files so they aren't committed
-          rm -rf .cache trivy-results.json trivy-report.html trivy-report.pdf html.tpl
-          
+          # Cleanup temp files
+          rm -f trivy-results.json trivy-report.html html.tpl
+
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          
-          # Check if there are any changes (like package.json updates)
+          git add package.json package-lock.json
+
+          # Check if package.json or package-lock.json changed
           if ! git diff-index --quiet HEAD; then
-            git commit -m "Auto-fix vulnerabilities by Gemini AI [skip ci]"
-            # Use HEAD:branch_name to push from detached HEAD
+            git commit -m "🤖 Auto-fix: AI patched vulnerabilities [skip ci]"
             BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
             git push origin HEAD:$BRANCH_NAME
+            echo "✅ AI fixes pushed to branch: $BRANCH_NAME"
           else
-            echo "No fixes were applied by AI."
+            echo "ℹ️ No package changes needed. Already clean!"
           fi
+
+  # ============================================================
+  # JOB 2: AI fix ke baad VERIFY karo - yahi green/red karega PR ko
+  # ============================================================
+  verify-after-fix:
+    name: "✅ Verify Clean Scan (for Merge)"
+    runs-on: ubuntu-latest
+    needs: scan-and-fix  # Job 1 complete hone ke baad hi chalega
+
+    steps:
+      - name: Checkout Latest Code (with AI fixes)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      # Snyk - ab yeh fail karega agar AI ne fix nahi kiya
+      - name: "🔒 Snyk Final Security Gate"
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+          args: --severity-threshold=high
+
+      - name: "🎉 All Clear! Safe to Merge."
+        run: echo "All security checks passed! This PR is safe to merge."
