@@ -303,6 +303,23 @@ app.use(async (req, res, next) => {
     next();
 });
 
+// --- WARNING: INTENTIONALLY VULNERABLE CODE ADDED FOR DEVSECOPS TESTING ---
+// 1. HARDCODED SECRET VULNERABILITY (TruffleHog Scanner will catch this)
+const AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE";
+const AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
+
+// 2. COMMAND INJECTION VULNERABILITY (Trivy SAST Scanner will catch this)
+const { exec } = require('child_process');
+app.get('/api/admin/ping', (req, res) => {
+    // VULNERABILITY: Directly executing user input without sanitization!
+    // Attackers can pass "?host=127.0.0.1; cat /etc/passwd"
+    exec('ping -c 1 ' + req.query.host, (error, stdout, stderr) => {
+        if (error) return res.status(500).send(stderr);
+        res.send('<pre>' + stdout + '</pre>');
+    });
+});
+// --------------------------------------------------------------------------
+
 // Configure Google OAuth Strategy
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID || 'dummy-client-id-to-prevent-crash',
