@@ -49,8 +49,24 @@ jobs:
       - name: Upload Trivy JSON Report
         uses: actions/upload-artifact@v4
         with:
-          name: trivy-report
+          name: trivy-report-json
           path: trivy-results.json
+
+      # Generate HTML and PDF Report
+      - name: Generate PDF Report
+        run: |
+          sudo apt-get update && sudo apt-get install -y wkhtmltopdf curl
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+          wget https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
+          trivy fs . --format template --template "html.tpl" -o trivy-report.html
+          wkhtmltopdf trivy-report.html trivy-report.pdf
+
+      # Upload Trivy PDF Report Artifact
+      - name: Upload Trivy PDF Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report-pdf
+          path: trivy-report.pdf
 
       # Run AI Auto-Remediator Python Script
       - name: Run AI Auto-Remediator
@@ -59,3 +75,17 @@ jobs:
         run: |
           pip install requests
           python scripts/ai_remediator.py
+
+      # Commit and Push AI Fixes back to the repository
+      - name: Commit and Push AI Fixes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          # Check if there are any changes (like package.json updates)
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Auto-fix vulnerabilities by Gemini AI [skip ci]"
+            git push
+          else
+            echo "No fixes were applied by AI."
+          fi
