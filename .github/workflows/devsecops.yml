@@ -125,9 +125,9 @@ jobs:
           
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json
+          git add -A
           
-          # Check if package.json or package-lock.json changed
+          # Check if any files were changed by AI
           if ! git diff-index --quiet HEAD; then
             git commit -m "🤖 Auto-fix: AI patched vulnerabilities [skip ci]"
             BRANCH_NAME="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
@@ -138,7 +138,7 @@ jobs:
             git push origin HEAD:$BRANCH_NAME
             echo "✅ AI fixes pushed to branch: $BRANCH_NAME"
           else
-            echo "ℹ️ No package changes needed. Already clean!"
+            echo "ℹ️ No AI fixes were generated. Already clean!"
           fi
 
   # ============================================================
