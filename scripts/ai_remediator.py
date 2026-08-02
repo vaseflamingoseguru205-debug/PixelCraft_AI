@@ -2,7 +2,7 @@ import json
 import os
 import requests
 import subprocess
-import re
+import sys
 
 # Fetch Gemini API key from GitHub Secrets
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -28,14 +28,14 @@ def extract_vulnerabilities(report):
                     fixed = vuln.get("FixedVersion", "unknown")
                     severity = vuln.get("Severity", "unknown")
                     
-                    # Store a concise string
-                    vuln_summary.append(f"Package: {pkg}, Installed: {installed}, Fixed in: {fixed}, Severity: {severity}")
+                    if fixed != "unknown" and fixed != "":
+                        vuln_summary.append(f"Package: {pkg}, Installed: {installed}, Fixed in: {fixed}, Severity: {severity}")
                     
     return "\n".join(set(vuln_summary)) # Remove duplicates
 
 def ask_gemini_for_fix(vuln_details):
     if not vuln_details:
-        print("No high severity vulnerabilities found to send to AI.")
+        print("No fixable vulnerabilities found to send to AI.")
         return None
         
     print("Sending vulnerability data to Gemini AI...")
@@ -44,7 +44,7 @@ def ask_gemini_for_fix(vuln_details):
     prompt = f"""You are a DevSecOps Expert. Read this list of vulnerabilities found in our Node.js project.
 Your ONLY job is to provide the exact terminal commands needed to update these vulnerable packages to their fixed versions.
 RULES:
-1. ONLY output raw 'npm install package@version --save' commands.
+1. ONLY output raw 'npm install package@version --save --legacy-peer-deps' commands.
 2. NO markdown formatting, NO backticks (```), NO explanations.
 3. Put each command on a new line.
 4. Do NOT include 'npm audit fix'.
@@ -78,19 +78,25 @@ def apply_ai_fix(commands_text):
     print("\n--- APPLYING AI FIXES AUTOMATICALLY ---\n")
     commands = commands_text.strip().split('\n')
     
+    success_count = 0
     for cmd in commands:
         cmd = cmd.strip()
-        # Clean up any accidental markdown or backticks the AI might have still included
         cmd = cmd.replace("`", "")
         if cmd.startswith("npm install"):
             print(f"Running Command: {cmd}")
             try:
                 subprocess.run(cmd, shell=True, check=True)
                 print("✅ Success!")
+                success_count += 1
             except subprocess.CalledProcessError as e:
                 print(f"❌ Failed to execute. Error: {e}")
+                sys.exit(1)
         elif cmd:
              print(f"⚠️ Ignored non-npm command: {cmd}")
+             
+    if success_count == 0:
+        print("❌ No valid npm commands were executed!")
+        sys.exit(1)
 
 if __name__ == "__main__":
     trivy_data = read_trivy_report()
