@@ -128,12 +128,12 @@ jobs:
           git add -A
           
           # Check if any files were changed by AI
-          if ! git diff-index --quiet HEAD; then
+          if [ -n "$(git status --porcelain)" ]; then
             git commit -m "🤖 Auto-fix: AI patched vulnerabilities [skip ci]"
             BRANCH_NAME="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
             
             # Pull with rebase to avoid rejected pushes if the remote advanced
-            git pull --rebase origin $BRANCH_NAME
+            git pull --rebase origin $BRANCH_NAME || true
             
             git push origin HEAD:$BRANCH_NAME
             echo "✅ AI fixes pushed to branch: $BRANCH_NAME"
