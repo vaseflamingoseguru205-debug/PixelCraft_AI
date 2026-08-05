@@ -132,6 +132,7 @@ jobs:
                   print("✅ Telegram notification sent successfully!")
               else:
                   print(f"⚠️ Telegram API returned error {res.status_code}: {res.text}")
+                  res.raise_for_status()
           else:
               print("ℹ️ Telegram credentials not set in secrets. Skipping notification.")
           '
