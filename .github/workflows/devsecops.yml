@@ -96,24 +96,45 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
-             RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-             BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
-             
-             if grep -q '"Vulnerabilities":' trivy-results.json; then
-                MESSAGE="🚨 *PixelCraft AI Security Alert!* 🚨%0A%0A*Branch:* \`$BRANCH\`%0A*Status:* Security vulnerabilities detected!%0A🤖 *AI Remediator:* Attempting auto-fix...%0A%0A🔗 [View GitHub Actions Run]($RUN_URL)"
-             else
-                MESSAGE="✅ *PixelCraft AI Security Report* ✅%0A%0A*Branch:* \`$BRANCH\`%0A*Status:* All security checks passed! No vulnerabilities found.%0A%0A🔗 [View GitHub Actions Run]($RUN_URL)"
-             fi
-             
-             curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-               -d "chat_id=${TELEGRAM_CHAT_ID}" \
-               -d "text=${MESSAGE}" \
-               -d "parse_mode=Markdown"
-             echo "✅ Telegram notification sent!"
-          else
-             echo "ℹ️ Telegram credentials not set in secrets. Skipping Telegram notification."
-          fi
+          pip install requests --quiet
+          python -c '
+          import os, requests
+
+          bot_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+          chat_id = os.getenv("TELEGRAM_CHAT_ID", "").strip()
+          repo = "${{ github.repository }}"
+          run_id = "${{ github.run_id }}"
+          branch = "${{ github.head_ref }}" or "${{ github.ref_name }}"
+          run_url = f"https://github.com/{repo}/actions/runs/{run_id}"
+
+          if bot_token.startswith("bot"):
+              bot_token = bot_token[3:]
+
+          if bot_token and chat_id:
+              url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+              
+              has_vulns = False
+              try:
+                  with open("trivy-results.json", "r") as f:
+                      if "Vulnerabilities" in f.read():
+                          has_vulns = True
+              except Exception:
+                  pass
+
+              if has_vulns:
+                  msg = f"🚨 *PixelCraft AI Security Alert!* 🚨\n\n*Branch:* `{branch}`\n*Status:* Security vulnerabilities detected!\n🤖 *AI Remediator:* Attempting auto-fix...\n\n🔗 [View GitHub Run]({run_url})"
+              else:
+                  msg = f"✅ *PixelCraft AI Security Report* ✅\n\n*Branch:* `{branch}`\n*Status:* All security checks passed!\n\n🔗 [View GitHub Run]({run_url})"
+
+              payload = {"chat_id": chat_id, "text": msg, "parse_mode": "Markdown"}
+              res = requests.post(url, json=payload)
+              if res.status_code == 200:
+                  print("✅ Telegram notification sent successfully!")
+              else:
+                  print(f"⚠️ Telegram API returned error {res.status_code}: {res.text}")
+          else:
+              print("ℹ️ Telegram credentials not set in secrets. Skipping notification.")
+          '
 
       # Upload JSON Report (Hidden, used by AI)
       - name: "📤 Upload JSON Report"
