@@ -122,11 +122,11 @@ jobs:
                   pass
 
               if has_vulns:
-                  msg = f"<b>🚨 PixelCraft AI Security Alert! 🚨</b>\n\n<b>Branch:</b> <code>{branch}</code>\n<b>Status:</b> Security vulnerabilities detected!\n🤖 <b>AI Remediator:</b> Attempting auto-fix...\n\n🔗 <a href='{run_url}'>View GitHub Action Run</a>"
+                  msg = f"🚨 PixelCraft AI Security Alert! 🚨\n\n📌 Branch: {branch}\n⚠️ Status: Security vulnerabilities detected!\n🤖 AI Remediator: Attempting auto-fix...\n\n🔗 View GitHub Run: {run_url}"
               else:
-                  msg = f"<b>✅ PixelCraft AI Security Report ✅</b>\n\n<b>Branch:</b> <code>{branch}</code>\n<b>Status:</b> All security checks passed!\n\n🔗 <a href='{run_url}'>View GitHub Action Run</a>"
+                  msg = f"✅ PixelCraft AI Security Report ✅\n\n📌 Branch: {branch}\n✨ Status: All security checks passed!\n\n🔗 View GitHub Run: {run_url}"
 
-              payload = {"chat_id": chat_id, "text": msg, "parse_mode": "HTML", "disable_web_page_preview": True}
+              payload = {"chat_id": chat_id, "text": msg, "disable_web_page_preview": True}
               res = requests.post(url, json=payload)
               if res.status_code == 200:
                   print("✅ Telegram notification sent successfully!")
