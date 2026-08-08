@@ -6,6 +6,8 @@
 
 ## 🚀 Advanced DevSecOps CI/CD Pipeline
 
+![PixelCraft AI DevSecOps Pipeline Architecture](./architecture.jpg)
+
 While PixelCraft AI delivers powerful frontend features, its core engineering marvel lies in its **Security-First DevSecOps Pipeline**. We have implemented an automated, multi-gate CI/CD infrastructure leveraging **GitHub Actions**, cutting-edge security scanners, and **GenAI-powered auto-remediation**.
 
 Our pipeline ensures that zero hardcoded secrets, no vulnerable dependencies, and no infrastructure misconfigurations make it to production.
