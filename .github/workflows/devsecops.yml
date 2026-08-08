@@ -89,6 +89,55 @@ jobs:
              echo "ℹ️ No vulnerabilities found. No WhatsApp message sent."
           fi
 
+      # Send Telegram Notification
+      - name: "✈️ Send Telegram Security Alert"
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          pip install requests --quiet
+          python -c '
+          import os, requests
+
+          bot_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+          chat_id = os.getenv("TELEGRAM_CHAT_ID", "").strip()
+          repo = "${{ github.repository }}"
+          run_id = "${{ github.run_id }}"
+          branch = "${{ github.head_ref }}" or "${{ github.ref_name }}"
+          run_url = f"https://github.com/{repo}/actions/runs/{run_id}"
+
+          if bot_token.startswith("bot"):
+              bot_token = bot_token[3:]
+
+          if bot_token and chat_id:
+              url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+              
+              has_vulns = False
+              try:
+                  with open("trivy-results.json", "r") as f:
+                      if "Vulnerabilities" in f.read():
+                          has_vulns = True
+              except Exception:
+                  pass
+
+              if has_vulns:
+                  msg = f"🚨 PixelCraft AI Security Alert! 🚨\n\n📌 Branch: {branch}\n⚠️ Status: Security vulnerabilities detected!\n🤖 AI Remediator: Attempting auto-fix...\n\n🔗 View GitHub Run: {run_url}"
+              else:
+                  msg = f"✅ PixelCraft AI Security Report ✅\n\n📌 Branch: {branch}\n✨ Status: All security checks passed!\n\n🔗 View GitHub Run: {run_url}"
+
+              payload = {"chat_id": chat_id, "text": msg, "disable_web_page_preview": True}
+              res = requests.post(url, json=payload)
+              if res.status_code == 200:
+                  print("✅ Telegram notification sent successfully!")
+              else:
+                  print(f"❌ Telegram API Error ({res.status_code}): {res.text}")
+                  print(f"Used Token: {bot_token[:5]}...{bot_token[-4:]} | Chat ID: {chat_id}")
+                  res.raise_for_status()
+          else:
+              print("ℹ️ Telegram credentials not set in secrets. Skipping notification.")
+          '
+
       # Upload JSON Report (Hidden, used by AI)
       - name: "📤 Upload JSON Report"
         if: always()

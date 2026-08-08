@@ -12,6 +12,7 @@ const User = require('./models/User');
 const multer = require('multer');
 const FormData = require('form-data');
 const fs = require('fs');
+const { sendTelegramAlert } = require('./utils/telegramAlert');
 const app = express();
 app.set('trust proxy', 1); // Trust the Render proxy to fix HTTP/HTTPS mismatch
 const PORT = process.env.PORT || 8080;
@@ -364,6 +365,9 @@ passport.use(new GoogleStrategy({
           avatar: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : ''
         });
         console.log("New user registered:", user.email);
+        
+        // Telegram Alert for new signups
+        sendTelegramAlert(`🎉 <b>New User Registration!</b>\n\n<b>Name:</b> ${user.name}\n<b>Email:</b> ${user.email}`);
       }
       
       // Update tracking data on every login

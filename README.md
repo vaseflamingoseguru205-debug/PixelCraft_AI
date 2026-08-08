@@ -10,6 +10,26 @@ While PixelCraft AI delivers powerful frontend features, its core engineering ma
 
 Our pipeline ensures that zero hardcoded secrets, no vulnerable dependencies, and no infrastructure misconfigurations make it to production.
 
+### 🧠 DevSecOps Integration Mind Map
+
+```mermaid
+mindmap
+  root((DevSecOps Pipeline))
+    Continuous Integration
+      GitHub Actions
+      Automated Workflows
+    Security Scanning
+      TruffleHog (Secrets)
+      Trivy (Containers)
+      Snyk (SCA)
+    AI Auto-Remediation
+      Gemini 1.5 Flash
+      JSON Parsing
+      Automated Git Commits
+    Alerting
+      WhatsApp Notifications
+```
+
 ### 🏗️ CI/CD Architecture Flow
 
 Below is the architectural representation of our automated CI/CD and security remediation workflow:
