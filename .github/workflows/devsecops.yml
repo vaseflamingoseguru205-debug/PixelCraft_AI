@@ -56,7 +56,8 @@ jobs:
       - name: "📄 Generate & Upload HTML Report"
         if: always()
         run: |
-          wget -q https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
+          # Downloading html.tpl from the repo gives a 404 (exit code 4).
+          # Using the local html.tpl already present in the workspace.
           trivy fs . --scanners vuln --format template --template "@html.tpl" -o trivy-report.html
           echo "✅ HTML Report generated!"
 
