@@ -1,18 +1,25 @@
-# 🎨 PixelCraft AI
+# PixelCraft AI - Secured with Advanced DevSecOps Pipeline
 
-**PixelCraft AI** is a state-of-the-art Web Application offering a comprehensive suite of free AI-powered image editing tools. From background removal to advanced image manipulation, PixelCraft provides a seamless and responsive user experience built with modern web technologies.
+[![DevSecOps Pipeline](https://img.shields.io/badge/CI%2FCD-DevSecOps-0052CC?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/)
+[![Security Scan](https://img.shields.io/badge/Security-Trivy%20%7C%20TruffleHog%20%7C%20Snyk-1E88E5?style=for-the-badge&logo=shield&logoColor=white)](https://github.com/)
+[![AI Remediator](https://img.shields.io/badge/AI_Engine-Gemini_1.5_Flash-8E24AA?style=for-the-badge&logo=google&logoColor=white)](https://generativelanguage.googleapis.com/)
+[![License](https://img.shields.io/badge/License-MIT-43A047?style=for-the-badge)](LICENSE)
+
+**PixelCraft AI** is an enterprise-grade web application offering a comprehensive suite of AI-powered image editing tools. Engineered with a **Security-First Architecture**, the repository is continuously audited and auto-patched using a custom GenAI-driven DevSecOps pipeline.
 
 ---
 
-## 🚀 Advanced DevSecOps CI/CD Pipeline
+## DevSecOps Pipeline Architecture
 
 ![PixelCraft AI DevSecOps Pipeline Architecture](./architecture.jpg)
 
-While PixelCraft AI delivers powerful frontend features, its core engineering marvel lies in its **Security-First DevSecOps Pipeline**. We have implemented an automated, multi-gate CI/CD infrastructure leveraging **GitHub Actions**, cutting-edge security scanners, and **GenAI-powered auto-remediation**.
+While PixelCraft AI delivers frontend capabilities, its core engineering foundation relies on an automated, multi-gate CI/CD infrastructure leveraging **GitHub Actions**, enterprise security scanners, and **GenAI-powered auto-remediation**.
 
-Our pipeline ensures that zero hardcoded secrets, no vulnerable dependencies, and no infrastructure misconfigurations make it to production.
+The pipeline enforces zero hardcoded secrets, zero unpatched vulnerability dependencies across all severities (Critical, High, Medium, Low), and strict compliance checks prior to deployment.
 
-### 🧠 DevSecOps Integration Mind Map
+---
+
+## DevSecOps Integration Mind Map
 
 ```mermaid
 mindmap
@@ -21,18 +28,21 @@ mindmap
       GitHub Actions
       Automated Workflows
     Security Scanning
-      TruffleHog (Secrets)
-      Trivy (Containers)
-      Snyk (SCA)
-    AI Auto-Remediation
+      TruffleHog Secrets
+      Trivy Vulnerability Scanner
+      Snyk SCA Analysis
+    AI Auto Remediation
       Gemini 1.5 Flash
-      JSON Parsing
+      JSON Report Parsing
       Automated Git Commits
-    Alerting
-      WhatsApp Notifications
+    Alerting & Telemetry
+      Telegram Bot Notifications
+      WhatsApp Alerts
 ```
 
-### 🏗️ CI/CD Architecture Flow
+---
+
+## CI/CD Architecture Flow
 
 Below is the architectural representation of our automated CI/CD and security remediation workflow:
 
@@ -46,7 +56,7 @@ graph TD
     F -->|Vulns Found| G[Generate JSON & HTML Security Reports]
     F -->|Passed| H[Pass to Snyk Verification]
     
-    G --> I[Send WhatsApp Notification Alert]
+    G --> I[Send Real-Time Telegram & WhatsApp Alerts]
     G --> J[Gemini 1.5 Flash AI Auto-Remediator]
     J --> K[Parse Root & Subfolder Targets]
     K --> L[Generate Exact Patch/Upgrade Commands]
@@ -58,41 +68,43 @@ graph TD
     Q -->|All Clear| R[Deployment Ready / Safe to Merge]
 ```
 
-### 🛡️ Deep Dive: Security Gates & Automation
+---
+
+## Security Gates Breakdown
 
 Our CI/CD pipeline orchestrates the following security gates synchronously upon every `push` and `pull_request` to the `main` or `feature/*` branches:
 
-#### 1. Pre-commit & Secret Scanning (TruffleHog)
-- **Tool**: `trufflesecurity/trufflehog`
-- **Objective**: Prevents API keys, private keys, passwords, and sensitive tokens from being leaked into the repository history.
-- **Mechanism**: Performs a deep, entropy-based scan across the entire repository snapshot. Any detected secret immediately halts the pipeline (Fail-Fast methodology).
+### 1. Pre-commit & Secret Scanning (TruffleHog)
+* **Engine:** `trufflesecurity/trufflehog`
+* **Objective:** Prevents API keys, private keys, passwords, and sensitive tokens from being leaked into repository history.
+* **Mechanism:** Performs entropy-based scanning across the entire repository snapshot. Any detected secret immediately halts the pipeline (Fail-Fast methodology).
 
-#### 2. Software Composition Analysis - SCA (Trivy & Snyk)
-- **Tools**: `aquasecurity/trivy-action` & `snyk/actions/node`
-- **Coverage**: All severity levels (**CRITICAL, HIGH, MEDIUM, LOW**) across both root and nested subfolder manifests (e.g., `package-lock.json`, `scratch_imgly/package-lock.json`).
-- **Mechanism**: Scans open-source dependency trees for known CVEs and prototype pollution vectors (resolving GitHub Dependabot security alerts automatically).
+### 2. Software Composition Analysis - SCA (Trivy & Snyk)
+* **Engines:** `aquasecurity/trivy-action` & `snyk/actions/node`
+* **Coverage:** All severity levels (**CRITICAL, HIGH, MEDIUM, LOW**) across both root and nested subfolder manifests (e.g., `package-lock.json`, `scratch_imgly/package-lock.json`).
+* **Mechanism:** Scans open-source dependency trees for known CVEs and prototype pollution vectors (resolving GitHub Dependabot security alerts automatically).
 
-#### 3. AI-Powered Auto-Remediation (Gemini 1.5 Flash)
-- **Script**: `scripts/ai_remediator.py`
-- **Objective**: Automatically fix vulnerable dependencies without human manual effort.
-- **Mechanism**:
-  1. **Trivy JSON Parsing**: Ingests `trivy-results.json` and extracts targets, package names, installed versions, and fixed versions.
-  2. **Subfolder Awareness**: Identifies nested package locations (e.g. `scratch_imgly/`) and generates scoped execution commands (`cd scratch_imgly && npm install ...`).
-  3. **Gemini 1.5 Flash Integration**: Uses Google's Gemini 1.5 Flash API to craft precise CLI patch commands with strict `--legacy-peer-deps` safeguards.
-  4. **Subprocess Execution**: Safely executes patch commands in Python subprocesses.
-  5. **Staged Diff Git Protection**: Evaluates `git diff --staged --quiet` to ensure only valid package file changes are committed, ignoring untracked build caches or temp files.
+### 3. AI-Powered Auto-Remediation (Gemini 1.5 Flash)
+* **Engine Script:** `scripts/ai_remediator.py`
+* **Objective:** Automatically remediates vulnerable dependencies without manual human intervention.
+* **Mechanism:**
+  1. **Trivy JSON Parsing:** Ingests `trivy-results.json` and extracts targets, package names, installed versions, and fixed versions.
+  2. **Subfolder Awareness:** Identifies nested package locations (e.g. `scratch_imgly/`) and generates scoped execution commands (`cd scratch_imgly && npm install ...`).
+  3. **Gemini 1.5 Flash Integration:** Interacts with Google's Gemini 1.5 Flash API to craft precise CLI patch commands with strict `--legacy-peer-deps` safeguards.
+  4. **Subprocess Execution:** Executes patch commands in Python subprocesses.
+  5. **Staged Diff Git Protection:** Evaluates `git diff --staged --quiet` to ensure only valid package file changes are committed, ignoring untracked build caches or temp files.
 
-#### 4. Automated HTML & Markdown Security Reports
-- **HTML Artifacts**: Generates structured `trivy-report.html` files uploaded as GitHub Actions artifacts (`trivy-report-html`), allowing developers to download visual audit reports directly.
-- **GitHub Step Summaries**: Dynamically renders formatted vulnerability tables in the workflow run summary for instant visibility.
+### 4. Automated HTML & Markdown Security Reports
+* **HTML Artifacts:** Generates structured `trivy-report.html` files uploaded as GitHub Actions artifacts (`trivy-report-html`), allowing developers to download visual audit reports directly.
+* **GitHub Step Summaries:** Dynamically renders formatted vulnerability tables in the workflow run summary for instant visibility.
 
-#### 5. Instant WhatsApp Notifications
-- **Integration**: Integrated via CallMeBot API (`WHATSAPP_PHONE` & `WHATSAPP_API_KEY` secrets).
-- **Functionality**: Triggers instant push notifications to the repository owner's mobile device whenever vulnerabilities are detected, including direct links to the GitHub Action run.
+### 5. Multi-Channel Alerting (Telegram & WhatsApp)
+* **Integration:** Integrated via Telegram Bot API and CallMeBot API.
+* **Functionality:** Triggers push notifications to the maintainer's mobile devices whenever vulnerabilities are detected, providing direct action links to GitHub Action execution logs.
 
 ---
 
-### 📂 CI/CD Directory Structure
+## Directory Structure
 
 ```text
 PixelCraft_AI/
@@ -106,15 +118,14 @@ PixelCraft_AI/
 │   └── package-lock.json       # Subfolder lockfile
 ├── public/                     # Static assets and Web App Frontend
 ├── package.json                # Root Node.js dependencies
-└── README.md                   # Comprehensive DevSecOps Documentation
+└── README.md                   # Technical DevSecOps Documentation
 ```
-
-### ⚙️ How It Works in Practice
-
-1. **Push Event**: A developer pushes code or submits a Pull Request.
-2. **Security Audit**: TruffleHog checks for leaked keys; Trivy scans root and subfolder lockfiles across all severities.
-3. **AI Remediation**: If vulnerabilities are found, `ai_remediator.py` asks Gemini 1.5 Flash for the exact update commands, runs them locally on the runner, and commits only the modified `package.json` files.
-4. **Final Verification**: Snyk runs a final verification check to ensure zero high-severity CVEs remain before declaring the branch safe for merge.
 
 ---
 
+## Execution Workflow
+
+1. **Trigger Event:** A developer pushes code or submits a Pull Request.
+2. **Security Audit:** TruffleHog checks for leaked keys; Trivy scans root and subfolder lockfiles across all severities.
+3. **AI Remediation:** If vulnerabilities are found, `ai_remediator.py` requests precise update commands from Gemini 1.5 Flash, runs them locally on the runner, and commits only the modified `package.json` files.
+4. **Final Verification:** Snyk runs a final verification check to ensure zero high-severity CVEs remain before declaring the branch safe for merge.
