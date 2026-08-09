@@ -86,23 +86,29 @@ Our CI/CD pipeline orchestrates the following security gates synchronously upon 
 * **Coverage:** All severity levels (**CRITICAL, HIGH, MEDIUM, LOW**) across both root and nested subfolder manifests (e.g., `package-lock.json`, `scratch_imgly/package-lock.json`).
 * **Mechanism:** Scans open-source dependency trees for known CVEs and prototype pollution vectors (resolving GitHub Dependabot security alerts automatically).
 
-### 3. AI-Powered Auto-Remediation (Gemini 1.5 Flash)
+### 3. AI-Powered Auto-Remediation & Self-Healing Engine (Gemini 1.5 Flash)
 * **Engine Script:** `scripts/ai_remediator.py`
-* **Objective:** Automatically remediates vulnerable dependencies without manual human intervention.
-* **Mechanism:**
-  1. **Trivy JSON Parsing:** Ingests `trivy-results.json` and extracts targets, package names, installed versions, and fixed versions.
-  2. **Subfolder Awareness:** Identifies nested package locations (e.g. `scratch_imgly/`) and generates scoped execution commands (`cd scratch_imgly && npm install ...`).
-  3. **Gemini 1.5 Flash Integration:** Interacts with Google's Gemini 1.5 Flash API to craft precise CLI patch commands with strict `--legacy-peer-deps` safeguards.
-  4. **Subprocess Execution:** Executes patch commands in Python subprocesses.
-  5. **Staged Diff Git Protection:** Evaluates `git diff --staged --quiet` to ensure only valid package file changes are committed, ignoring untracked build caches or temp files.
+* **Secret Token:** `GEMINI_API_KEY` (Stored in GitHub Repository Secrets)
+* **Objective:** Automatically resolves code & package failures without human developer intervention.
+* **Failure Resolution Mechanism:**
+  1. **Failure Interception:** When Trivy detects CVEs in `trivy-results.json`, the pipeline triggers `scripts/ai_remediator.py`.
+  2. **Trivy JSON Parsing:** The script parses `trivy-results.json`, extracting Target Files (e.g. `package-lock.json` or `scratch_imgly/package-lock.json`), Package Names, Installed Versions, and Fixed Versions.
+  3. **Gemini API Key Authentication:** Reads `GEMINI_API_KEY` from environment variables and constructs an authenticated HTTPS payload to `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`.
+  4. **Subfolder-Aware Prompt Engineering:** Gemini 1.5 Flash evaluates the target paths. If a vulnerability resides in a subfolder (e.g., `scratch_imgly/`), Gemini outputs scoped directory commands: `cd scratch_imgly && npm install package@version --save --legacy-peer-deps && cd ..`.
+  5. **Subprocess Auto-Patching:** Python's `subprocess.run()` executes the AI-generated commands in real-time on the `ubuntu-latest` runner.
+  6. **Staged Git Diff Guard:** Executes `git diff --staged --quiet` after staging `package.json`. If untracked ~1.1GB Trivy database caches exist, they are filtered out, ensuring clean, isolated commits.
 
 ### 4. Automated HTML & Markdown Security Reports
 * **HTML Artifacts:** Generates structured `trivy-report.html` files uploaded as GitHub Actions artifacts (`trivy-report-html`), allowing developers to download visual audit reports directly.
 * **GitHub Step Summaries:** Dynamically renders formatted vulnerability tables in the workflow run summary for instant visibility.
 
-### 5. Multi-Channel Alerting (Telegram & WhatsApp)
-* **Integration:** Integrated via Telegram Bot API and CallMeBot API.
-* **Functionality:** Triggers push notifications to the maintainer's mobile devices whenever vulnerabilities are detected, providing direct action links to GitHub Action execution logs.
+### 5. Multi-Channel Real-time Telemetry (Telegram & WhatsApp)
+* **Integration:** Integrated via Telegram Bot API (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`) & CallMeBot API.
+* **Telemetry Mechanism:** 
+  1. Executes a dedicated Python telemetry script inside `devsecops.yml`.
+  2. Sanitizes `TELEGRAM_BOT_TOKEN` automatically (stripping `bot` prefixes or trailing whitespace).
+  3. Sends plain-text formatted payloads directly to Telegram, eliminating entity parsing 400 errors while maintaining clickable GitHub Actions run links.
+  4. Triggers instant mobile push alerts with execution status upon every pipeline trigger.
 
 ---
 
