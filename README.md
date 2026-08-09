@@ -5,8 +5,6 @@
 [![AI Remediator](https://img.shields.io/badge/AI_Engine-Gemini_1.5_Flash-8E24AA?style=for-the-badge&logo=google&logoColor=white)](https://generativelanguage.googleapis.com/)
 [![License](https://img.shields.io/badge/License-MIT-43A047?style=for-the-badge)](LICENSE)
 
-![PixelCraft AI DevSecOps Pipeline Live Animation](./pipeline.gif)
-
 **PixelCraft AI** is an enterprise-grade web application offering a comprehensive suite of AI-powered image editing tools. Engineered with a **Security-First Architecture**, the repository is continuously audited and auto-patched using a custom GenAI-driven DevSecOps pipeline.
 
 ---
