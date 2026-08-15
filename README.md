@@ -135,3 +135,9 @@ PixelCraft_AI/
 2. **Security Audit:** TruffleHog checks for leaked keys; Trivy scans root and subfolder lockfiles across all severities.
 3. **AI Remediation:** If vulnerabilities are found, `ai_remediator.py` requests precise update commands from Gemini 1.5 Flash, runs them locally on the runner, and commits only the modified `package.json` files.
 4. **Final Verification:** Snyk runs a final verification check to ensure zero high-severity CVEs remain before declaring the branch safe for merge.
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
