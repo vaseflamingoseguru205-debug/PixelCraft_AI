@@ -209,6 +209,7 @@ jobs:
 
       # Snyk - ab yeh fail karega agar AI ne fix nahi kiya
       - name: "🔒 Snyk Final Security Gate"
+        if: ${{ secrets.SNYK_TOKEN != '' }}
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
