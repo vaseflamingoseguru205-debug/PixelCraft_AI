@@ -3,6 +3,8 @@ name: PixelCraft AI DevSecOps Pipeline
 on:
   push:
     branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
   workflow_dispatch:
     
 
