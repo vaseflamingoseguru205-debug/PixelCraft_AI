@@ -28,8 +28,10 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
-            curl -s -X POST https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage -d chat_id=${TELEGRAM_CHAT_ID} -d text="🚀 PixelCraft AI Pipeline Started for branch: ${{ github.ref_name }}" > /dev/null
+          TOKEN=$(echo "$TELEGRAM_BOT_TOKEN" | tr -d '\n' | tr -d '\r' | sed 's/^bot//')
+          CHAT=$(echo "$TELEGRAM_CHAT_ID" | tr -d '\n' | tr -d '\r')
+          if [ -n "$TOKEN" ] && [ -n "$CHAT" ]; then
+            curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" -d chat_id="${CHAT}" -d text="🚀 PixelCraft AI Pipeline Started for branch: ${{ github.ref_name }}" > /dev/null
           fi
 
       # Gate 1: Secret Scanning
