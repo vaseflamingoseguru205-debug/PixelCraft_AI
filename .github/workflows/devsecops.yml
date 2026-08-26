@@ -104,7 +104,6 @@ jobs:
           ref: ${{ github.head_ref || github.ref_name }}
 
       - name: "🔒 Snyk Security Scan (Pre-Fix)"
-        if: ${{ secrets.SNYK_TOKEN != '' }}
         uses: snyk/actions/node@master
         continue-on-error: true
         env:
@@ -225,7 +224,6 @@ jobs:
           fetch-depth: 0
 
       - name: "🔒 Snyk Final Security Gate"
-        if: ${{ secrets.SNYK_TOKEN != '' }}
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
