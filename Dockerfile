@@ -1,25 +1,27 @@
 FROM node:20.18.1-alpine3.20 AS build
 
-USER node
-WORKDIR /home/node/app
+ENV NODE_ENV=production
 
-COPY --chown=node:node package*.json ./
+WORKDIR /usr/src/app
 
-RUN npm ci --omit=dev && npm cache clean --force
+COPY package*.json ./
+
+RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
 FROM node:20.18.1-alpine3.20
 
+ENV NODE_ENV=production
+ENV PORT=3000
+
 RUN apk update && \
     apk upgrade --no-cache && \
-    apk add --no-cache tini && \
-    rm -rf /var/cache/apk/*
+    apk add --no-cache tini=~0.19 && \
+    rm -rf /var/cache/apk/* /tmp/*
 
-WORKDIR /home/node/app
+WORKDIR /usr/src/app
 
-ENV NODE_ENV=production
-
-COPY --chown=node:node . .
-COPY --chown=node:node --from=build /home/node/app/node_modules ./node_modules
+COPY --chown=root:root . .
+COPY --chown=root:root --from=build /usr/src/app/node_modules ./node_modules
 
 USER 1000:1000
 
