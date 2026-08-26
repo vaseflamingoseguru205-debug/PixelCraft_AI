@@ -3,155 +3,314 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login to PixelCraft AI</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Login - PixelCraft AI</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      background-color: #0f172a;
-      color: #f8fafc;
-      font-family: 'Inter', sans-serif;
+    :root {
+      /* Google Brand Colors */
+      --g-blue: #4285F4;
+      --g-red: #EA4335;
+      --g-yellow: #FBBC05;
+      --g-green: #34A853;
+      
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #111827; /* Slightly lighter background */
+      color: var(--text-main);
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
       overflow: hidden;
-      background-image: radial-gradient(circle at center, rgba(37, 99, 235, 0.1) 0%, transparent 70%);
+      position: relative;
     }
 
-    .login-container {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 24px;
-      padding: 50px 40px;
+    /* Beautiful background gradient using Google colors */
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      max-width: 420px;
-      text-align: center;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
-      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.25) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(234, 67, 53, 0.25) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(251, 188, 5, 0.25) 0%, transparent 50%),
+                  radial-gradient(circle at 20% 80%, rgba(52, 168, 83, 0.25) 0%, transparent 50%);
+      z-index: 0;
+      animation: pulseBg 10s ease-in-out infinite alternate;
     }
 
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes pulseBg {
+      0% { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(1.1); opacity: 1; }
     }
 
-    .logo {
-      font-size: 3.5rem;
-      margin-bottom: 20px;
-      display: inline-block;
-      animation: float 4s ease-in-out infinite;
+    /* Animated Border Wrapper */
+    .login-wrapper {
+      position: relative;
+      z-index: 10;
+      padding: 3px;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 40px rgba(66, 133, 244, 0.3);
+      overflow: hidden;
+      animation: floatPopup 6s ease-in-out infinite;
     }
 
-    @keyframes float {
+    .login-wrapper::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: conic-gradient(from 0deg, var(--g-blue), var(--g-red), var(--g-yellow), var(--g-green), var(--g-blue));
+      animation: spinBorder 4s linear infinite;
+      z-index: -1;
+    }
+
+    @keyframes spinBorder {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes floatPopup {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      50% { transform: translateY(-15px); }
+    }
+
+    /* Center Square Glassmorphism Container */
+    .login-container {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 21px; /* slightly smaller than wrapper */
+      width: 100%;
+      max-width: 400px;
+      padding: 30px 35px;
+      text-align: center;
+      position: relative;
+    }
+
+    /* Floating Animation for the logo */
+    .logo-container {
+      margin-bottom: 15px;
+    }
+
+    .logo-icon {
+      font-size: 3rem;
+      display: inline-block;
+      filter: drop-shadow(0 4px 15px rgba(66,133,244,0.4));
     }
 
     h1 {
       font-family: 'Outfit', sans-serif;
       font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: #fff;
+      font-weight: 800;
+      margin-bottom: 15px;
+      position: relative;
+      display: inline-block;
+      color: #e2e8f0; /* Silver text */
+      overflow: hidden;
+      padding: 0 10px;
+      border-radius: 4px;
     }
 
-    p {
-      color: #94a3b8;
-      font-size: 0.95rem;
-      margin-bottom: 35px;
-      line-height: 1.5;
+    /* Silver shine effect on hover */
+    h1::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 50%; height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.8), transparent);
+      transform: skewX(-20deg);
+      transition: 0.5s ease-in-out;
     }
 
+    h1:hover::after {
+      left: 150%;
+    }
+
+    .intro-text {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    .info-box {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 12px 15px;
+      margin-bottom: 25px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: left;
+    }
+    .info-box ul {
+      padding-left: 20px;
+      margin-top: 5px;
+    }
+    .info-box li {
+      margin-bottom: 5px;
+    }
+
+    /* Google Button Wrapper (Spinning Border) */
     .google-btn-wrapper {
       position: relative;
-      padding: 3px;
-      border-radius: 12px;
-      background: linear-gradient(60deg, #4285F4, #EA4335, #FBBC05, #34A853, #4285F4);
-      background-size: 300% 300%;
-      animation: borderGradient 4s ease infinite;
       display: block;
-      transition: transform 0.3s;
+      padding: 2px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .google-btn-wrapper::before {
+      content: '';
+      position: absolute;
+      top: -100%; left: -50%;
+      width: 200%; height: 300%;
+      background: conic-gradient(from 0deg, var(--g-blue), var(--g-red), var(--g-yellow), var(--g-green), var(--g-blue));
+      animation: spinBorder 4s linear infinite;
+      z-index: -1;
     }
 
     .google-btn-wrapper:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(66, 133, 244, 0.3);
+      box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+      transform: scale(1.02);
     }
 
-    @keyframes borderGradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
+    /* Glassmorphism Google Button */
     .google-btn {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 12px;
-      background: #fff;
+      background: rgba(255, 255, 255, 0.85); /* Slightly transparent */
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       color: #1e293b;
-      padding: 14px 24px;
+      padding: 12px 20px;
       border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
       font-size: 1.05rem;
-      font-weight: 600;
+      font-weight: 700;
       text-decoration: none;
       width: 100%;
-      box-sizing: border-box;
-      transition: background 0.3s;
     }
 
     .google-btn img {
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
     }
 
-    .back-link {
-      display: inline-block;
-      margin-top: 25px;
-      color: #64748b;
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: color 0.3s;
+    .legal-links {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
     }
-    
-    .back-link:hover {
-      color: #94a3b8;
+    .legal-links a {
+      color: var(--g-blue);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .legal-links a:hover {
+      color: #60a5fa;
+      text-decoration: underline;
+    }
+
+    /* Back link */
+    .back-home {
+      display: inline-block;
+      margin-top: 15px;
+      color: #64748b;
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back-home:hover {
+      color: var(--text-muted);
     }
 
   </style>
 </head>
 <body>
 
-  <div class="login-container">
-    <div class="logo">🎨</div>
-    <h1>Sign In Required</h1>
-    <p>Please sign in to access PixelCraft AI tools. All our tools are 100% free!</p>
-    
-    <a href="/auth/google" class="google-btn-wrapper" id="google-login">
-      <div class="google-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
-        Sign in with Google
+  <div class="bg-gradient"></div>
+
+  <div class="login-wrapper">
+    <div class="login-container">
+      
+      <div class="logo-container">
+        <span class="logo-icon">🎨</span>
       </div>
-    </a>
-    
-    <a href="/" class="back-link">← Back to Home</a>
+      
+      <h1>PixelCraft AI</h1>
+      
+      <p class="intro-text">
+        Welcome to the decentralized privacy & digital security toolset. Sign in to unlock advanced tools and protect your digital footprint.
+      </p>
+
+      <div class="info-box">
+        <strong>Platform Features:</strong>
+        <ul>
+          <li>100% Local Processing</li>
+          <li>Advanced Steganography & Cryptography</li>
+          <li>Digital Footprint Wiper</li>
+          <li>No Centralized Databases</li>
+        </ul>
+      </div>
+
+      <div class="google-btn-wrapper" id="google-login">
+        <div class="google-btn">
+          <!-- Google SVG Logo -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="22px" height="22px">
+            <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+            <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+            <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+            <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+          </svg>
+          Sign in with Google
+        </div>
+      </div>
+
+      <div class="legal-links">
+        By signing in, you agree to our <br>
+        <a href="terms-conditions.html">Terms & Conditions</a> and <a href="privacy.html">Privacy Policy</a>.
+      </div>
+      
+      <a href="index.html" class="back-home">← Back to Home</a>
+      
+    </div>
   </div>
 
   <script>
-    // Grab the returnTo parameter from the URL and append it to the Google login link
     document.addEventListener("DOMContentLoaded", () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const returnTo = urlParams.get("returnTo");
-      if (returnTo) {
-        const loginBtn = document.getElementById("google-login");
-        loginBtn.href = "/auth/google?returnTo=" + encodeURIComponent(returnTo);
-      }
+      // Handle OAuth Redirect
+      const loginBtn = document.getElementById("google-login");
+      
+      loginBtn.addEventListener("click", () => {
+        // Visual feedback
+        loginBtn.innerHTML = '<div class="google-btn">Redirecting to Google...</div>';
+        
+        setTimeout(() => {
+          // Redirect to OAuth
+          window.location.href = "/auth/google";
+        }, 800);
+      });
     });
   </script>
 </body>

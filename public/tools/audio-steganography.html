@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+
+  <!-- Global Login Guard -->
+  <script>
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.href = '/login.html?returnTo=' + encodeURIComponent(window.location.pathname);
+    }
+  </script>
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-V78ZLHJLR8"></script>
   <script>
@@ -51,7 +60,7 @@
         display: flex; align-items: center; gap: 10px;
     }
     .mode-btn.active {
-        background: rgba(56, 189, 248, 0.15); border-color: #38bdf8; color: #fff;
+        background: rgba(56, 189, 248, 0.15); border-color: #38bdf8; color: var(--text-main);
         box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
     }
 
@@ -247,7 +256,7 @@
           <input type="checkbox" id="legal-check" style="margin-top: 4px; width: 18px; height: 18px; accent-color: #eab308; cursor: pointer;">
           <div>
               <label for="legal-check" style="color: #eab308; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: block; margin-bottom: 4px;">Terms & Privacy Policy</label>
-              <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0; line-height: 1.5;">I agree to the <a href="/terms-conditions.html" target="_blank" style="color: #38bdf8;">Terms</a> and <a href="/privacy-policy.html" target="_blank" style="color: #38bdf8;">Privacy Policy</a>. To ensure a safe platform, basic security metrics (like IP) may be logged securely by PixelCraft AI.</p>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.5;">I agree to the <a href="/terms-conditions.html" target="_blank" style="color: #38bdf8;">Terms</a> and <a href="/privacy.html" target="_blank" style="color: #38bdf8;">Privacy Policy</a>. To ensure a safe platform, basic security metrics (like IP) may be logged securely by PixelCraft AI.</p>
           </div>
       </div>
 
@@ -901,8 +910,8 @@
   </script>
 
   <!-- SEO/ADSENSE RICH TEXT INJECTION -->
-  <div style="margin-top: 60px; padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); color: #cbd5e1; line-height: 1.8; margin-bottom: 40px;">
-    <h2 style="color: #fff; font-size: 1.8rem; margin-bottom: 20px;">Advanced Audio & Video Steganography: Securing Data with QIM and AES-256</h2>
+  <div style="margin-top: 60px; padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); color: var(--text-muted); line-height: 1.8; margin-bottom: 40px;">
+    <h2 style="color: var(--text-main); font-size: 1.8rem; margin-bottom: 20px;">Advanced Audio & Video Steganography: Securing Data with QIM and AES-256</h2>
     <p style="margin-bottom: 20px;">
       Welcome to the <strong>PixelCraft AI Audio & Video Steganography</strong> tool. Unlike standard communication channels that leave digital traces, our platform allows you to embed encrypted secret messages directly into the audio channels of your media files (.wav, .mp3, .mp4, .webm). This ensures your sensitive data remains hidden in plain sight.
     </p>

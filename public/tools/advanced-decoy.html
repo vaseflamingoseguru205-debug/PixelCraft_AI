@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+
+  <!-- Global Login Guard -->
+  <script>
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.href = '/login.html?returnTo=' + encodeURIComponent(window.location.pathname);
+    }
+  </script>
+
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-V78ZLHJLR8"></script>
 <script>
@@ -33,20 +42,20 @@
     .tabs { display: flex; border-bottom: 1px solid #334155; margin-bottom: 25px; }
     .tab { flex: 1; text-align: center; padding: 15px; cursor: pointer; color: #94a3b8; font-weight: 600; transition: 0.3s; }
     .tab.active { color: #3b82f6; border-bottom: 3px solid #3b82f6; }
-    .tab:hover:not(.active) { color: #cbd5e1; background: rgba(255,255,255,0.05); }
+    .tab:hover:not(.active) { color: var(--text-muted); background: rgba(255,255,255,0.05); }
 
     .panel { display: none; }
     .panel.active { display: block; animation: fadeIn 0.4s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
     .drop-zone { border: 2px dashed #475569; border-radius: 12px; padding: 40px 20px; text-align: center; color: #94a3b8; cursor: pointer; transition: 0.3s; background: rgba(15, 23, 42, 0.5); margin-bottom: 25px; }
-    .drop-zone:hover, .drop-zone.dragover { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); color: #cbd5e1; }
+    .drop-zone:hover, .drop-zone.dragover { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); color: var(--text-muted); }
     
     .preview-container { text-align: center; margin-bottom: 25px; display: none; }
     .preview-container img { max-width: 100%; max-height: 300px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid #334155; }
 
     .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; margin-bottom: 8px; color: #cbd5e1; font-size: 0.95rem; font-weight: 500; }
+    .form-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
     .form-group input, .form-group textarea { width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid #475569; border-radius: 8px; color: white; font-family: inherit; font-size: 1rem; box-sizing: border-box; transition: 0.3s; }
     .form-group input:focus, .form-group textarea:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
     .form-group textarea { resize: vertical; min-height: 100px; }
@@ -455,8 +464,8 @@
   </script>
 
   <!-- SEO/ADSENSE RICH TEXT INJECTION -->
-  <div style="margin-top: 60px; padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); color: #cbd5e1; line-height: 1.8; margin-bottom: 40px;">
-    <h2 style="color: #fff; font-size: 1.8rem; margin-bottom: 20px;">Advanced Decoy Steganography: The Ultimate Plausible Deniability</h2>
+  <div style="margin-top: 60px; padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); color: var(--text-muted); line-height: 1.8; margin-bottom: 40px;">
+    <h2 style="color: var(--text-main); font-size: 1.8rem; margin-bottom: 20px;">Advanced Decoy Steganography: The Ultimate Plausible Deniability</h2>
     <p style="margin-bottom: 20px;">
       Welcome to the <strong>PixelCraft AI Advanced Decoy Steganography</strong> tool. Standard steganography hides a single message, but what happens if an adversary discovers the hidden data and forces you to hand over the decryption password? This is where our Decoy Steganography tool shines, providing mathematically guaranteed <em>plausible deniability</em>.
     </p>
