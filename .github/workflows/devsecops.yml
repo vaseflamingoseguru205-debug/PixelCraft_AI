@@ -207,7 +207,15 @@ jobs:
           ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 0
 
-
+      # Snyk - ab yeh fail karega agar AI ne fix nahi kiya
+      - name: "🔒 Snyk Final Security Gate"
+        if: ${{ secrets.SNYK_TOKEN != '' }}
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+          args: --severity-threshold=high
 
       - name: "🎉 All Clear! Safe to Merge."
         run: echo "All security checks passed! This PR is safe to merge."
