@@ -135,7 +135,7 @@ def apply_ai_fix(commands_text):
     else:
         log_debug("Gemini API completely failed! Running guaranteed fallback fix...")
         send_telegram_msg(f"⚠️ Gemini API Quota Exceeded ⚠️\n\n📌 Branch: {GITHUB_BRANCH}\n🤖 Applying guaranteed fallback fixes instead.\n\n🔗 View Run: {run_url}")
-        subprocess.run("npm install lodash@4.18.1 express@4.22.0 qs@6.14.2 axios@1.19.0 mongoose@6.13.9 multer@2.2.0 body-parser@1.20.4 --save", shell=True, capture_output=True)
+        subprocess.run("npm install lodash@4.18.1 express@4.22.0 qs@6.15.2 axios@1.19.0 mongoose@8.24.1 multer@2.2.0 body-parser@1.20.6 --save", shell=True, capture_output=True)
         return True
     return False
 
@@ -165,7 +165,7 @@ if __name__ == "__main__":
                 send_telegram_msg(fix_msg)
             else:
                 send_telegram_msg(f"⚠️ Gemini AI Output Invalid ⚠️\n\n📌 Branch: {GITHUB_BRANCH}\n🤖 Applying guaranteed fallback fixes instead.\n\n🔗 View Run: {run_url}")
-                subprocess.run("npm install lodash@4.17.21 express@4.22.0 qs@6.14.2 axios@1.16.0 mongoose@6.13.9 multer@2.2.0 body-parser@1.20.4 --save", shell=True, capture_output=True)
+                subprocess.run("npm install lodash@4.18.1 express@4.22.0 qs@6.15.2 axios@1.19.0 mongoose@8.24.1 multer@2.2.0 body-parser@1.20.6 --save", shell=True, capture_output=True)
         else:
             send_telegram_msg(f"⚠️ Gemini API Quota Exceeded ⚠️\n\n📌 Branch: {GITHUB_BRANCH}\n🤖 Applying guaranteed fallback fixes instead.\n\n🔗 View Run: {run_url}")
-            subprocess.run("npm install lodash@4.17.21 express@4.22.0 qs@6.14.2 axios@1.16.0 mongoose@6.13.9 multer@2.2.0 body-parser@1.20.4 --save", shell=True, capture_output=True)
+            subprocess.run("npm install lodash@4.18.1 express@4.22.0 qs@6.15.2 axios@1.19.0 mongoose@8.24.1 multer@2.2.0 body-parser@1.20.6 --save", shell=True, capture_output=True)
