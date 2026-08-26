@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+
+  <!-- Global Login Guard -->
+  <script>
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.href = '/login.html?returnTo=' + encodeURIComponent(window.location.pathname);
+    }
+  </script>
+
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-V78ZLHJLR8"></script>
 <script>
@@ -309,19 +318,19 @@
       <!-- RELATED TOOLS FOR SEO INTERNAL LINKING -->
       <div style="max-width: 1000px; margin: 60px auto 40px; padding: 0 20px;">
         <div style="padding: 30px; background: rgba(0,0,0,0.2); border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
-          <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 20px; font-family: 'Outfit', sans-serif;">Explore More Premium Free Tools</h3>
+          <h3 style="color: var(--text-main); font-size: 1.5rem; margin-bottom: 20px; font-family: 'Outfit', sans-serif;">Explore More Premium Free Tools</h3>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
-            <a href="ai-content-detector.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
+            <a href="ai-content-detector.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
               <div style="font-size: 1.5rem; margin-bottom: 8px;">‍</div>
               <strong style="display: block; margin-bottom: 4px;">Deep AI Content Detector</strong>
               <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Identify ChatGPT text & deepfake images instantly.</span>
             </a>
-            <a href="ai-prompt-humanizer.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
+            <a href="ai-prompt-humanizer.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
               <div style="font-size: 1.5rem; margin-bottom: 8px;"></div>
               <strong style="display: block; margin-bottom: 4px;">AI Text Humanizer</strong>
               <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Bypass AI detectors with 100% human-like text.</span>
             </a>
-            <a href="qr-generator.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
+            <a href="qr-generator.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
               <div style="font-size: 1.5rem; margin-bottom: 8px;"></div>
               <strong style="display: block; margin-bottom: 4px;">Advanced QR Generator</strong>
               <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Create custom branded QR codes instantly.</span>
@@ -636,8 +645,8 @@
   </script>
 
   <!-- SEO/ADSENSE RICH TEXT INJECTION -->
-  <div style="margin-top: 60px; padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); color: #cbd5e1; line-height: 1.8; margin-bottom: 40px;">
-    <h2 style="color: #fff; font-size: 1.8rem; margin-bottom: 20px;">Everything You Need to Know About the Qr Generator Tool</h2>
+  <div style="margin-top: 60px; padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); color: var(--text-muted); line-height: 1.8; margin-bottom: 40px;">
+    <h2 style="color: var(--text-main); font-size: 1.8rem; margin-bottom: 20px;">Everything You Need to Know About the Qr Generator Tool</h2>
     <p style="margin-bottom: 20px;">Welcome to the ultimate guide on utilizing our powerful <strong>Qr Generator</strong> tool. In today's fast-paced digital world, efficiency and privacy are the two most critical factors when handling media online. Unlike many other platforms that force you to upload your sensitive files to remote servers, PixelCraft AI processes everything directly within your local browser environment.</p>
     
     <h3 style="color: #38bdf8; font-size: 1.4rem; margin-top: 30px; margin-bottom: 15px;">How to Use This Tool Efficiently</h3>
