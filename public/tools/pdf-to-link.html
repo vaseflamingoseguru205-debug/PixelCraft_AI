@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+
+  <!-- Global Login Guard -->
+  <script>
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.href = '/login.html?returnTo=' + encodeURIComponent(window.location.pathname);
+    }
+  </script>
+
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-V78ZLHJLR8"></script>
 <script>
@@ -204,7 +213,7 @@
       flex: 1;
       background: transparent;
       border: none;
-      color: #fff;
+      color: var(--text-main);
       font-size: 1rem;
       outline: none;
       padding: 0 10px;
@@ -332,12 +341,12 @@
         <div class="upload-area-pdf" id="upload-area" onclick="document.getElementById('file-input').click()">
           <input type="file" id="file-input" accept=".pdf,application/pdf" style="display:none"/>
           <div class="upload-icon-pdf">📄</div>
-          <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 8px;">Tap or Drop PDF Here</h3>
+          <h3 style="color: var(--text-main); font-size: 1.5rem; margin-bottom: 8px;">Tap or Drop PDF Here</h3>
           <p style="color: #94a3b8;">Max file size: 50MB. Secure temporary hosting.</p>
         </div>
 
         <div id="upload-status" style="display: none; text-align: center; margin-top: 20px;">
-          <h4 style="color: #fff; margin-bottom: 10px;" id="status-text">Uploading magic... ✨</h4>
+          <h4 style="color: var(--text-main); margin-bottom: 10px;" id="status-text">Uploading magic... ✨</h4>
           <div class="progress-bar-container" style="display: block;">
             <div class="progress-bar" id="progress-bar"></div>
           </div>
@@ -346,7 +355,7 @@
         <div class="result-box" id="result-box">
           <div style="text-align: center;">
             <div class="success-icon">✅</div>
-            <h3 style="color: #fff; margin-bottom: 5px;">Your PDF is Ready to Share!</h3>
+            <h3 style="color: var(--text-main); margin-bottom: 5px;">Your PDF is Ready to Share!</h3>
             <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">This secure link is active permanently.</p>
           </div>
 
@@ -359,7 +368,7 @@
             <a href="#" id="open-link" target="_blank" class="btn btn-gray" style="display: inline-block; margin-bottom: 15px;">🌐 Open in New Tab</a>
           </div>
 
-          <h4 style="color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-top: 10px;">Quick Share</h4>
+          <h4 style="color: var(--text-main); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-top: 10px;">Quick Share</h4>
           <div class="share-actions">
             <a href="#" id="share-wa" target="_blank" class="share-btn whatsapp">💬 WhatsApp</a>
             <a href="#" id="share-tg" target="_blank" class="share-btn telegram">✈️ Telegram</a>
@@ -375,7 +384,7 @@
           </div>
 
           <div style="text-align: center; margin-top: 25px;">
-             <button class="btn btn-outline" onclick="resetTool()" style="color: #fff; border-color: rgba(255,255,255,0.2);">🔄 Upload Another PDF</button>
+             <button class="btn btn-outline" onclick="resetTool()" style="color: var(--text-main); border-color: rgba(255,255,255,0.2);">🔄 Upload Another PDF</button>
           </div>
         </div>
 
@@ -387,19 +396,19 @@
 <!-- RELATED TOOLS FOR SEO INTERNAL LINKING -->
 <div style="max-width: 1000px; margin: 60px auto 40px; padding: 0 20px;">
   <div style="padding: 30px; background: rgba(0,0,0,0.2); border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
-    <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 20px; font-family: 'Outfit', sans-serif;">🔗 Explore More Premium Free Tools</h3>
+    <h3 style="color: var(--text-main); font-size: 1.5rem; margin-bottom: 20px; font-family: 'Outfit', sans-serif;">🔗 Explore More Premium Free Tools</h3>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
-      <a href="qr-generator.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
+      <a href="qr-generator.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
         <div style="font-size: 1.5rem; margin-bottom: 8px;">🔲</div>
         <strong style="display: block; margin-bottom: 4px;">Advanced QR Generator</strong>
         <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Create custom branded QR codes instantly.</span>
       </a>
-      <a href="format-converter.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
+      <a href="format-converter.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
         <div style="font-size: 1.5rem; margin-bottom: 8px;">🔄</div>
         <strong style="display: block; margin-bottom: 4px;">Image Format Converter</strong>
         <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Convert PNG, JPG, WebP securely in browser.</span>
       </a>
-      <a href="ai-prompt-humanizer.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
+      <a href="ai-prompt-humanizer.html" style="text-decoration: none; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); transition: 0.3s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
         <div style="font-size: 1.5rem; margin-bottom: 8px;">✍️</div>
         <strong style="display: block; margin-bottom: 4px;">AI Text Humanizer</strong>
         <span style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4; display: block;">Bypass AI detectors with 100% human-like text.</span>
@@ -609,8 +618,8 @@
 </script>
 
   <!-- SEO/ADSENSE RICH TEXT INJECTION -->
-  <div style="margin-top: 60px; padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); color: #cbd5e1; line-height: 1.8; margin-bottom: 40px;">
-    <h2 style="color: #fff; font-size: 1.8rem; margin-bottom: 20px;">Everything You Need to Know About the Pdf To Link Tool</h2>
+  <div style="margin-top: 60px; padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); color: var(--text-muted); line-height: 1.8; margin-bottom: 40px;">
+    <h2 style="color: var(--text-main); font-size: 1.8rem; margin-bottom: 20px;">Everything You Need to Know About the Pdf To Link Tool</h2>
     <p style="margin-bottom: 20px;">Welcome to the ultimate guide on utilizing our powerful <strong>Pdf To Link</strong> tool. In today's fast-paced digital world, efficiency and privacy are the two most critical factors when handling media online. Unlike many other platforms that force you to upload your sensitive files to remote servers, PixelCraft AI processes everything directly within your local browser environment.</p>
     
     <h3 style="color: #38bdf8; font-size: 1.4rem; margin-top: 30px; margin-bottom: 15px;">How to Use This Tool Efficiently</h3>
