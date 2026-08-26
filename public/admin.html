@@ -85,7 +85,7 @@
             100% { filter: hue-rotate(360deg); }
         }
 
-        .login-box h1 { margin-bottom: 8px; font-weight: 700; color: #fff; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 10px var(--accent-glow); }
+        .login-box h1 { margin-bottom: 8px; font-weight: 700; color: var(--text-main); letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 10px var(--accent-glow); }
         .login-box p { color: var(--accent); margin-bottom: 30px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
 
         input[type="password"] {
@@ -143,7 +143,7 @@
             padding-bottom: 20px;
         }
 
-        .dash-title h1 { margin: 0; font-size: 32px; color: #fff; text-shadow: 0 0 15px var(--accent-glow); text-transform: uppercase; letter-spacing: 2px; }
+        .dash-title h1 { margin: 0; font-size: 32px; color: var(--text-main); text-shadow: 0 0 15px var(--accent-glow); text-transform: uppercase; letter-spacing: 2px; }
         .dash-title span { color: var(--accent); font-size: 14px; display: flex; align-items: center; gap: 8px; margin-top: 8px; font-family: 'JetBrains Mono', monospace; }
         .pulse { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 15px var(--accent); animation: blink 1.5s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
@@ -152,7 +152,7 @@
             background: transparent; border: 1px solid var(--danger); color: var(--danger);
             padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;
         }
-        .btn-logout:hover { background: var(--danger); color: #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+        .btn-logout:hover { background: var(--danger); color: var(--text-main); box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
 
         .grid-stats {
             display: grid;
@@ -163,7 +163,7 @@
 
         .stat-card { border-left: 4px solid var(--accent); }
         .stat-card h3 { margin: 0 0 10px 0; font-size: 13px; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        .stat-card .value { font-size: 36px; font-weight: 700; margin: 0; color: #fff; font-family: 'JetBrains Mono', monospace; }
+        .stat-card .value { font-size: 36px; font-weight: 700; margin: 0; color: var(--text-main); font-family: 'JetBrains Mono', monospace; }
 
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; text-align: left; }
         th { padding: 0 16px 10px 16px; color: var(--accent); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; }
@@ -174,7 +174,7 @@
         tr:hover td { background: rgba(255, 255, 255, 0.05); }
 
         .avatar { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; margin-right: 16px; vertical-align: middle; border: 1px solid var(--border); }
-        .user-name { font-weight: 600; font-size: 1.05rem; color: #fff; }
+        .user-name { font-weight: 600; font-size: 1.05rem; color: var(--text-main); }
         .user-email { color: var(--text-muted); font-size: 13px; display: block; margin-top: 4px; }
         .sub-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
         .highlight { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px;}
@@ -210,7 +210,7 @@
 
         .modal-user-info { display: flex; align-items: center; gap: 20px; }
         .modal-avatar { width: 80px; height: 80px; border-radius: 16px; border: 2px solid var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
-        .modal-name { font-size: 28px; color: #fff; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 1px;}
+        .modal-name { font-size: 28px; color: var(--text-main); margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 1px;}
         .modal-email { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 14px; margin: 0; }
 
         .modal-close {
@@ -231,8 +231,8 @@
         .data-group { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
         .data-title { font-size: 14px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; font-weight: 600;}
         .data-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; align-items: center; }
-        .data-label { color: #cbd5e1; }
-        .data-val { color: #fff; font-family: 'JetBrains Mono', monospace; text-align: right; background: rgba(0,242,254,0.05); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(0,242,254,0.1); }
+        .data-label { color: var(--text-muted); }
+        .data-val { color: var(--text-main); font-family: 'JetBrains Mono', monospace; text-align: right; background: rgba(0,242,254,0.05); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(0,242,254,0.1); }
         .val-highlight { color: var(--accent); }
 
         /* Timeline */
@@ -247,13 +247,13 @@
 
         /* Action Buttons */
         .btn-ban { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%; margin-top: 10px; }
-        .btn-ban:hover { background: var(--danger); color: #fff; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+        .btn-ban:hover { background: var(--danger); color: var(--text-main); box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
         
         .btn-warn { background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); color: var(--warning); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%; margin-top: 20px; }
-        .btn-warn:hover { background: var(--warning); color: #fff; box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
+        .btn-warn:hover { background: var(--warning); color: var(--text-main); box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
         
         .btn-unban { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%; margin-top: 20px; }
-        .btn-unban:hover { background: var(--success); color: #fff; box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
+        .btn-unban:hover { background: var(--success); color: var(--text-main); box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
 
         /* Small Prompts */
         .prompt-modal {
@@ -320,7 +320,7 @@
         }
         .btn-prompt-cancel:hover {
             background: rgba(255,255,255,0.05);
-            color: #fff;
+            color: var(--text-main);
         }
         .btn-submit-ban {
             background: rgba(239, 68, 68, 0.1);
@@ -329,7 +329,7 @@
         }
         .btn-submit-ban:hover {
             background: var(--danger);
-            color: #fff;
+            color: var(--text-main);
             box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
         }
         .btn-submit-warn {
@@ -339,7 +339,7 @@
         }
         .btn-submit-warn:hover {
             background: var(--warning);
-            color: #fff;
+            color: var(--text-main);
             box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
         }
 
