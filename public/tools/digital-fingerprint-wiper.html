@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+  <!-- Global Login Guard -->
+  <script>
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.href = '/login.html?returnTo=' + encodeURIComponent(window.location.pathname);
+    }
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Digital Fingerprint Wiper | PixelCraft AI</title>
@@ -38,7 +46,7 @@
       display: flex; justify-content: space-between; align-items: center;
     }
     .navbar .logo {
-      color: #fff; text-decoration: none; font-weight: 600; font-size: 1.2rem; letter-spacing: 1px;
+      color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 1.2rem; letter-spacing: 1px;
     }
     .navbar .logo span { color: var(--accent-cyan); }
     .back-btn {
@@ -138,7 +146,7 @@
       margin-top: 3px; accent-color: var(--alert-red); cursor: pointer; width: 16px; height: 16px;
     }
     .legal-text {
-      font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;
+      font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;
     }
 
     /* Action Buttons */
@@ -167,7 +175,7 @@
     /* Terminal */
     .terminal {
       flex: 1; background: #000; border: 1px solid #222; border-radius: 8px; padding: 15px;
-      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #cbd5e1;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted);
       overflow-y: auto; max-height: 300px;
     }
     .terminal div { margin-bottom: 4px; word-wrap: break-word; }
@@ -229,7 +237,7 @@
           <input type="checkbox" id="legalCheck" style="margin-top: 4px; accent-color: #eab308;">
           <div>
             <label for="legalCheck" style="color: #eab308; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: block; margin-bottom: 4px;">Terms & Privacy Policy</label>
-            <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0; line-height: 1.5;">I agree to the Terms & Privacy Policy. To ensure a safe platform, basic security metrics (like IP) may be logged securely by PixelCraft AI.</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.5;">I agree to the Terms & Privacy Policy. To ensure a safe platform, basic security metrics (like IP) may be logged securely by PixelCraft AI.</p>
           </div>
         </div>
         
@@ -552,8 +560,8 @@
   </script>
 
   <!-- SEO/ADSENSE RICH TEXT INJECTION -->
-  <div style="margin-top: 60px; padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); color: #cbd5e1; line-height: 1.8; margin-bottom: 40px;">
-    <h2 style="color: #fff; font-size: 1.8rem; margin-bottom: 20px;">Digital Fingerprint Wiper: Protect Your EXIF Metadata Privacy</h2>
+  <div style="margin-top: 60px; padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); color: var(--text-muted); line-height: 1.8; margin-bottom: 40px;">
+    <h2 style="color: var(--text-main); font-size: 1.8rem; margin-bottom: 20px;">Digital Fingerprint Wiper: Protect Your EXIF Metadata Privacy</h2>
     <p style="margin-bottom: 20px;">
       Welcome to the <strong>PixelCraft AI Digital Fingerprint Wiper</strong>. When you capture a photograph with a smartphone or DSLR camera, the device embeds hidden metadata into the file known as EXIF (Exchangeable Image File Format) data. This hidden layer of information poses a severe threat to personal privacy if not properly managed before sharing media online.
     </p>
