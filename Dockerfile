@@ -4,7 +4,11 @@ ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+RUN chown node:node /usr/src/app
+
+USER node
+
+COPY --chown=node:node package*.json ./
 
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
@@ -20,10 +24,12 @@ RUN apk update && \
 
 WORKDIR /usr/src/app
 
-COPY --chown=root:root . .
-COPY --chown=root:root --from=build /usr/src/app/node_modules ./node_modules
+RUN chown node:node /usr/src/app
 
-USER 1000:1000
+COPY --chown=node:node . .
+COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
+
+USER node
 
 EXPOSE 3000
 
