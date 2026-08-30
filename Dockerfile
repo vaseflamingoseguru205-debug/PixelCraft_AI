@@ -12,7 +12,7 @@ COPY --chown=node:node package*.json ./
 
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
-FROM node:20.18.1-alpine3.20
+FROM node:20.18.1-alpine3.20 AS runner
 
 ENV NODE_ENV=production
 ENV PORT=3000
