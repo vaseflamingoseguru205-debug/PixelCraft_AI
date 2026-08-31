@@ -2,8 +2,6 @@ FROM node:20.18.1-alpine3.20 AS builder
 
 WORKDIR /usr/src/app
 
-RUN chown node:node /usr/src/app
-
 USER node
 
 COPY --chown=node:node package*.json ./
@@ -20,8 +18,6 @@ FROM node:20.18.1-alpine3.20 AS prod-deps
 
 WORKDIR /usr/src/app
 
-RUN chown node:node /usr/src/app
-
 USER node
 
 COPY --chown=node:node package*.json ./
@@ -35,17 +31,15 @@ ENV PORT=3000
 
 WORKDIR /usr/src/app
 
-RUN chown node:node /usr/src/app
-
 RUN apk update && \
     apk upgrade --no-cache && \
     apk add --no-cache tini && \
     rm -rf /var/cache/apk/* /tmp/*
 
-USER node
+COPY --from=builder /usr/src/app ./
+COPY --from=prod-deps /usr/src/app/node_modules ./node_modules
 
-COPY --chown=node:node --from=builder /usr/src/app ./
-COPY --chown=node:node --from=prod-deps /usr/src/app/node_modules ./node_modules
+USER node
 
 EXPOSE 3000
 
