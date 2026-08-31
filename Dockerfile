@@ -1,6 +1,6 @@
 FROM node:20.18.1-alpine3.20 AS builder
 
-WORKDIR /usr/src/app
+WORKDIR /home/node/app
 
 USER node
 
@@ -16,7 +16,7 @@ RUN rm -rf node_modules
 
 FROM node:20.18.1-alpine3.20 AS prod-deps
 
-WORKDIR /usr/src/app
+WORKDIR /home/node/app
 
 USER node
 
@@ -29,15 +29,14 @@ FROM node:20.18.1-alpine3.20 AS runner
 ENV NODE_ENV=production
 ENV PORT=3000
 
-WORKDIR /usr/src/app
+WORKDIR /home/node/app
 
-RUN apk update && \
-    apk upgrade --no-cache && \
+RUN apk upgrade --no-cache && \
     apk add --no-cache tini && \
-    rm -rf /var/cache/apk/* /tmp/*
+    chown node:node /home/node/app
 
-COPY --from=builder /usr/src/app ./
-COPY --from=prod-deps /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=builder /home/node/app ./
+COPY --chown=node:node --from=prod-deps /home/node/app/node_modules ./node_modules
 
 USER node
 
