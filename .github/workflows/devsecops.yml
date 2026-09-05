@@ -109,13 +109,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: test
-          args: --severity-threshold=high
-
-      - name: "📥 Download JSON Report for AI"
-        uses: actions/download-artifact@v4
-        with:
-          name: trivy-report-json
-          path: .
+          args: --severity-threshold=high --json-file-output=snyk-results.json
 
       # ==========================================
       # 🥷 NEW FEATURE: AI Red Teamer (Option 1)
