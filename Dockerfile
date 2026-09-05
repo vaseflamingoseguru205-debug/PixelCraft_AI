@@ -1,8 +1,8 @@
 FROM node:20.18.1-alpine3.20 AS builder
 
-RUN mkdir -p /home/node/app && chown -R node:node /home/node/app
-
 WORKDIR /home/node/app
+
+RUN chown node:node /home/node/app
 
 USER node
 
@@ -18,9 +18,9 @@ RUN rm -rf node_modules
 
 FROM node:20.18.1-alpine3.20 AS prod-deps
 
-RUN mkdir -p /home/node/app && chown -R node:node /home/node/app
-
 WORKDIR /home/node/app
+
+RUN chown node:node /home/node/app
 
 USER node
 
@@ -34,16 +34,14 @@ ENV NODE_ENV=production
 ENV PORT=3000
 
 RUN apk upgrade --no-cache && \
-    apk add --no-cache tini && \
-    mkdir -p /home/node/app && \
-    chown -R node:node /home/node/app
+    apk add --no-cache tini
 
 WORKDIR /home/node/app
 
-USER node
+COPY --chown=root:node --from=builder /home/node/app ./
+COPY --chown=root:node --from=prod-deps /home/node/app/node_modules ./node_modules
 
-COPY --chown=node:node --from=builder /home/node/app ./
-COPY --chown=node:node --from=prod-deps /home/node/app/node_modules ./node_modules
+USER node
 
 EXPOSE 3000
 
