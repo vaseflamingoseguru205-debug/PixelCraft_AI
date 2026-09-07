@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Forensic Image Sanitizer | PixelCraft AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #050505;
+      --panel-bg: #0a0a0a;
+      --border-cyan: rgba(6, 182, 212, 0.3);
+      --text-main: #e2e8f0;
+      --text-muted: #64748b;
+      --accent-cyan: #06b6d4;
+      --accent-cyan-glow: rgba(6, 182, 212, 0.4);
+      --accent-emerald: #10b981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.4);
+      --alert-red: #ef4444;
+      --alert-yellow: #f59e0b;
+    }
+    
+    * { box-sizing: border-box; }
+    
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+
+    /* Navbar */
+    .navbar {
+      padding: 15px 20px;
+      background: #000;
+      border-bottom: 1px solid var(--border-cyan);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .navbar .logo {
+      color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 1.2rem; letter-spacing: 1px;
+    }
+    .navbar .logo span { color: var(--accent-cyan); }
+    .back-btn {
+      color: var(--text-muted); text-decoration: none; font-size: 0.85rem;
+      border: 1px solid #333; padding: 6px 12px; border-radius: 4px; transition: 0.2s;
+    }
+    .back-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+    /* Main Container */
+    .container {
+      display: flex; flex: 1;
+      max-width: 1400px; margin: 0 auto; width: 100%;
+      padding: 20px; gap: 20px;
+      align-items: stretch;
+    }
+    
+    /* Left Panel: Dropzone & Image */
+    .panel-left {
+      flex: 1; min-width: 0;
+      background: var(--panel-bg);
+      border: 1px solid var(--border-cyan);
+      border-radius: 8px; padding: 20px;
+      display: flex; flex-direction: column; position: relative;
+    }
+    
+    .dropzone {
+      flex: 1; border: 1px dashed var(--accent-cyan); border-radius: 6px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: rgba(6, 182, 212, 0.02); cursor: pointer; transition: 0.3s;
+      text-align: center; padding: 20px;
+    }
+    .dropzone.dragover { background: rgba(6, 182, 212, 0.1); border-style: solid; box-shadow: inset 0 0 20px var(--accent-cyan-glow); }
+    .dropzone-icon { font-size: 3rem; margin-bottom: 10px; color: var(--accent-cyan); }
+    .dropzone-title { margin: 0 0 5px 0; font-size: 1.2rem; font-weight: 500; letter-spacing: 0.5px; }
+    .dropzone-desc { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+
+    .preview-wrapper {
+      display: none; flex-direction: column; height: 100%; position: relative;
+    }
+    .preview-img-container {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      overflow: hidden; border-radius: 6px; background: #000; border: 1px solid #333;
+      position: relative; margin-bottom: 15px;
+    }
+    .preview-img-container img {
+      max-width: 100%; max-height: 40vh; object-fit: contain;
+    }
+    
+    /* Scanner Animation */
+    .scanner {
+      position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+      background: var(--accent-cyan); box-shadow: 0 0 15px var(--accent-cyan);
+      display: none; z-index: 10;
+      animation: scanline 2s linear infinite;
+    }
+    @keyframes scanline {
+      0% { top: 0; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    .btn-outline {
+      background: transparent; border: 1px solid var(--text-muted); color: var(--text-main);
+      padding: 10px; border-radius: 4px; cursor: pointer; font-family: 'Inter', sans-serif;
+      margin-top: 15px; transition: 0.2s; font-size: 0.9rem;
+    }
+    .btn-outline:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+    /* Right Panel: Controls */
+    .panel-right {
+      flex: 0 0 400px; display: flex; flex-direction: column; gap: 20px;
+    }
+    
+    .control-box {
+      background: var(--panel-bg); border: 1px solid var(--border-cyan);
+      border-radius: 8px; padding: 25px;
+    }
+    
+    .tool-header {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: var(--accent-cyan);
+      margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px;
+    }
+    .tool-desc {
+      color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 20px;
+    }
+
+    /* Action Buttons */
+    .btn-cyber {
+      width: 100%; background: #111; border: 1px solid var(--accent-cyan); color: var(--accent-cyan);
+      padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: bold;
+      border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+    .btn-cyber:hover {
+      background: var(--accent-cyan); color: #000; box-shadow: 0 0 20px var(--accent-cyan-glow);
+    }
+    
+    .btn-verify {
+      width: 100%; background: #111; border: 1px solid var(--accent-emerald); color: var(--accent-emerald);
+      padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: bold;
+      border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+      transition: all 0.3s ease; margin-top: 10px;
+    }
+    .btn-verify:hover {
+      background: var(--accent-emerald); color: #000; box-shadow: 0 0 20px var(--accent-emerald-glow);
+    }
+
+    .btn-success {
+      display: none; width: 100%; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-emerald);
+      color: var(--accent-emerald); padding: 14px; font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase;
+      margin-top: 15px; transition: 0.3s;
+    }
+    .btn-success:hover { background: var(--accent-emerald); color: #000; box-shadow: 0 0 20px var(--accent-emerald-glow); }
+
+    /* OSINT Dashboard / Threats */
+    .threat-dashboard {
+      background: #000; border: 1px solid #222; border-radius: 8px; padding: 15px;
+      margin-bottom: 20px; display: none;
+    }
+    .threat-item {
+      padding: 10px; border-left: 3px solid #444; margin-bottom: 10px; background: rgba(255,255,255,0.03);
+    }
+    .threat-item.danger { border-left-color: var(--alert-red); background: rgba(239, 68, 68, 0.05); }
+    .threat-item.warning { border-left-color: var(--alert-yellow); background: rgba(245, 158, 11, 0.05); }
+    .threat-item.safe { border-left-color: var(--accent-emerald); background: rgba(16, 185, 129, 0.05); }
+    
+    .threat-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; color: #fff; }
+    .threat-desc { font-size: 0.8rem; color: var(--text-muted); }
+    .threat-alert { font-size: 0.85rem; color: var(--alert-yellow); margin-top: 5px; font-weight: 500;}
+
+    /* Terminal */
+    .terminal {
+      flex: 1; background: #000; border: 1px solid #222; border-radius: 8px; padding: 15px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted);
+      overflow-y: auto; max-height: 300px;
+    }
+    .terminal div { margin-bottom: 4px; word-wrap: break-word; }
+    .terminal .sys { color: var(--accent-cyan); }
+    .terminal .success { color: var(--accent-emerald); }
+    .terminal .err { color: var(--alert-red); }
+    .terminal .warn { color: #f59e0b; }
+
+    /* Mobile Optimization */
+    @media (max-width: 900px) {
+      .container { flex-direction: column; padding: 10px; margin-top: 10px; gap: 10px; }
+      .panel-right { flex: none; width: 100%; }
+      .panel-left { padding: 15px; min-height: 300px; }
+      .preview-img-container img { max-height: 35vh; }
+      .btn-cyber, .btn-success { padding: 12px; font-size: 0.9rem; }
+      .control-box { padding: 15px; }
+      .terminal { max-height: 200px; font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="/index.html" class="logo">PixelCraft <span>AI</span></a>
+    <a href="/index.html" class="back-btn">RETURN</a>
+  </nav>
+
+  <div class="container">
+    
+    <!-- LEFT PANEL: Image View -->
+    <div class="panel-left">
+      <div class="dropzone" id="dropzone">
+        <div class="dropzone-icon">⛶</div>
+        <h3 class="dropzone-title">AWAITING TARGET MEDIA</h3>
+        <p class="dropzone-desc">Drag & drop or tap to select image</p>
+      </div>
+      
+      <div class="preview-wrapper" id="previewWrapper">
+        <div class="preview-img-container">
+          <div class="scanner" id="scanner"></div>
+          <img id="previewImg" src="" alt="Target Image">
+        </div>
+        
+        <div class="threat-dashboard" id="threatDashboard">
+            <h4 style="margin: 0 0 10px 0; color: var(--accent-cyan); font-family: 'JetBrains Mono';">Deep Threat OSINT Results:</h4>
+            <div id="threatList"></div>
+        </div>
+
+        <button class="btn-outline" id="btnChange">Abort & Select New Target</button>
+      </div>
+    </div>
+    
+    <!-- RIGHT PANEL: Controls -->
+    <div class="panel-right">
+      <div class="control-box">
+        <h2 class="tool-header">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          Forensic Image Sanitizer
+        </h2>
+        <p class="tool-desc">
+          Upload an image to perform deep threat OSINT (GPS reverse-geocoding, device extraction) and hex payload analysis. The system will then completely nuke all metadata (EXIF/IPTC/XMP) and embed an invisible <strong>Pixelcraft Cryptographic Seal</strong>.
+        </p>
+        
+        <button class="btn-cyber" id="btnProcess">1. Scan & Sanitize Image</button>
+        <button class="btn-verify" id="btnVerify">2. Verify Cryptographic Seal</button>
+        <button class="btn-success" id="btnDownload">Download Secured Image</button>
+      </div>
+      
+      <div class="terminal" id="terminal">
+        <div class="sys">> System Ready.</div>
+        <div>> Waiting for image upload...</div>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+  <script>
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const previewWrapper = document.getElementById('previewWrapper');
+    const previewImg = document.getElementById('previewImg');
+    const btnChange = document.getElementById('btnChange');
+    const btnProcess = document.getElementById('btnProcess');
+    const btnVerify = document.getElementById('btnVerify');
+    const btnDownload = document.getElementById('btnDownload');
+    const terminal = document.getElementById('terminal');
+    const scanner = document.getElementById('scanner');
+    const threatDashboard = document.getElementById('threatDashboard');
+    const threatList = document.getElementById('threatList');
+
+    let currentFile = null;
+    let sanitizedDataUrl = null;
+
+    // --- Terminal Logger ---
+    function logTerminal(msg, type = '') {
+      const div = document.createElement('div');
+      div.textContent = '> ' + msg;
+      if (type) div.className = type;
+      terminal.appendChild(div);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    // --- Input Handling ---
+    window.addEventListener('dragover', (e) => e.preventDefault());
+    window.addEventListener('drop', (e) => e.preventDefault());
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('dragenter', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    dropzone.addEventListener('dragleave', (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); });
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault(); dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) handleFile(e.target.files[0]);
+    });
+
+    function handleFile(file) {
+        if (!file.type.startsWith('image/')) {
+            logTerminal('ERROR: Invalid media format.', 'err');
+            return;
+        }
+        currentFile = file;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            dropzone.style.display = 'none';
+            previewImg.src = e.target.result;
+            previewWrapper.style.display = 'flex';
+            threatDashboard.style.display = 'none';
+            btnDownload.style.display = 'none';
+            sanitizedDataUrl = null;
+            logTerminal(`TARGET ACQUIRED: ${file.name} [${(file.size/1024).toFixed(1)} KB]`, 'sys');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    btnChange.addEventListener('click', () => {
+        currentFile = null;
+        sanitizedDataUrl = null;
+        fileInput.value = '';
+        previewImg.src = '';
+        previewWrapper.style.display = 'none';
+        dropzone.style.display = 'flex';
+        btnDownload.style.display = 'none';
+        threatDashboard.style.display = 'none';
+        logTerminal('TARGET DISCARDED. Standing by...', 'warn');
+    });
+
+    btnProcess.addEventListener('click', async () => {
+        if (!currentFile) {
+            logTerminal('ERROR: No image selected.', 'err');
+            return;
+        }
+        
+        btnProcess.textContent = "Processing & Sanitizing...";
+        btnProcess.disabled = true;
+        scanner.style.display = 'block';
+        logTerminal('Initiating Deep Threat OSINT Scan...', 'sys');
+        
+        const formData = new FormData();
+        formData.append('image', currentFile);
+        
+        try {
+            const res = await fetch('/api/tools/forensic-sanitize', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            
+            if (data.error) throw new Error(data.error);
+            
+            logTerminal('Scan complete. Displaying threats.', 'success');
+            
+            // Render Threats
+            threatList.innerHTML = '';
+            data.threats.forEach(t => {
+                const item = document.createElement('div');
+                let cssClass = 'safe';
+                if (t.status === 'Found' && t.type.includes('Location')) cssClass = 'danger';
+                else if (t.status === 'Found') cssClass = 'warning';
+                
+                item.className = `threat-item ${cssClass}`;
+                item.innerHTML = `
+                    <div class="threat-title">${t.type} [${t.status}]</div>
+                    ${t.alert ? `<div class="threat-alert">${t.alert}</div>` : ''}
+                `;
+                threatList.appendChild(item);
+                logTerminal(`Threat Check: ${t.type} -> ${t.status}`);
+            });
+            
+            threatDashboard.style.display = 'block';
+            
+            // Show new image
+            logTerminal(`Image Nuked. Cryptographic Seal Applied: ${data.sealHash.substring(0,8)}...`, 'sys');
+            sanitizedDataUrl = data.sanitizedImageBase64;
+            previewImg.src = sanitizedDataUrl;
+            
+            btnDownload.style.display = 'block';
+            
+        } catch (err) {
+            logTerminal('ERROR: ' + err.message, 'err');
+        } finally {
+            scanner.style.display = 'none';
+            btnProcess.textContent = "1. Scan & Sanitize Image";
+            btnProcess.disabled = false;
+        }
+    });
+
+    btnVerify.addEventListener('click', async () => {
+        if (!currentFile) {
+            logTerminal('ERROR: Select an image to verify first.', 'err');
+            return;
+        }
+        
+        logTerminal('Verifying Cryptographic Seal...', 'sys');
+        
+        // Convert base64 to blob if we are verifying the currently sanitized image
+        // Or if the user uploaded an already sanitized image, just use currentFile
+        
+        let fileToVerify = currentFile;
+        // if user just sanitized, let's verify the output
+        if (sanitizedDataUrl) {
+            logTerminal('Note: Verifying the newly sanitized image buffer.', 'warn');
+            const res = await fetch(sanitizedDataUrl);
+            const blob = await res.blob();
+            fileToVerify = new File([blob], 'sanitized.png', { type: blob.type });
+        }
+        
+        const formData = new FormData();
+        formData.append('image', fileToVerify);
+        
+        try {
+            const res = await fetch('/api/tools/verify-seal', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            
+            if (data.error) throw new Error(data.error);
+            
+            if (data.verified) {
+                logTerminal(data.message, 'success');
+            } else {
+                logTerminal(data.message, 'err');
+            }
+            
+        } catch (err) {
+            logTerminal('ERROR: ' + err.message, 'err');
+        }
+    });
+    
+    btnDownload.addEventListener('click', () => {
+        if (!sanitizedDataUrl) return;
+        const a = document.createElement('a');
+        a.href = sanitizedDataUrl;
+        a.download = "Pixelcraft_Sanitized_Image.png";
+        a.click();
+        logTerminal('Secure download initiated.', 'sys');
+    });
+
+  </script>
+</body>
+</html>
