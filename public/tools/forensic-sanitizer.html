@@ -254,6 +254,16 @@
   <input type="file" id="fileInput" accept="image/*" style="display: none;">
 
   <script>
+    // Force unregister any existing service workers that might be intercepting POST requests
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister();
+                console.log('ServiceWorker unregistered aggressively.');
+            }
+        });
+    }
+
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
     const previewWrapper = document.getElementById('previewWrapper');
@@ -346,7 +356,15 @@
                 method: 'POST',
                 body: formData
             });
-            const data = await res.json();
+            
+            const rawText = await res.text();
+            let data;
+            try {
+                data = JSON.parse(rawText);
+            } catch (parseErr) {
+                console.error("Raw response:", rawText);
+                throw new Error(`Invalid JSON response (Status ${res.status}). Body: ${rawText.substring(0, 50)}...`);
+            }
             
             if (data.error) throw new Error(data.error);
             
