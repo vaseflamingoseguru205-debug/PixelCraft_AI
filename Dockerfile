@@ -1,10 +1,8 @@
 FROM node:20.18.1-alpine3.20 AS builder
 
-WORKDIR /home/node/app
-
-RUN chown node:node /home/node/app
-
 USER node
+RUN mkdir -p /home/node/app
+WORKDIR /home/node/app
 
 COPY --chown=node:node package*.json ./
 
@@ -12,17 +10,13 @@ RUN npm ci --ignore-scripts
 
 COPY --chown=node:node . .
 
-RUN npm run build --if-present
-
-RUN rm -rf node_modules
+RUN npm run build --if-present && rm -rf node_modules
 
 FROM node:20.18.1-alpine3.20 AS prod-deps
 
-WORKDIR /home/node/app
-
-RUN chown node:node /home/node/app
-
 USER node
+RUN mkdir -p /home/node/app
+WORKDIR /home/node/app
 
 COPY --chown=node:node package*.json ./
 
