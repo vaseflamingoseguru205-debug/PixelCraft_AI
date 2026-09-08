@@ -488,7 +488,7 @@
                     <tr>
                         <th>Identity</th>
                         <th>Latest Device Vector</th>
-                        <th>Latest Geolocation</th>
+
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -544,7 +544,7 @@
                             <th>Session ID</th>
                             <th>Timestamp</th>
                             <th>Entity (Email)</th>
-                            <th>IP Address</th>
+
                             <th>Action</th>
                             <th>Legal Consent</th>
                         </tr>
@@ -565,7 +565,7 @@
                             <th>Session ID</th>
                             <th>Timestamp</th>
                             <th>Entity (Email)</th>
-                            <th>IP Address</th>
+
                             <th>Action</th>
                             <th>Legal Consent</th>
                         </tr>
@@ -586,7 +586,7 @@
                             <th>Session ID</th>
                             <th>Timestamp</th>
                             <th>Entity (Email)</th>
-                            <th>IP Address</th>
+
                             <th>Action</th>
                             <th>Legal Consent</th>
                         </tr>
@@ -640,11 +640,7 @@
                 </div>
                 <div class="data-group">
                     <div class="data-title">Latest Known Vector</div>
-                    <div class="data-row"><span class="data-label">IP Address</span><span class="data-val" id="m-ip">Unknown</span></div>
-                    <div class="data-row"><span class="data-label">Device / OS</span><span class="data-val" id="m-device">Unknown</span></div>
-                    <div class="data-row"><span class="data-label">Browser</span><span class="data-val" id="m-browser">Unknown</span></div>
-                    <div class="data-row"><span class="data-label">📍 Location</span><span class="data-val" id="m-loc">Unknown</span></div>
-                    <div class="data-row"><span class="data-label">ISP</span><span class="data-val" id="m-isp">Unknown</span></div>
+
                 </div>
             </div>
         </div>
@@ -1397,7 +1393,7 @@ inSxPwWk6OXcfLjWnE/xatI=
                 <td style="color:var(--accent); font-family:'JetBrains Mono',monospace;">PixelCraft Software<br><span style="font-size:0.85em; color:var(--text-muted);">${log.sessionId}</span></td>
                 <td>${new Date(log.timestamp).toLocaleString()}</td>
                 <td style="color:#fff;">${log.email}</td>
-                <td style="color:#cbd5e1; font-family:'JetBrains Mono',monospace;">${log.ipAddress}</td>
+                
                 <td><span style="background:rgba(245,158,11,0.15); color:var(--warning); padding:2px 8px; border-radius:4px; font-size:11px;">${log.action}</span></td>
                 <td>${log.legalConsentGranted ? '<span style="color:var(--success);">TRUE</span>' : '<span style="color:var(--danger);">FALSE</span>'}</td>
             `;
@@ -1568,9 +1564,7 @@ inSxPwWk6OXcfLjWnE/xatI=
                 item.innerHTML = `
                     <div class="time-date">${dateObj.toLocaleDateString('en-IN')} ${dateObj.toLocaleTimeString()}</div>
                     <div class="time-details">
-                        <span><b style="color:var(--accent);">IP:</b> ${session.ip || 'Unknown'} | <b style="color:var(--accent);">ISP:</b> ${session.isp || 'Unknown'}</span>
-                        <span><b style="color:var(--accent);">📍 Loc:</b> ${session.city || 'Unknown'}, ${session.country || 'Unknown'}</span>
-                        <span><b style="color:var(--accent);">Sys:</b> ${session.deviceType || 'Unknown'} / ${session.os || 'Unknown'} / ${session.browser || 'Unknown'}</span>
+                        <span><b style="color:var(--accent);">Session Logged</b></span>
                     </div>
                 `;
                 timeline.appendChild(item);
@@ -1766,7 +1760,7 @@ inSxPwWk6OXcfLjWnE/xatI=
                     </div>
                 </td>
                 <td class="sub-text"><span class="highlight">${u.deviceType || 'Unknown'} / ${u.os || 'Unknown'}</span></td>
-                <td class="sub-text"><span class="highlight">${u.city || 'Unknown'}, ${u.country || 'Unknown'}</span></td>
+                
                 <td>${statusBadge}</td>
             `;
             tbody.appendChild(tr);
