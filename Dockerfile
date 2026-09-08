@@ -36,8 +36,8 @@ RUN apk upgrade --no-cache && \
 
 WORKDIR /usr/src/app
 
-COPY --chown=root:node --from=builder /usr/src/app ./
-COPY --chown=root:node --from=prod-deps /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=builder /usr/src/app ./
+COPY --chown=node:node --from=prod-deps /usr/src/app/node_modules ./node_modules
 
 USER node
 
