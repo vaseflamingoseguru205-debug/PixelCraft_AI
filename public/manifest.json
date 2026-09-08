@@ -1,7 +1,7 @@
 {
   "name": "PixelCraft AI",
   "short_name": "PixelCraft",
-  "description": "Free AI Image Editing Tools Online | Background Remover, Compressor & More",
+  "description": "Free AI Privacy, Security & Image Tools Online | Background Remover, Compressor & More",
   "start_url": "/?source=pwa",
   "display": "standalone",
   "background_color": "#2563EB",

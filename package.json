@@ -1,7 +1,7 @@
 {
   "name": "ai-tools-website",
   "version": "1.0.0",
-  "description": "PixelCraft AI is a suite of professional, browser-based image editing tools. All processing happens locally on your device, ensuring maximum privacy and speed. No sign-up, no server uploads, 100% free.",
+  "description": "PixelCraft AI is a suite of professional, browser-based privacy, security, and image tools. All processing happens locally on your device, ensuring maximum privacy and speed. No sign-up, no server uploads, 100% free.",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
