@@ -4,15 +4,15 @@ RUN apk update && apk upgrade --no-cache
 
 WORKDIR /usr/src/app
 
-RUN chown node:node /usr/src/app
+RUN chown 1000:1000 /usr/src/app
 
-USER node
+USER 1000:1000
 
-COPY --chown=node:node package*.json ./
+COPY --chown=1000:1000 package*.json ./
 
 RUN npm ci --ignore-scripts
 
-COPY --chown=node:node . .
+COPY --chown=1000:1000 . .
 
 RUN npm run build --if-present && rm -rf node_modules
 
@@ -22,11 +22,11 @@ RUN apk update && apk upgrade --no-cache
 
 WORKDIR /usr/src/app
 
-RUN chown node:node /usr/src/app
+RUN chown 1000:1000 /usr/src/app
 
-USER node
+USER 1000:1000
 
-COPY --chown=node:node package*.json ./
+COPY --chown=1000:1000 package*.json ./
 
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
@@ -41,12 +41,10 @@ RUN apk update && \
 
 WORKDIR /usr/src/app
 
-RUN chown node:node /usr/src/app
+COPY --chown=0:0 --from=builder /usr/src/app ./
+COPY --chown=0:0 --from=prod-deps /usr/src/app/node_modules ./node_modules
 
-COPY --chown=node:node --from=builder /usr/src/app ./
-COPY --chown=node:node --from=prod-deps /usr/src/app/node_modules ./node_modules
-
-USER node
+USER 1000:1000
 
 EXPOSE 3000
 
