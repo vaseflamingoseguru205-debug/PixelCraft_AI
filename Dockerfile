@@ -37,7 +37,8 @@ ENV PORT=3000
 
 RUN apk update && \
     apk upgrade --no-cache && \
-    apk add --no-cache tini
+    apk add --no-cache tini && \
+    rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx /opt/yarn*
 
 WORKDIR /usr/src/app
 
