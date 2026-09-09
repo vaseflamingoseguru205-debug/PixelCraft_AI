@@ -2,17 +2,17 @@ FROM node:20.18.1-alpine3.20 AS builder
 
 RUN apk update && apk upgrade --no-cache
 
-WORKDIR /usr/src/app
+WORKDIR /home/node/app
 
-RUN chown 1000:1000 /usr/src/app
+RUN chown node:node /home/node/app
 
-USER 1000:1000
+USER node
 
-COPY --chown=1000:1000 package*.json ./
+COPY --chown=node:node package*.json ./
 
 RUN npm ci --ignore-scripts
 
-COPY --chown=1000:1000 . .
+COPY --chown=node:node . .
 
 RUN npm run build --if-present && rm -rf node_modules
 
@@ -20,13 +20,13 @@ FROM node:20.18.1-alpine3.20 AS prod-deps
 
 RUN apk update && apk upgrade --no-cache
 
-WORKDIR /usr/src/app
+WORKDIR /home/node/app
 
-RUN chown 1000:1000 /usr/src/app
+RUN chown node:node /home/node/app
 
-USER 1000:1000
+USER node
 
-COPY --chown=1000:1000 package*.json ./
+COPY --chown=node:node package*.json ./
 
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
@@ -40,12 +40,14 @@ RUN apk update && \
     apk add --no-cache tini && \
     rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx /opt/yarn*
 
-WORKDIR /usr/src/app
+WORKDIR /home/node/app
 
-COPY --chown=0:0 --from=builder /usr/src/app ./
-COPY --chown=0:0 --from=prod-deps /usr/src/app/node_modules ./node_modules
+RUN chown node:node /home/node/app
 
-USER 1000:1000
+COPY --chown=node:node --from=builder /home/node/app ./
+COPY --chown=node:node --from=prod-deps /home/node/app/node_modules ./node_modules
+
+USER node
 
 EXPOSE 3000
 
