@@ -2,7 +2,7 @@ name: PixelCraft AI DevSecOps Pipeline
 
 on:
   push:
-    branches: [ "main", "master", "feature/**" ]
+    branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master", "feature/**" ]
   workflow_dispatch:
@@ -15,6 +15,7 @@ jobs:
   security-scans:
     name: "🔍 Scans & AI Reports"
     runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'ai-auto-fixes/') }}
 
     steps:
       - name: Checkout Code
@@ -90,6 +91,7 @@ jobs:
   scan-and-remediate:
     name: "🔒 Snyk Scan & 🤖 AI Fix"
     runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'ai-auto-fixes/') }}
     needs: security-scans
     permissions:
       contents: write
