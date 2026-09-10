@@ -1,0 +1,51 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "SecretsManagerAccess",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:app-production-secrets-*"
+    },
+    {
+      "Sid": "S3ObjectManipulations",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::my-app-uploads-bucket/*"
+    },
+    {
+      "Sid": "S3BucketListing",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Resource": "arn:aws:s3:::my-app-uploads-bucket"
+    },
+    {
+      "Sid": "SESEmailSending",
+      "Effect": "Allow",
+      "Action": [
+        "ses:SendEmail",
+        "ses:SendRawEmail"
+      ],
+      "Resource": [
+        "arn:aws:ses:us-east-1:123456789012:identity/example.com",
+        "arn:aws:ses:us-east-1:123456789012:identity/noreply@example.com"
+      ]
+    },
+    {
+      "Sid": "DocumentDBConnection",
+      "Effect": "Allow",
+      "Action": [
+        "rds-db:connect"
+      ],
+      "Resource": "arn:aws:rds-db:us-east-1:123456789012:dbuser:docdb-cluster-xyz/db_user"
+    }
+  ]
+}
