@@ -1,0 +1,60 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S3ObjectStorageAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::production-app-assets-bucket/*"
+    },
+    {
+      "Sid": "S3BucketListAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Resource": "arn:aws:s3:::production-app-assets-bucket"
+    },
+    {
+      "Sid": "SESSendEmailAccess",
+      "Effect": "Allow",
+      "Action": [
+        "ses:SendEmail",
+        "ses:SendRawEmail"
+      ],
+      "Resource": [
+        "arn:aws:ses:us-east-1:123456789012:identity/noreply@yourdomain.com",
+        "arn:aws:ses:us-east-1:123456789012:identity/yourdomain.com"
+      ]
+    },
+    {
+      "Sid": "SecretsManagerRetrieveAccess",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:production/app/config-*"
+    },
+    {
+      "Sid": "SSMParameterStoreAccess",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameter",
+        "ssm:GetParameters"
+      ],
+      "Resource": "arn:aws:ssm:us-east-1:123456789012:parameter/production/app/*"
+    },
+    {
+      "Sid": "DocumentDBIAMConnectionAccess",
+      "Effect": "Allow",
+      "Action": [
+        "rds-db:connect"
+      ],
+      "Resource": "arn:aws:rds-db:us-east-1:123456789012:dbuser:cluster-ABCDEFGHIJKLMNOPQRSTUV1234/app_user"
+    }
+  ]
+}
