@@ -2,9 +2,10 @@ FROM node:20.18.1-alpine3.20 AS builder
 
 RUN apk upgrade --no-cache
 
-USER node
-
 WORKDIR /home/node/app
+RUN chown -R node:node /home/node/app
+
+USER node
 
 COPY --chown=node:node package*.json ./
 
@@ -18,9 +19,10 @@ FROM node:20.18.1-alpine3.20 AS prod-deps
 
 RUN apk upgrade --no-cache
 
-USER node
-
 WORKDIR /home/node/app
+RUN chown -R node:node /home/node/app
+
+USER node
 
 COPY --chown=node:node package*.json ./
 
@@ -36,9 +38,10 @@ RUN apk upgrade --no-cache && \
     rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx /opt/yarn*
 
 WORKDIR /home/node/app
+RUN chown -R node:node /home/node/app
 
-COPY --chown=root:node --from=builder /home/node/app ./
-COPY --chown=root:node --from=prod-deps /home/node/app/node_modules ./node_modules
+COPY --chown=node:node --from=builder /home/node/app ./
+COPY --chown=node:node --from=prod-deps /home/node/app/node_modules ./node_modules
 
 USER node
 
