@@ -1,12 +1,10 @@
 FROM node:20.18.1-alpine3.20 AS builder
 
-RUN apk update && apk upgrade --no-cache
-
-WORKDIR /home/node/app
-
-RUN chown node:node /home/node/app
+RUN apk upgrade --no-cache
 
 USER node
+
+WORKDIR /home/node/app
 
 COPY --chown=node:node package*.json ./
 
@@ -18,13 +16,11 @@ RUN npm run build --if-present && rm -rf node_modules
 
 FROM node:20.18.1-alpine3.20 AS prod-deps
 
-RUN apk update && apk upgrade --no-cache
-
-WORKDIR /home/node/app
-
-RUN chown node:node /home/node/app
+RUN apk upgrade --no-cache
 
 USER node
+
+WORKDIR /home/node/app
 
 COPY --chown=node:node package*.json ./
 
@@ -35,19 +31,16 @@ FROM node:20.18.1-alpine3.20 AS runner
 ENV NODE_ENV=production
 ENV PORT=3000
 
-RUN apk update && \
-    apk upgrade --no-cache && \
+RUN apk upgrade --no-cache && \
     apk add --no-cache tini && \
     rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx /opt/yarn*
 
-WORKDIR /home/node/app
+USER node
 
-RUN chown node:node /home/node/app
+WORKDIR /home/node/app
 
 COPY --chown=node:node --from=builder /home/node/app ./
 COPY --chown=node:node --from=prod-deps /home/node/app/node_modules ./node_modules
-
-USER node
 
 EXPOSE 3000
 
