@@ -21,9 +21,9 @@ async function plantHoneytoken() {
         await mongoose.connect(process.env.MONGO_URI);
         console.log("✅ Connected to Database");
 
-        // 1. Generate a realistic-looking fake API Key
+        // 1. Generate a realistic-looking fake API Key with a specific fake prefix
         const rawToken = crypto.randomBytes(32).toString('hex');
-        const fakeToken = `pk_live_${rawToken}`;
+        const fakeToken = `pct_fake_live_${rawToken}`;
 
         // 2. Save it to Database
         const description = "Planted in .env.backup via CI/CD pipeline script";
