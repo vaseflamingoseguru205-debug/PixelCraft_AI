@@ -35,12 +35,12 @@ RUN apk upgrade --no-cache && \
     apk add --no-cache tini && \
     rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx /opt/yarn*
 
-USER node
-
 WORKDIR /home/node/app
 
-COPY --chown=node:node --from=builder /home/node/app ./
-COPY --chown=node:node --from=prod-deps /home/node/app/node_modules ./node_modules
+COPY --chown=root:node --from=builder /home/node/app ./
+COPY --chown=root:node --from=prod-deps /home/node/app/node_modules ./node_modules
+
+USER node
 
 EXPOSE 3000
 
