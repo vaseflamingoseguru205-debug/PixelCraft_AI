@@ -39,34 +39,6 @@ jobs:
         with:
           path: ./
 
-      # Gate 1b: Snyk Security Scan
-      - name: "🔒 Snyk Security Scan (Pre-Fix)"
-        uses: snyk/actions/node@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: test
-          args: --severity-threshold=high --json-file-output=snyk-results.json
-
-      - name: "📊 Generate Snyk Markdown Report"
-        if: always()
-        run: |
-          echo "## 🔒 Snyk Vulnerability Report" >> $GITHUB_STEP_SUMMARY
-          if [ -f snyk-results.json ]; then
-            VULNS=$(jq '.vulnerabilities | length' snyk-results.json 2>/dev/null || echo "0")
-            echo "Total High/Critical Vulnerabilities Found: **$VULNS**" >> $GITHUB_STEP_SUMMARY
-            echo "<details><summary>Click to view Snyk Details</summary>" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo '```json' >> $GITHUB_STEP_SUMMARY
-            jq '{vulnerabilities: [.vulnerabilities[]? | {id, title, packageName, severity, version}] | unique}' snyk-results.json | head -n 100 >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            echo "</details>" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "✅ No high/critical vulnerabilities found by Snyk." >> $GITHUB_STEP_SUMMARY
-          fi
-          echo "✅ Snyk Report added to Job Summary!"
-
       # Gate 2: Trivy Scan - Generate JSON report for AI
       - name: "🛡️ Trivy Vulnerability Scan"
         uses: aquasecurity/trivy-action@master
@@ -112,13 +84,6 @@ jobs:
           name: trivy-report-json
           path: trivy-results.json
 
-      - name: "📤 Upload Snyk JSON Report"
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: snyk-report-json
-          path: snyk-results.json
-
   # ============================================================
   # JOB 2: Snyk Scan aur AI Remediation
   # ============================================================
@@ -137,12 +102,32 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref || github.ref_name }}
 
-      - name: "📥 Download Snyk JSON Report"
-        uses: actions/download-artifact@v4
+      - name: "🔒 Snyk Security Scan (Pre-Fix)"
+        uses: snyk/actions/node@master
         continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          name: snyk-report-json
-          path: .
+          command: test
+          args: --severity-threshold=high --json-file-output=snyk-results.json
+
+      - name: "📊 Generate Snyk Markdown Report"
+        if: always()
+        run: |
+          echo "## 🔒 Snyk Vulnerability Report" >> $GITHUB_STEP_SUMMARY
+          if [ -f snyk-results.json ]; then
+            VULNS=$(jq '.vulnerabilities | length' snyk-results.json 2>/dev/null || echo "0")
+            echo "Total High/Critical Vulnerabilities Found: **$VULNS**" >> $GITHUB_STEP_SUMMARY
+            echo "<details><summary>Click to view Snyk Details</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            jq '{vulnerabilities: [.vulnerabilities[]? | {id, title, packageName, severity, version}] | unique}' snyk-results.json | head -n 100 >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ No high/critical vulnerabilities found by Snyk." >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "✅ Snyk Report added to Job Summary!"
 
       # ==========================================
       # 🥷 NEW FEATURE: AI Red Teamer (Option 1)
