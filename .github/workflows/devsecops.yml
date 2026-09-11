@@ -2,9 +2,9 @@ name: PixelCraft AI DevSecOps Pipeline
 
 on:
   push:
-    branches: [ "**" ]
+    branches: [ "main", "master" ]
   pull_request:
-    branches: [ "**" ]
+    branches: [ "main", "master", "feature/**" ]
   workflow_dispatch:
 
 jobs:
@@ -102,6 +102,15 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref || github.ref_name }}
 
+      - name: "📦 Setup Node.js & Caching"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: "📥 Install Dependencies"
+        run: npm ci || npm install
+
       - name: "🔒 Snyk Security Scan (Pre-Fix)"
         uses: snyk/actions/node@master
         continue-on-error: true
@@ -110,6 +119,24 @@ jobs:
         with:
           command: test
           args: --severity-threshold=high --json-file-output=snyk-results.json
+
+      - name: "📊 Generate Snyk Markdown Report"
+        if: always()
+        run: |
+          echo "## 🔒 Snyk Vulnerability Report" >> $GITHUB_STEP_SUMMARY
+          if [ -f snyk-results.json ]; then
+            VULNS=$(jq '.vulnerabilities | length' snyk-results.json 2>/dev/null || echo "0")
+            echo "Total High/Critical Vulnerabilities Found: **$VULNS**" >> $GITHUB_STEP_SUMMARY
+            echo "<details><summary>Click to view Snyk Details</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            jq '{vulnerabilities: [.vulnerabilities[]? | {id, title, packageName, severity, version}] | unique}' snyk-results.json | head -n 100 >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ No high/critical vulnerabilities found by Snyk." >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "✅ Snyk Report added to Job Summary!"
 
       # ==========================================
       # 🥷 NEW FEATURE: AI Red Teamer (Option 1)

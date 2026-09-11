@@ -13,6 +13,7 @@ const multer = require('multer');
 const FormData = require('form-data');
 const fs = require('fs');
 const { sendTelegramAlert } = require('./utils/telegramAlert');
+const honeytokenTrap = require('./middlewares/honeytokenTrap');
 const app = express();
 app.set('trust proxy', 1); // Trust the Render proxy to fix HTTP/HTTPS mismatch
 const PORT = process.env.PORT || 8080;
@@ -46,6 +47,10 @@ if (process.env.RENDER || process.env.NODE_ENV === 'production') {
 } else {
   console.log("Using Local Memory Session Store");
 }
+
+// --- GLOBAL ACTIVE DEFENSE TRAP ---
+// Protects the server by intercepting requests containing fake API keys
+app.use(honeytokenTrap);
 
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
@@ -712,6 +717,11 @@ app.post('/api/admin/settings', requireAdminAuth, (req, res) => {
 
 // Middleware to Protect ALL Tools (Requires Sign-In to use tools)
 app.use('/tools', (req, res, next) => {
+  // Allow forensic-sanitizer to bypass auth
+  if (req.originalUrl.toLowerCase().includes('forensic-sanitizer')) {
+    return next();
+  }
+  
   if (req.isAuthenticated()) {
     // Allow tool access
     return next();
